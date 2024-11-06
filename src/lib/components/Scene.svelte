@@ -1,13 +1,9 @@
 <script lang="ts">
-	import { T, useTask } from '@threlte/core';
-	import {
-		Grid,
-		OrbitControls,
-		InstancedMesh,
-		Instance,
-		useGltf,
-		interactivity
-	} from '@threlte/extras';
+	import { T } from '@threlte/core';
+	import { Grid, OrbitControls } from '@threlte/extras';
+
+	import Peformance from './misc/Peformance.svelte';
+	import Cards from './cards/Cards.svelte';
 </script>
 
 <Grid
@@ -20,6 +16,13 @@
 	position.y={-0.01}
 />
 
-<T.PerspectiveCamera makeDefault name="dev camera" position={[20, 20, 20]} fov={15}>
+<Peformance />
+
+<Cards />
+
+<T.PerspectiveCamera makeDefault name="dev camera" position={[0, 20, 20]} fov={15}>
 	<OrbitControls />
 </T.PerspectiveCamera>
+
+<T.DirectionalLight intensity={1.5} position={[5, 5, 5]} />
+<T.AmbientLight intensity={1.2} />
