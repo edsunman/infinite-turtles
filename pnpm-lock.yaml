@@ -14,6 +14,9 @@ importers:
       '@threlte/extras':
         specifier: 9.0.0-next.31
         version: 9.0.0-next.31(@types/three@0.169.0)(svelte@5.1.9)(three@0.170.0)
+      '@types/three':
+        specifier: ^0.169.0
+        version: 0.169.0
       three:
         specifier: ^0.170.0
         version: 0.170.0

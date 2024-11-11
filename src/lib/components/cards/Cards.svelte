@@ -5,6 +5,9 @@
 	import { movingBehaviour } from './cardsBehaviour';
 	import type { Card, XYZ } from '$lib/types';
 
+	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
+	import RoundedPlane from '../geometries/RoundedPlane.svelte';
+
 	const every5 = interval(2);
 	useTask((delta) => {
 		//temp = cardState.cards.concat();
@@ -36,7 +39,7 @@
 		rotation.y={card.rotation.y}
 		rotation.z={card.rotation.z}
 	>
-		<T.BoxGeometry />
-		<T.MeshStandardMaterial />
+		<RoundedPlane />
+		<ParallaxMaterial />
 	</T.Mesh>
 {/each}
