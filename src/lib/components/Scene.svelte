@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
 	import { Grid, OrbitControls } from '@threlte/extras';
+	import { gameState } from '$lib/state.svelte';
 
 	import Peformance from './misc/Peformance.svelte';
 	import Cards from './cards/Cards.svelte';
+	import Hitboxes from './cards/Hitboxes.svelte';
 </script>
 
 <Grid
@@ -19,8 +21,22 @@
 <Peformance />
 
 <Cards />
+<Hitboxes />
 
-<T.PerspectiveCamera makeDefault name="dev camera" position={[0, 20, 20]} fov={15}>
+<T.Mesh>
+	<T.MeshStandardMaterial />
+	<T.BoxGeometry />
+</T.Mesh>
+
+<T.PerspectiveCamera
+	name="main camera"
+	position={[0, 20, 20]}
+	rotation={[-0.75, 0, 0]}
+	fov={15}
+	makeDefault={!gameState.dev}
+/>
+
+<T.PerspectiveCamera name="dev camera" position={[0, 10, 10]} fov={15} makeDefault={gameState.dev}>
 	<OrbitControls />
 </T.PerspectiveCamera>
 

@@ -5,9 +5,9 @@ export type Card = {
 	position: XYZ;
 	moveTo: XYZ;
 	moveVelocity: XYZ;
-	positionSettled: boolean;
 	rotation: XYZ;
 	rotateTo: XYZ;
 	rotateVelocity: XYZ;
-	rotationSettled: boolean;
+	settled: boolean;
+	inHand: boolean;
 };

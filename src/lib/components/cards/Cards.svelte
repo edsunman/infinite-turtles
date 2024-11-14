@@ -2,31 +2,37 @@
 	import { T, useTask } from '@threlte/core';
 	import { cardState } from '$lib/state.svelte';
 	import { interval } from '$lib/helpers/animation';
-	import { movingBehaviour } from './cardsBehaviour';
+	import { movingBehaviour } from './cardBehaviour';
+	import { dealCard } from './cardActions';
 	import type { Card, XYZ } from '$lib/types';
 
 	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
 	import RoundedPlane from '../geometries/RoundedPlane.svelte';
 
+	dealCard(1);
+	dealCard(2);
+	dealCard(3);
+
+	let temp: Card[] = [];
 	const every5 = interval(2);
 	useTask((delta) => {
 		//temp = cardState.cards.concat();
-		every5(delta, () => {
+		/* every5(delta, () => {
 			cardState.cards.forEach((card, index, array) => {
 				card.moveTo.z = Math.random() * 10;
 				card.moveTo.x = Math.random() * 10;
 				card.moveTo.y = Math.random() * 10;
-				card.positionSettled = false;
 				card.rotateTo.z = Math.random() * 10;
 				card.rotateTo.x = Math.random() * 10;
 				card.rotateTo.y = Math.random() * 10;
-				card.rotationSettled = false;
+				card.settled = false;
 			});
-		});
-		cardState.cards.forEach((card, index, array) => {
+		}); */
+		temp = cardState.cards.concat();
+		temp.forEach((card, index, array) => {
 			card = movingBehaviour(card, delta);
 		});
-		cardState.cards = cardState.cards;
+		cardState.cards = temp;
 	});
 </script>
 

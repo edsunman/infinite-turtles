@@ -1,23 +1,26 @@
 <script lang="ts">
 	import { Canvas } from '@threlte/core';
-	import { cardState } from '$lib/state.svelte';
+	import { cardState, gameState } from '$lib/state.svelte';
 	import type { Card } from '$lib/types';
 
 	import Scene from './Scene.svelte';
+	import { dealCard } from './cards/cardActions';
 
 	const lotsOfCubes = () => {
+		const newId = cardState.cards.length + 1;
 		const newCard: Card = {
-			id: 2,
+			id: newId,
 			moveTo: { x: 2, y: 0, z: 0 },
 			position: { x: 0, y: 0, z: 0 },
 			moveVelocity: { x: 0, y: 0, z: 0 },
-			positionSettled: true,
 			rotateTo: { x: -2, y: 0, z: 0 },
 			rotation: { x: 0, y: 0, z: 0 },
 			rotateVelocity: { x: 0, y: 0, z: 0 },
-			rotationSettled: true
+			settled: true,
+			inHand: false
 		};
 		cardState.cards = [...cardState.cards, newCard];
+		dealCard(newId);
 	};
 </script>
 
@@ -27,4 +30,13 @@
 
 <div style="background-color:white;position:absolute;bottom:0px;margin:20px">
 	<button onclick={lotsOfCubes}>hello</button>
+	{cardState.cards[0].position.x}
 </div>
+
+<svelte:window
+	onkeydown={(e: KeyboardEvent) => {
+		if (e.key === 'd') {
+			gameState.dev = !gameState.dev;
+		}
+	}}
+/>

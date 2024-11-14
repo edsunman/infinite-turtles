@@ -1,39 +1,44 @@
 import type { Card } from './types';
 
+export const gameState = $state({
+	dev: false
+});
+
 const createCardState = () => {
+	let selectedCardId = $state(0);
 	let cards = $state.raw<Card[]>([
 		{
 			id: 1,
 			moveTo: { x: -2, y: 0, z: 0 },
 			position: { x: 0, y: 0, z: 0 },
 			moveVelocity: { x: 0, y: 0, z: 0 },
-			positionSettled: true,
 			rotateTo: { x: -2, y: 0, z: 0 },
 			rotation: { x: 0, y: 0, z: 0 },
 			rotateVelocity: { x: 0, y: 0, z: 0 },
-			rotationSettled: true
+			settled: true,
+			inHand: false
 		},
 		{
 			id: 2,
 			moveTo: { x: 2, y: 0, z: 0 },
 			position: { x: 0, y: 0, z: 0 },
 			moveVelocity: { x: 0, y: 0, z: 0 },
-			positionSettled: true,
 			rotateTo: { x: -2, y: 0, z: 0 },
 			rotation: { x: 0, y: 0, z: 0 },
 			rotateVelocity: { x: 0, y: 0, z: 0 },
-			rotationSettled: true
+			settled: true,
+			inHand: false
 		},
 		{
 			id: 3,
 			moveTo: { x: 4, y: 0, z: 0 },
 			position: { x: 0, y: 0, z: 0 },
 			moveVelocity: { x: 0, y: 0, z: 0 },
-			positionSettled: true,
 			rotateTo: { x: -2, y: 0, z: 0 },
 			rotation: { x: 0, y: 0, z: 0 },
 			rotateVelocity: { x: 0, y: 0, z: 0 },
-			rotationSettled: true
+			settled: true,
+			inHand: false
 		}
 	]);
 
@@ -48,6 +53,12 @@ const createCardState = () => {
 		},
 		set cards(c) {
 			cards = c;
+		},
+		get selectedCardId() {
+			return selectedCardId;
+		},
+		set selectedCardId(id) {
+			selectedCardId = id;
 		},
 		addCard
 	};
