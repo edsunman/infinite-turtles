@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { Grid, OrbitControls } from '@threlte/extras';
+	import { Grid, OrbitControls, useGltf, useDraco } from '@threlte/extras';
 	import { gameState } from '$lib/state.svelte';
 
 	import Peformance from './misc/Peformance.svelte';
 	import Cards from './cards/Cards.svelte';
 	import Hitboxes from './cards/Hitboxes.svelte';
+
+	const dracoLoader = useDraco();
+	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
 </script>
 
 <Grid
@@ -20,13 +23,10 @@
 
 <Peformance />
 
-<Cards />
+{#await gltf then gltf}
+	<Cards {gltf} />
+{/await}
 <Hitboxes />
-
-<T.Mesh>
-	<T.MeshStandardMaterial />
-	<T.BoxGeometry />
-</T.Mesh>
 
 <T.PerspectiveCamera
 	name="main camera"

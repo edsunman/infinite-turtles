@@ -1,51 +1,82 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
+	import { type ThrelteGltf } from '@threlte/extras';
 	import { cardState } from '$lib/state.svelte';
-	import { interval } from '$lib/helpers/animation';
 	import { movingBehaviour } from './cardBehaviour';
 	import { dealCard } from './cardActions';
-	import type { Card, XYZ } from '$lib/types';
+	import type { Card } from '$lib/types';
 
 	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
-	import RoundedPlane from '../geometries/RoundedPlane.svelte';
+	import { BatchedMesh, DynamicDrawUsage, InstancedMesh, Object3D } from 'three';
+
+	let {
+		gltf
+	}: {
+		gltf: ThrelteGltf<{
+			nodes: Record<string, any>;
+			materials: Record<string, any>;
+		}>;
+	} = $props();
 
 	dealCard(1);
 	dealCard(2);
 	dealCard(3);
 
 	let temp: Card[] = [];
-	const every5 = interval(2);
+	let cardsCount = 0;
+	const dummy = new Object3D();
+
+	const instancedBorders = new InstancedMesh(gltf.nodes.Border.geometry, undefined, 100);
+	instancedBorders.instanceMatrix.setUsage(DynamicDrawUsage);
+	const instancedBackgrounds = new InstancedMesh(gltf.nodes.Background.geometry, undefined, 100);
+	instancedBackgrounds.instanceMatrix.setUsage(DynamicDrawUsage);
+
+	const maxGeometryCount = 50;
+	const maxIndexCount = 512;
+	const maxVertexCount = 1024;
+	const batched = new BatchedMesh(
+		maxGeometryCount,
+		maxVertexCount * maxGeometryCount,
+		maxIndexCount * maxGeometryCount
+	);
+	batched.addGeometry(gltf.nodes.Rune.geometry);
+	for (let i = 0; i < 50; i++) {
+		batched.addInstance(0);
+	}
+
 	useTask((delta) => {
-		//temp = cardState.cards.concat();
-		/* every5(delta, () => {
-			cardState.cards.forEach((card, index, array) => {
-				card.moveTo.z = Math.random() * 10;
-				card.moveTo.x = Math.random() * 10;
-				card.moveTo.y = Math.random() * 10;
-				card.rotateTo.z = Math.random() * 10;
-				card.rotateTo.x = Math.random() * 10;
-				card.rotateTo.y = Math.random() * 10;
-				card.settled = false;
-			});
-		}); */
 		temp = cardState.cards.concat();
 		temp.forEach((card, index, array) => {
 			card = movingBehaviour(card, delta);
 		});
 		cardState.cards = temp;
+		cardsCount = temp.length;
+
+		for (let i = 0; i < 50; i++) {
+			batched.setVisibleAt(i, false);
+		}
+		for (let i = 0; i < cardsCount; i++) {
+			dummy.position.set(temp[i].position.x, temp[i].position.y, temp[i].position.z);
+			dummy.rotation.set(temp[i].rotation.x, temp[i].rotation.y, temp[i].rotation.z);
+			dummy.updateMatrix();
+			instancedBorders.setMatrixAt(i, dummy.matrix);
+			instancedBackgrounds.setMatrixAt(i, dummy.matrix);
+			batched.setMatrixAt(i, dummy.matrix);
+			batched.setVisibleAt(i, true);
+		}
+		instancedBorders.count = cardsCount;
+		instancedBorders.instanceMatrix.needsUpdate = true;
+		instancedBackgrounds.count = cardsCount;
+		instancedBackgrounds.instanceMatrix.needsUpdate = true;
 	});
 </script>
 
-{#each cardState.cards as card, i}
-	<T.Mesh
-		position.x={card.position.x}
-		position.y={card.position.y}
-		position.z={card.position.z}
-		rotation.x={card.rotation.x}
-		rotation.y={card.rotation.y}
-		rotation.z={card.rotation.z}
-	>
-		<RoundedPlane />
-		<ParallaxMaterial />
-	</T.Mesh>
-{/each}
+<T is={instancedBorders} frustumCulled={false}>
+	<T.MeshStandardMaterial />
+</T>
+
+<T is={instancedBackgrounds} frustumCulled={false}>
+	<ParallaxMaterial />
+</T>
+
+<T is={batched} matrixAutoUpdate={false} frustumCulled={false} />

@@ -1,3 +1,5 @@
+<svelte:options runes={true} />
+
 <script lang="ts">
 	import { Canvas } from '@threlte/core';
 	import { cardState, gameState } from '$lib/state.svelte';
@@ -5,6 +7,8 @@
 
 	import Scene from './Scene.svelte';
 	import { dealCard } from './cards/cardActions';
+
+	let runie = $derived(cardState.cards[0].position.x);
 
 	const lotsOfCubes = () => {
 		const newId = cardState.cards.length + 1;
@@ -30,7 +34,7 @@
 
 <div style="background-color:white;position:absolute;bottom:0px;margin:20px">
 	<button onclick={lotsOfCubes}>hello</button>
-	{cardState.cards[0].position.x}
+	{runie}
 </div>
 
 <svelte:window
