@@ -60,7 +60,7 @@
 	name="ground"
 	scale={[40, 40, 40]}
 	rotation.x={-1.57}
-	position.y={0}
+	position.y={-0.1}
 	onpointermove={groundClicked}
 >
 	<T.PlaneGeometry />

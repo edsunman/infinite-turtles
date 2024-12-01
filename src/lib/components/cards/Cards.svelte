@@ -7,7 +7,17 @@
 	import type { Card } from '$lib/types';
 
 	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
-	import { BatchedMesh, DynamicDrawUsage, InstancedMesh, Object3D } from 'three';
+	import NumbersMaterial from '../materials/numbers/NumbersMaterial.svelte';
+
+	import {
+		BatchedMesh,
+		DynamicDrawUsage,
+		InstancedBufferAttribute,
+		InstancedMesh,
+		Object3D,
+		PlaneGeometry
+	} from 'three';
+	import { interval } from '$lib/helpers/animation';
 
 	let {
 		gltf
@@ -31,9 +41,15 @@
 	const instancedBackgrounds = new InstancedMesh(gltf.nodes.Background.geometry, undefined, 100);
 	instancedBackgrounds.instanceMatrix.setUsage(DynamicDrawUsage);
 
+	const instancedNumbers = new InstancedMesh(new PlaneGeometry(0.3, 0.3), undefined, 100);
+	instancedNumbers.instanceMatrix.setUsage(DynamicDrawUsage);
+	const numbersFloat = new Float32Array(100);
+	const numbersBufferAttribute = new InstancedBufferAttribute(numbersFloat, 1);
+	instancedNumbers.geometry.setAttribute('custom', numbersBufferAttribute);
+
 	const maxGeometryCount = 50;
-	const maxIndexCount = 512;
-	const maxVertexCount = 1024;
+	const maxIndexCount = 100;
+	const maxVertexCount = 100;
 	const batched = new BatchedMesh(
 		maxGeometryCount,
 		maxVertexCount * maxGeometryCount,
@@ -63,11 +79,20 @@
 			instancedBackgrounds.setMatrixAt(i, dummy.matrix);
 			batched.setMatrixAt(i, dummy.matrix);
 			batched.setVisibleAt(i, true);
+			dummy.translateX(0.3);
+			dummy.translateY(0.6);
+			dummy.translateZ(0.02);
+			dummy.updateMatrix();
+			instancedNumbers.setMatrixAt(i, dummy.matrix);
+			numbersFloat.set([temp[i].health], i);
 		}
 		instancedBorders.count = cardsCount;
 		instancedBorders.instanceMatrix.needsUpdate = true;
 		instancedBackgrounds.count = cardsCount;
 		instancedBackgrounds.instanceMatrix.needsUpdate = true;
+		instancedNumbers.count = cardsCount;
+		instancedNumbers.instanceMatrix.needsUpdate = true;
+		instancedNumbers.geometry.attributes.custom.needsUpdate = true;
 	});
 </script>
 
@@ -77,6 +102,10 @@
 
 <T is={instancedBackgrounds} frustumCulled={false}>
 	<ParallaxMaterial />
+</T>
+
+<T is={instancedNumbers} frustumCulled={false}>
+	<NumbersMaterial />
 </T>
 
 <T is={batched} matrixAutoUpdate={false} frustumCulled={false} />

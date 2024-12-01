@@ -4,6 +4,15 @@ varying vec2 vUv;
 varying vec3 vViewPosition;
 varying vec3 vNormal;
 
+// Converts a color from linear light gamma to sRGB gamma
+vec4 fromLinear(vec4 linearRGB) {
+    bvec3 cutoff = lessThan(linearRGB.rgb, vec3(0.0031308));
+    vec3 higher = vec3(1.055) * pow(linearRGB.rgb, vec3(1.0 / 2.4)) - vec3(0.055);
+    vec3 lower = linearRGB.rgb * vec3(12.92);
+
+    return vec4(mix(higher, lower, cutoff), linearRGB.a);
+}
+
 vec2 parallaxMap(in vec3 V) {
     // use bump map
     //float initialHeight = texture2D(bumpMap, vUv).r;
@@ -29,8 +38,8 @@ vec2 perturbUv(vec3 surfPosition, vec3 surfNormal, vec3 viewPosition) {
 
 void main() {
     vec2 mapUv = perturbUv(-vViewPosition, normalize(vNormal), normalize(vViewPosition));
-    gl_FragColor = texture2D(map, mapUv);
+    gl_FragColor = fromLinear(texture2D(map, mapUv));
 
-    #include <tonemapping_fragment>
-    #include <colorspace_fragment> 
+   // #include <tonemapping_fragment>
+  //  #include <colorspace_fragment> 
 }

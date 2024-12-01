@@ -14,6 +14,7 @@
 		const newId = cardState.cards.length + 1;
 		const newCard: Card = {
 			id: newId,
+			health: 5,
 			moveTo: { x: 2, y: 0, z: 0 },
 			position: { x: 0, y: 0, z: 0 },
 			moveVelocity: { x: 0, y: 0, z: 0 },
