@@ -5,7 +5,9 @@ export const gameState = $state({
 });
 
 const createCardState = () => {
-	let selectedCardId = $state('');
+	let selectedCardId = '';
+	let hoverCardId = '';
+	let slots: string[] = ['', '', '', ''];
 	let cards = $state.raw<Card[]>([]);
 
 	const addCard = (args: Partial<Card>) => {
@@ -39,6 +41,18 @@ const createCardState = () => {
 		},
 		set selectedCardId(id) {
 			selectedCardId = id;
+		},
+		get hoverCardId() {
+			return hoverCardId;
+		},
+		set hoverCardId(id) {
+			hoverCardId = id;
+		},
+		get slots() {
+			return slots;
+		},
+		set slots(c) {
+			slots = c;
 		},
 		addCard
 	};

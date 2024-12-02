@@ -2,32 +2,56 @@
 	import { T, useTask } from '@threlte/core';
 	import { interactivity } from '@threlte/extras';
 	import { cardState } from '$lib/state.svelte';
-	import { cardIdFromInstanceId, positionHand } from './cardActions';
+	import { cardIdFromInstanceId, positionHand, placeCard } from './cardActions';
 	import {
 		InstancedMesh,
 		MeshStandardMaterial,
 		PlaneGeometry,
 		DynamicDrawUsage,
-		Object3D
+		Object3D,
+		MeshBasicMaterial
 	} from 'three';
 
 	interactivity();
 
-	let hoverCardId = '';
-
-	const groundHover = (e: any) => {
-		//console.log(e.intersections);
+	const pointerMoved = (e: any) => {
+		if (cardState.selectedCardId !== '') return;
 		let cardId = '';
 		for (let intersect of e.intersections) {
 			if (Object.hasOwn(intersect, 'instanceId')) {
 				cardId = cardIdFromInstanceId(intersect.instanceId);
-				//console.log(cardId);
 				break;
 			}
 		}
-		if (hoverCardId !== cardId) {
-			hoverCardId = cardId;
-			cardState.selectedCardId = hoverCardId;
+		if (cardState.hoverCardId !== cardId) {
+			cardState.hoverCardId = cardId;
+			positionHand();
+		}
+	};
+
+	const pointerUp = (e: any) => {
+		let cardId = '';
+		for (let intersect of e.intersections) {
+			if (Object.hasOwn(intersect, 'instanceId')) {
+				cardId = cardIdFromInstanceId(intersect.instanceId);
+				break;
+			}
+		}
+		if (cardId === '' && cardState.selectedCardId !== '') {
+			if (e.point.x > -2.5 && e.point.x < -1.5 && e.point.z < -0.3 && e.point.z > -1.8) {
+				// left turtle
+				placeCard(cardState.selectedCardId, 'left');
+			} else if (e.point.x < 2.5 && e.point.x > 1.5 && e.point.z < -0.3 && e.point.z > -1.8) {
+				// right turtle
+				placeCard(cardState.selectedCardId, 'right');
+			}
+			cardState.selectedCardId = '';
+			cardState.hoverCardId = '';
+			positionHand();
+		} else if (cardState.selectedCardId !== cardId) {
+			// clicked a differnt card so select that one
+			cardState.selectedCardId = cardId;
+			cardState.hoverCardId = '';
 			positionHand();
 		}
 	};
@@ -56,12 +80,18 @@
 
 <T is={mesh} onclick={() => {}} />
 
+<!-- <T.Mesh rotation.x={-1.57} position={[-2, 0.1, -1]} onclick={() => {}} name="turtleHit">
+	<T.PlaneGeometry args={[1, 1.5]} />
+	<T.MeshBasicMaterial />
+</T.Mesh> -->
+
 <T.Mesh
 	name="ground"
 	scale={[40, 40, 40]}
 	rotation.x={-1.57}
 	position.y={-0.1}
-	onpointermove={groundHover}
+	onpointermove={pointerMoved}
+	onpointerup={pointerUp}
 >
 	<T.PlaneGeometry />
 	<T.MeshStandardMaterial color="red" />

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { T, useTask, useThrelte } from '@threlte/core';
+	import { T } from '@threlte/core';
 	import { Grid, OrbitControls, useGltf, useDraco } from '@threlte/extras';
 	import { gameState, cardState } from '$lib/state.svelte';
 	import { setupCards } from './cards/cardActions';
@@ -8,9 +8,6 @@
 	import Cards from './cards/Cards.svelte';
 	import Hitboxes from './cards/Hitboxes.svelte';
 	import { onDestroy } from 'svelte';
-
-	const { renderer } = useThrelte();
-	console.log(renderer.capabilities.getMaxAnisotropy());
 
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });

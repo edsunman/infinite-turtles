@@ -11,7 +11,7 @@
 	//let runie = $derived(cardState.cards[0].position.x);
 
 	const lotsOfCubes = () => {
-		const newId = cardState.addCard({});
+		const newId = cardState.addCard({ health: Math.random() * 15 });
 		dealCard(newId);
 	};
 </script>
