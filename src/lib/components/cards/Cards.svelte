@@ -28,9 +28,9 @@
 		}>;
 	} = $props();
 
-	dealCard(1);
+	/* 	dealCard(1);
 	dealCard(2);
-	dealCard(3);
+	dealCard(3); */
 
 	let temp: Card[] = [];
 	let cardsCount = 0;

@@ -1,11 +1,43 @@
 import { cardState } from '$lib/state.svelte';
 
-export const dealCard = (cardId: number) => {
+export const setupCards = () => {
+	// Player
+	cardState.addCard({
+		health: 5,
+		rotation: { x: -1.57, y: 0, z: 0 },
+		position: { x: 0, y: 0, z: -0.5 }
+	});
+	// Left turtle
+	cardState.addCard({
+		health: 5,
+		rotation: { x: -1.57, y: 0, z: 0 },
+		position: { x: -2, y: 0, z: -1 }
+	});
+	// Right turtle
+	cardState.addCard({
+		health: 5,
+		rotation: { x: -1.57, y: 0, z: 0 },
+		position: { x: 2, y: 0, z: -1 }
+	});
+	// Enemy
+	cardState.addCard({
+		health: 5,
+		rotation: { x: -1.57, y: 0, z: 0 },
+		position: { x: 0, y: 0, z: -3.2 }
+	});
+	// Left rune
+	cardState.addCard({
+		health: 5,
+		rotation: { x: -1.57, y: 0, z: 0 },
+		position: { x: -2.6, y: 0, z: 0.6 }
+	});
+};
+
+export const dealCard = (cardId: string) => {
 	let foundCard;
 	cardState.cards.forEach((card) => {
 		if (card.id === cardId) {
-			card.rotateTo = { x: -0.75, y: 0, z: 0 };
-			card.moveTo = { x: -2 + countHand() * 1.1, y: 8, z: 9 };
+			card.rotateTo = { x: -1.15, y: 0, z: 0 };
 			card.settled = false;
 			card.inHand = true;
 			foundCard = card;
@@ -15,17 +47,9 @@ export const dealCard = (cardId: number) => {
 	positionHand();
 };
 
-export const cardIdFromInstanceId = (instanceId: number): number => {
+export const cardIdFromInstanceId = (instanceId: number): string => {
 	const card = cardState.cards[instanceId];
-	return card ? card.id : 0;
-};
-
-const countHand = () => {
-	let handCount = 0;
-	for (const card of cardState.cards) {
-		if (card.inHand) handCount++;
-	}
-	return handCount;
+	return card ? card.id : '';
 };
 
 export const positionHand = () => {
@@ -40,8 +64,10 @@ export const positionHand = () => {
 	cardState.cards.forEach((card) => {
 		if (!card.inHand) return;
 		if (card.id === hoverId) hoverHeight = 0.5;
-		card.moveTo.x = i / 1.1 - offset / 1.1;
-		card.moveTo.y = 7.5 + (heights[i] - offset) / 4 + hoverHeight;
+		card.moveTo.x = i / 1.05 - offset / 1.1;
+		card.moveTo.y = 3 + hoverHeight - i / 20 + (heights[i] - offset) * 0.05;
+		card.moveTo.z = 3 - (heights[i] - offset) * 0.1 - hoverHeight / 2;
+		card.rotateTo.x = card.id === hoverId ? -1.25 : -1.15;
 		card.rotateTo.z = (i / 12) * -1 + offset / 12;
 		card.settled = false;
 		hoverHeight = 0;

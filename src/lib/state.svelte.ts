@@ -5,49 +5,26 @@ export const gameState = $state({
 });
 
 const createCardState = () => {
-	let selectedCardId = $state(0);
-	let cards = $state.raw<Card[]>([
-		{
-			id: 1,
-			health: 2,
-			moveTo: { x: -2, y: 0, z: 0 },
-			position: { x: 0, y: 0, z: 0 },
-			moveVelocity: { x: 0, y: 0, z: 0 },
-			rotateTo: { x: -2, y: 0, z: 0 },
-			rotation: { x: 0, y: 0, z: 0 },
-			rotateVelocity: { x: 0, y: 0, z: 0 },
-			settled: true,
-			inHand: false
-		},
-		{
-			id: 2,
-			health: 3,
-			moveTo: { x: 2, y: 0, z: 0 },
-			position: { x: 0, y: 0, z: 0 },
-			moveVelocity: { x: 0, y: 0, z: 0 },
-			rotateTo: { x: -2, y: 0, z: 0 },
-			rotation: { x: 0, y: 0, z: 0 },
-			rotateVelocity: { x: 0, y: 0, z: 0 },
-			settled: true,
-			inHand: false
-		},
-		{
-			id: 3,
-			health: 8,
-			moveTo: { x: 4, y: 0, z: 0 },
-			position: { x: 0, y: 0, z: 0 },
-			moveVelocity: { x: 0, y: 0, z: 0 },
-			rotateTo: { x: -2, y: 0, z: 0 },
-			rotation: { x: 0, y: 0, z: 0 },
-			rotateVelocity: { x: 0, y: 0, z: 0 },
-			settled: true,
-			inHand: false
-		}
-	]);
+	let selectedCardId = $state('');
+	let cards = $state.raw<Card[]>([]);
 
-	const addCard = () => {
-		//const newCard: Card = { id: 0, position: { x: 3, y: 0, z: 0 } };
-		//cards = [...cards, newCard];
+	const addCard = (args: Partial<Card>) => {
+		const newId = Math.random().toString(16).slice(2);
+		const defaults: Card = {
+			id: newId,
+			health: 0,
+			moveTo: { x: 0, y: 0, z: 0 },
+			position: { x: 0, y: 0, z: 0 },
+			moveVelocity: { x: 0, y: 0, z: 0 },
+			rotateTo: { x: 0, y: 0, z: 0 },
+			rotation: { x: 0, y: 0, z: 0 },
+			rotateVelocity: { x: 0, y: 0, z: 0 },
+			settled: true,
+			inHand: false
+		};
+		const newCard = { ...defaults, ...args };
+		cards = [...cards, newCard];
+		return newId;
 	};
 
 	return {

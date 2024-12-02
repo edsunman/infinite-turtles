@@ -1,7 +1,7 @@
 export type XYZ = { x: number; y: number; z: number };
 
 export type Card = {
-	id: number;
+	id: string;
 	position: XYZ;
 	moveTo: XYZ;
 	moveVelocity: XYZ;

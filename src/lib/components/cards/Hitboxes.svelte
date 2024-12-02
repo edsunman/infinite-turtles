@@ -13,11 +13,11 @@
 
 	interactivity();
 
-	let hoverCardId = 0;
+	let hoverCardId = '';
 
-	const groundClicked = (e: any) => {
+	const groundHover = (e: any) => {
 		//console.log(e.intersections);
-		let cardId = 0;
+		let cardId = '';
 		for (let intersect of e.intersections) {
 			if (Object.hasOwn(intersect, 'instanceId')) {
 				cardId = cardIdFromInstanceId(intersect.instanceId);
@@ -61,7 +61,7 @@
 	scale={[40, 40, 40]}
 	rotation.x={-1.57}
 	position.y={-0.1}
-	onpointermove={groundClicked}
+	onpointermove={groundHover}
 >
 	<T.PlaneGeometry />
 	<T.MeshStandardMaterial color="red" />

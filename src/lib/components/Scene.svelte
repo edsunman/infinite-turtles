@@ -1,25 +1,32 @@
 <script lang="ts">
-	import { T, useThrelte } from '@threlte/core';
+	import { T, useTask, useThrelte } from '@threlte/core';
 	import { Grid, OrbitControls, useGltf, useDraco } from '@threlte/extras';
-	import { gameState } from '$lib/state.svelte';
+	import { gameState, cardState } from '$lib/state.svelte';
+	import { setupCards } from './cards/cardActions';
 
 	import Peformance from './misc/Peformance.svelte';
 	import Cards from './cards/Cards.svelte';
 	import Hitboxes from './cards/Hitboxes.svelte';
-	import { BoxGeometry } from 'three';
+	import { onDestroy } from 'svelte';
 
 	const { renderer } = useThrelte();
 	console.log(renderer.capabilities.getMaxAnisotropy());
 
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
+
+	setupCards();
+
+	onDestroy(() => {
+		cardState.cards = [];
+	});
 </script>
 
-<!-- <T.Mesh>
-	<T.BoxGeometry />
-	<T.MeshBasicMaterial color="#e84682" />
-</T.Mesh>
- -->
+<!-- <T.Mesh rotation.x={rotate}>
+	<T.PlaneGeometry />
+	<ParallaxMaterial />
+</T.Mesh> -->
+
 <Grid
 	name="debug"
 	gridSize={[50, 50]}
@@ -39,8 +46,8 @@
 
 <T.PerspectiveCamera
 	name="main camera"
-	position={[0, 20, 20]}
-	rotation={[-0.75, 0, 0]}
+	position={[0, 22, 9.3]}
+	rotation={[-1.15, 0, 0]}
 	fov={15}
 	makeDefault={!gameState.dev}
 />

@@ -6,8 +6,8 @@ export const movingBehaviour = (card: Card, delta: number) => {
 };
 
 const springTick = (currentValue: number, endValue: number, velocity: number, delta: number) => {
-	const stiffness = 0.1;
-	const damping = 0.8;
+	const stiffness = 0.3;
+	const damping = 1;
 	const precision = 0.01;
 	const tensionForce = -stiffness * (currentValue - endValue);
 	const dampingForce = -damping * velocity;

@@ -8,23 +8,10 @@
 	import Scene from './Scene.svelte';
 	import { dealCard } from './cards/cardActions';
 
-	let runie = $derived(cardState.cards[0].position.x);
+	//let runie = $derived(cardState.cards[0].position.x);
 
 	const lotsOfCubes = () => {
-		const newId = cardState.cards.length + 1;
-		const newCard: Card = {
-			id: newId,
-			health: 5,
-			moveTo: { x: 2, y: 0, z: 0 },
-			position: { x: 0, y: 0, z: 0 },
-			moveVelocity: { x: 0, y: 0, z: 0 },
-			rotateTo: { x: -2, y: 0, z: 0 },
-			rotation: { x: 0, y: 0, z: 0 },
-			rotateVelocity: { x: 0, y: 0, z: 0 },
-			settled: true,
-			inHand: false
-		};
-		cardState.cards = [...cardState.cards, newCard];
+		const newId = cardState.addCard({});
 		dealCard(newId);
 	};
 </script>
@@ -35,7 +22,7 @@
 
 <div style="background-color:white;position:absolute;bottom:0px;margin:20px">
 	<button onclick={lotsOfCubes}>hello</button>
-	{runie}
+	<!-- {runie} -->
 </div>
 
 <svelte:window
