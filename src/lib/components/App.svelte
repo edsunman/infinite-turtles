@@ -25,7 +25,7 @@
 	<button
 		onclick={() => {
 			mainTimeline.addKeyframe(0, () => lotsOfCubes());
-			mainTimeline.addKeyframe(0.2, () => lotsOfCubes());
+			mainTimeline.addKeyframe(0.3, () => lotsOfCubes());
 		}}>t</button
 	>
 	<!-- {runie} -->

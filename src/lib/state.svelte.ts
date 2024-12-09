@@ -11,6 +11,7 @@ const createCardState = () => {
 	let hoverCardId = '';
 	let slots: string[] = ['', '', '', ''];
 	let cards = $state.raw<Card[]>([]);
+	let dealing = false;
 
 	const addCard = (args: Partial<Card>) => {
 		const newId = Math.random().toString(16).slice(2);
@@ -39,6 +40,7 @@ const createCardState = () => {
 		set cards(c) {
 			cards = c;
 		},
+
 		get selectedCardId() {
 			return selectedCardId;
 		},
@@ -56,6 +58,12 @@ const createCardState = () => {
 		},
 		set slots(c) {
 			slots = c;
+		},
+		get dealing() {
+			return dealing;
+		},
+		set dealing(d) {
+			dealing = d;
 		},
 		addCard
 	};

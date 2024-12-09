@@ -28,7 +28,7 @@
 	<ParallaxMaterial />
 </T.Mesh> -->
 
-<Grid
+<!-- <Grid
 	name="debug"
 	gridSize={[50, 50]}
 	cellColor={'#46536b'}
@@ -36,7 +36,7 @@
 	sectionThickness={0}
 	fadeDistance={50}
 	position.y={-0.01}
-/>
+/> -->
 
 <Peformance />
 

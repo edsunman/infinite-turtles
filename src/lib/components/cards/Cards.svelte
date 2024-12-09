@@ -3,7 +3,6 @@
 	import { type ThrelteGltf } from '@threlte/extras';
 	import { cardState } from '$lib/state.svelte';
 	import { movingBehaviour } from './cardBehaviour';
-	import { dealCard } from './cardActions';
 	import type { Card } from '$lib/types';
 
 	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
@@ -17,7 +16,6 @@
 		Object3D,
 		PlaneGeometry
 	} from 'three';
-	import { interval } from '$lib/helpers/animation';
 
 	let {
 		gltf
@@ -27,10 +25,6 @@
 			materials: Record<string, any>;
 		}>;
 	} = $props();
-
-	/* 	dealCard(1);
-	dealCard(2);
-	dealCard(3); */
 
 	let temp: Card[] = [];
 	let cardsCount = 0;

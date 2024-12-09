@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
 	import { interactivity } from '@threlte/extras';
-	import { cardState } from '$lib/state.svelte';
+	import { cardState, gameState } from '$lib/state.svelte';
 	import { cardIdFromInstanceId, positionHand, placeCard } from './cardActions';
 	import {
 		InstancedMesh,
 		MeshStandardMaterial,
 		PlaneGeometry,
 		DynamicDrawUsage,
-		Object3D,
-		MeshBasicMaterial
+		Object3D
 	} from 'three';
 
 	interactivity();
 
 	const pointerMoved = (e: any) => {
+		if (gameState.locked) return;
 		if (cardState.selectedCardId !== '') return;
 		let cardId = '';
 		for (let intersect of e.intersections) {
@@ -30,6 +30,8 @@
 	};
 
 	const pointerUp = (e: any) => {
+		if (gameState.locked) return;
+		console.log(e.intersections);
 		let cardId = '';
 		for (let intersect of e.intersections) {
 			if (Object.hasOwn(intersect, 'instanceId')) {
@@ -80,11 +82,6 @@
 
 <T is={mesh} onclick={() => {}} />
 
-<!-- <T.Mesh rotation.x={-1.57} position={[-2, 0.1, -1]} onclick={() => {}} name="turtleHit">
-	<T.PlaneGeometry args={[1, 1.5]} />
-	<T.MeshBasicMaterial />
-</T.Mesh> -->
-
 <T.Mesh
 	name="ground"
 	scale={[40, 40, 40]}
@@ -94,5 +91,5 @@
 	onpointerup={pointerUp}
 >
 	<T.PlaneGeometry />
-	<T.MeshStandardMaterial color="red" />
+	<T.MeshStandardMaterial color="#121212" />
 </T.Mesh>

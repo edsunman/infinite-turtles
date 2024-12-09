@@ -1,57 +1,3 @@
-/* type Keyframe = { offset: number; action: () => void; played: boolean };
-type Sequence = {
-	played: boolean;
-	keyframes: Keyframe[];
-}; */
-
-/* export const sequence = () => {
-	let played = false;
-	const keyframes: Keyframe[] = [];
-	const addKeyframe = (offset: number, action: () => void) => {
-		keyframes.push({
-			offset,
-			action,
-			played: false
-		});
-	};
-	return {
-		keyframes,
-		addKeyframe,
-		get played() {
-			return played;
-		},
-		set played(p) {
-			played = p;
-		}
-	};
-}; export const timeline = () => {
-	let clock = 0;
-	let sequences: Sequence[] = [];
-	const addSequence = (newSequence: Sequence) => {
-		for (const keyframe of newSequence.keyframes) {
-			keyframe.offset += clock;
-		}
-		sequences.push(newSequence);
-	};
-	const update = (delta: number) => {
-		clock += delta;
-		if (sequences.length < 1) return;
-		for (const sequence of sequences) {
-			let allActionsPlayed = true;
-			for (const keyframe of sequence.keyframes) {
-				if (!keyframe.played) allActionsPlayed = false;
-				if (clock > keyframe.offset && !keyframe.played) {
-					keyframe.action();
-					keyframe.played = true;
-				}
-			}
-			if (allActionsPlayed) sequence.played = true;
-		}
-		sequences = sequences.filter((s) => !s.played);
-	};
-	return { update, clock, addSequence };
-};*/
-
 export const timeline = () => {
 	let clock = 0;
 	let keyframes: { offset: number; action: () => void; played: boolean }[] = [];
@@ -73,8 +19,7 @@ export const timeline = () => {
 		}
 		keyframes = keyframes.filter((k) => !k.played);
 	};
-
-	return { update, clock, addKeyframe };
+	return { update, addKeyframe };
 };
 
 /**

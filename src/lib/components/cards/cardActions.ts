@@ -1,4 +1,4 @@
-import { cardState, mainTimeline } from '$lib/state.svelte';
+import { cardState, gameState, mainTimeline } from '$lib/state.svelte';
 import type { Card, XYZ } from '$lib/types';
 
 export const setupCards = () => {
@@ -39,7 +39,14 @@ export const dealCard = (cardId: string) => {
 		}
 	});
 	if (!foundCard) console.error('no card with id ' + cardId);
+	cardState.selectedCardId = '';
+	cardState.dealing = true;
+	gameState.locked = true;
 	positionHand();
+	mainTimeline.addKeyframe(0.2, () => {
+		cardState.dealing = false;
+		gameState.locked = false;
+	});
 };
 
 export const placeCard = (cardId: string, on: 'left' | 'right') => {
@@ -55,37 +62,25 @@ export const placeCard = (cardId: string, on: 'left' | 'right') => {
 		}
 		selectedSlot = cardState.slots[2] === '' ? 2 : 3;
 	}
-
-	//const selectedSlot = cardState.slots[0] === '' ? 0 : 1;
 	const slots = [
 		{ x: -2.6, y: 0, z: 0.6 },
 		{ x: -1.4, y: 0, z: 0.6 },
 		{ x: 1.4, y: 0, z: 0.6 },
 		{ x: 2.6, y: 0, z: 0.6 }
 	];
-
-	let foundCard: Card | undefined;
-	cardState.cards.forEach((card) => {
-		if (card.id === cardId) {
-			card.rotateTo = { x: -1.57, y: 0, z: 0 };
-			card.moveTo = { x: 0, y: 3, z: 0 };
-			card.stiffness = 0.1;
-			card.settled = false;
-			card.inHand = false;
-			foundCard = card;
-		}
-	});
-	if (!foundCard) {
-		console.error('no card with id ' + cardId);
-		return;
-	}
-	mainTimeline.addKeyframe(0.1, () => {
-		moveCard(cardId, 0.1, slots[selectedSlot], { x: -1.57, y: 0, z: 0 });
-	});
-	cardState.slots[selectedSlot] = foundCard.id;
+	moveCard(cardId, 0.02, { x: 0, y: 5, z: 0 });
+	gameState.locked = true;
+	mainTimeline.addKeyframe(0.3, () => moveCard(cardId, 0.2, slots[selectedSlot]));
+	mainTimeline.addKeyframe(0.5, () => (gameState.locked = false));
+	cardState.slots[selectedSlot] = cardId;
 };
 
-const moveCard = (cardId: string, stiffness: number, moveTo: XYZ, rotateTo: XYZ) => {
+export const moveCard = (
+	cardId: string,
+	stiffness: number,
+	moveTo: XYZ,
+	rotateTo: XYZ = { x: -1.57, y: 0, z: 0 }
+) => {
 	let foundCard: Card | undefined;
 	cardState.cards.forEach((card) => {
 		if (card.id === cardId) {
@@ -93,13 +88,11 @@ const moveCard = (cardId: string, stiffness: number, moveTo: XYZ, rotateTo: XYZ)
 			card.moveTo = moveTo;
 			card.stiffness = stiffness;
 			card.settled = false;
+			card.inHand = false;
 			foundCard = card;
 		}
 	});
-	if (!foundCard) {
-		console.error('no card with id ' + cardId);
-		return;
-	}
+	if (!foundCard) console.error('no card with id ' + cardId);
 };
 
 export const cardIdFromInstanceId = (instanceId: number): string => {
@@ -125,14 +118,17 @@ export const positionHand = () => {
 		card.moveTo.z = 3 - (heights[i] - offset) * 0.1 - hoverHeight / 2;
 		card.rotateTo.x = card.id === hoverId || card.id === selectedId ? -1.25 : -1.15;
 		card.rotateTo.z = (i / 12) * -1 + offset / 12;
-		card.stiffness = card.id === hoverId ? 0.25 : 0.4;
+		let stiffness = 0.4;
+		if (card.id === hoverId) stiffness = 0.25;
+		if (cardState.dealing) stiffness = 0.15;
+		card.stiffness = stiffness;
 		card.settled = false;
 		hoverHeight = 0;
 		i++;
 	});
 };
 
-function createAscendingDescendingArray(length: number) {
+const createAscendingDescendingArray = (length: number) => {
 	const result = [];
 	for (let i = 1; i <= Math.ceil(length / 2); i++) {
 		result.push(i);
@@ -141,4 +137,4 @@ function createAscendingDescendingArray(length: number) {
 		result.push(i);
 	}
 	return result;
-}
+};
