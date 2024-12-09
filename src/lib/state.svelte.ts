@@ -1,7 +1,9 @@
+import { timeline } from './helpers/animation';
 import type { Card } from './types';
 
 export const gameState = $state({
-	dev: false
+	dev: false,
+	locked: false
 });
 
 const createCardState = () => {
@@ -21,6 +23,7 @@ const createCardState = () => {
 			rotateTo: { x: 0, y: 0, z: 0 },
 			rotation: { x: 0, y: 0, z: 0 },
 			rotateVelocity: { x: 0, y: 0, z: 0 },
+			stiffness: 0.3,
 			settled: true,
 			inHand: false
 		};
@@ -59,3 +62,5 @@ const createCardState = () => {
 };
 
 export const cardState = createCardState();
+
+export const mainTimeline = timeline();

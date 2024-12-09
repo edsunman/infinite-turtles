@@ -2,7 +2,7 @@
 
 <script lang="ts">
 	import { Canvas } from '@threlte/core';
-	import { cardState, gameState } from '$lib/state.svelte';
+	import { cardState, gameState, mainTimeline } from '$lib/state.svelte';
 	import type { Card } from '$lib/types';
 
 	import Scene from './Scene.svelte';
@@ -22,6 +22,12 @@
 
 <div style="background-color:white;position:absolute;bottom:0px;margin:20px">
 	<button onclick={lotsOfCubes}>hello</button>
+	<button
+		onclick={() => {
+			mainTimeline.addKeyframe(0, () => lotsOfCubes());
+			mainTimeline.addKeyframe(0.2, () => lotsOfCubes());
+		}}>t</button
+	>
 	<!-- {runie} -->
 </div>
 

@@ -1,5 +1,5 @@
-import { cardState } from '$lib/state.svelte';
-import type { Card } from '$lib/types';
+import { cardState, mainTimeline } from '$lib/state.svelte';
+import type { Card, XYZ } from '$lib/types';
 
 export const setupCards = () => {
 	// Player
@@ -68,7 +68,8 @@ export const placeCard = (cardId: string, on: 'left' | 'right') => {
 	cardState.cards.forEach((card) => {
 		if (card.id === cardId) {
 			card.rotateTo = { x: -1.57, y: 0, z: 0 };
-			card.moveTo = slots[selectedSlot];
+			card.moveTo = { x: 0, y: 3, z: 0 };
+			card.stiffness = 0.1;
 			card.settled = false;
 			card.inHand = false;
 			foundCard = card;
@@ -78,7 +79,27 @@ export const placeCard = (cardId: string, on: 'left' | 'right') => {
 		console.error('no card with id ' + cardId);
 		return;
 	}
+	mainTimeline.addKeyframe(0.1, () => {
+		moveCard(cardId, 0.1, slots[selectedSlot], { x: -1.57, y: 0, z: 0 });
+	});
 	cardState.slots[selectedSlot] = foundCard.id;
+};
+
+const moveCard = (cardId: string, stiffness: number, moveTo: XYZ, rotateTo: XYZ) => {
+	let foundCard: Card | undefined;
+	cardState.cards.forEach((card) => {
+		if (card.id === cardId) {
+			card.rotateTo = rotateTo;
+			card.moveTo = moveTo;
+			card.stiffness = stiffness;
+			card.settled = false;
+			foundCard = card;
+		}
+	});
+	if (!foundCard) {
+		console.error('no card with id ' + cardId);
+		return;
+	}
 };
 
 export const cardIdFromInstanceId = (instanceId: number): string => {
@@ -104,6 +125,7 @@ export const positionHand = () => {
 		card.moveTo.z = 3 - (heights[i] - offset) * 0.1 - hoverHeight / 2;
 		card.rotateTo.x = card.id === hoverId || card.id === selectedId ? -1.25 : -1.15;
 		card.rotateTo.z = (i / 12) * -1 + offset / 12;
+		card.stiffness = card.id === hoverId ? 0.25 : 0.4;
 		card.settled = false;
 		hoverHeight = 0;
 		i++;

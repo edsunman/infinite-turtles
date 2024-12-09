@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { T } from '@threlte/core';
+	import { T, useTask } from '@threlte/core';
 	import { Grid, OrbitControls, useGltf, useDraco } from '@threlte/extras';
-	import { gameState, cardState } from '$lib/state.svelte';
+	import { gameState, cardState, mainTimeline } from '$lib/state.svelte';
 	import { setupCards } from './cards/cardActions';
 
 	import Peformance from './misc/Peformance.svelte';
@@ -16,6 +16,10 @@
 
 	onDestroy(() => {
 		cardState.cards = [];
+	});
+
+	useTask((delta) => {
+		mainTimeline.update(delta);
 	});
 </script>
 

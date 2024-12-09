@@ -1,3 +1,82 @@
+/* type Keyframe = { offset: number; action: () => void; played: boolean };
+type Sequence = {
+	played: boolean;
+	keyframes: Keyframe[];
+}; */
+
+/* export const sequence = () => {
+	let played = false;
+	const keyframes: Keyframe[] = [];
+	const addKeyframe = (offset: number, action: () => void) => {
+		keyframes.push({
+			offset,
+			action,
+			played: false
+		});
+	};
+	return {
+		keyframes,
+		addKeyframe,
+		get played() {
+			return played;
+		},
+		set played(p) {
+			played = p;
+		}
+	};
+}; export const timeline = () => {
+	let clock = 0;
+	let sequences: Sequence[] = [];
+	const addSequence = (newSequence: Sequence) => {
+		for (const keyframe of newSequence.keyframes) {
+			keyframe.offset += clock;
+		}
+		sequences.push(newSequence);
+	};
+	const update = (delta: number) => {
+		clock += delta;
+		if (sequences.length < 1) return;
+		for (const sequence of sequences) {
+			let allActionsPlayed = true;
+			for (const keyframe of sequence.keyframes) {
+				if (!keyframe.played) allActionsPlayed = false;
+				if (clock > keyframe.offset && !keyframe.played) {
+					keyframe.action();
+					keyframe.played = true;
+				}
+			}
+			if (allActionsPlayed) sequence.played = true;
+		}
+		sequences = sequences.filter((s) => !s.played);
+	};
+	return { update, clock, addSequence };
+};*/
+
+export const timeline = () => {
+	let clock = 0;
+	let keyframes: { offset: number; action: () => void; played: boolean }[] = [];
+	const addKeyframe = (offset: number, action: () => void) => {
+		keyframes.push({
+			offset: (offset += clock),
+			action,
+			played: false
+		});
+	};
+	const update = (delta: number) => {
+		clock += delta;
+		if (keyframes.length < 1) return;
+		for (const keyframe of keyframes) {
+			if (clock > keyframe.offset && !keyframe.played) {
+				keyframe.action();
+				keyframe.played = true;
+			}
+		}
+		keyframes = keyframes.filter((k) => !k.played);
+	};
+
+	return { update, clock, addKeyframe };
+};
+
 /**
  * Returns a function that can be used to execute a child function every given number of seconds.
  * @param interval - The interval in seconds.
@@ -124,7 +203,7 @@ export const spring = <T extends Record<string, number> | number>(
 	return { set, update };
 };
 
-function springTick(
+const springTick = (
 	stiffness: number,
 	damping: number,
 	currentValue: number,
@@ -132,7 +211,7 @@ function springTick(
 	delta: number,
 	velocity: number,
 	precision: number
-) {
+) => {
 	let settled = false;
 	const tensionForce = -stiffness * (currentValue - endValue);
 	const dampingForce = -damping * velocity;
@@ -143,7 +222,7 @@ function springTick(
 		settled = true;
 	}
 	return { cv: currentValue, s: settled, v: velocity };
-}
+};
 
 /**
  * Similar behvour to Svelte's tweened funtion but linked to Threlte's useTask.
@@ -194,7 +273,7 @@ export const tween = <T extends Record<string, number> | number>(
 	return { set, update };
 };
 
-function tweenInterpolator<T extends Record<string, number> | number>(a: T, b: T) {
+const tweenInterpolator = <T extends Record<string, number> | number>(a: T, b: T) => {
 	if (a === b || a !== a) return () => a;
 	if (typeof b === 'object' && typeof a === 'object') {
 		const keys = Object.keys(b);
@@ -215,4 +294,4 @@ function tweenInterpolator<T extends Record<string, number> | number>(a: T, b: T
 	} else {
 		return (t: number) => t;
 	}
-}
+};

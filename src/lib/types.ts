@@ -9,6 +9,7 @@ export type Card = {
 	rotateTo: XYZ;
 	rotateVelocity: XYZ;
 	settled: boolean;
+	stiffness: number;
 	inHand: boolean;
 	health: number;
 };
