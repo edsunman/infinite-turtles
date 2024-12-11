@@ -15,8 +15,6 @@
 	setupInitialCards();
 	dealHand();
 
-	$inspect(gameState.state);
-
 	onDestroy(() => {
 		cardState.cards = [];
 	});

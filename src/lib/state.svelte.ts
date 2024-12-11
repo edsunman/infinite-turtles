@@ -11,14 +11,13 @@ export const gameState = $state<{
 	locked: false
 });
 
-const createCardState = () => {
-	let selectedCardId = '';
-	let hoverCardId = '';
-	let slots: string[] = ['', '', '', ''];
-	let cards = $state.raw<Card[]>([]);
-	let count = $state({ deck: 0, discard: 0 });
-
-	const addCard = (args: Partial<Card>) => {
+class CardState {
+	selectedCardId = '';
+	hoverCardId = '';
+	slots: string[] = ['', '', '', ''];
+	cards = $state.raw<Card[]>([]);
+	count = $state({ deck: 0, discard: 0 });
+	addCard = (args: Partial<Card>) => {
 		const newId = Math.random().toString(16).slice(2);
 		const defaults: Card = {
 			id: newId,
@@ -36,45 +35,11 @@ const createCardState = () => {
 			order: 0
 		};
 		const newCard = { ...defaults, ...args };
-		cards = [...cards, newCard];
+		this.cards = [...this.cards, newCard];
 		return newId;
 	};
+}
 
-	return {
-		get cards() {
-			return cards;
-		},
-		set cards(c) {
-			cards = c;
-		},
-		get selectedCardId() {
-			return selectedCardId;
-		},
-		set selectedCardId(id) {
-			selectedCardId = id;
-		},
-		get hoverCardId() {
-			return hoverCardId;
-		},
-		set hoverCardId(id) {
-			hoverCardId = id;
-		},
-		get slots() {
-			return slots;
-		},
-		set slots(c) {
-			slots = c;
-		},
-		get count() {
-			return count;
-		},
-		set count(c) {
-			count = c;
-		},
-		addCard
-	};
-};
-
-export const cardState = createCardState();
+export const cardState = new CardState();
 
 export const mainTimeline = timeline();
