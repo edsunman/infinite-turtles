@@ -2,7 +2,7 @@
 	import { T, useTask } from '@threlte/core';
 	import { interactivity } from '@threlte/extras';
 	import { cardState, gameState } from '$lib/state.svelte';
-	import { cardIdFromInstanceId, positionHand, placeCard } from './cardActions';
+	import { positionHand, placeCard } from './cardActions';
 	import {
 		InstancedMesh,
 		MeshStandardMaterial,
@@ -14,12 +14,12 @@
 	interactivity();
 
 	const pointerMoved = (e: any) => {
-		if (gameState.locked) return;
+		if (gameState.state !== 'playerTurn' || gameState.locked) return;
 		if (cardState.selectedCardId !== '') return;
 		let cardId = '';
 		for (let intersect of e.intersections) {
 			if (Object.hasOwn(intersect, 'instanceId')) {
-				cardId = cardIdFromInstanceId(intersect.instanceId);
+				cardId = cardState.cards[intersect.instanceId].id;
 				break;
 			}
 		}
@@ -30,12 +30,11 @@
 	};
 
 	const pointerUp = (e: any) => {
-		if (gameState.locked) return;
-		console.log(e.intersections);
+		if (gameState.state !== 'playerTurn' || gameState.locked) return;
 		let cardId = '';
 		for (let intersect of e.intersections) {
 			if (Object.hasOwn(intersect, 'instanceId')) {
-				cardId = cardIdFromInstanceId(intersect.instanceId);
+				cardId = cardState.cards[intersect.instanceId].id;
 				break;
 			}
 		}
@@ -47,6 +46,7 @@
 				// right turtle
 				placeCard(cardState.selectedCardId, 'right');
 			}
+
 			cardState.selectedCardId = '';
 			cardState.hoverCardId = '';
 			positionHand();

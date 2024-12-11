@@ -116,6 +116,7 @@ filteredGltfFiles.forEach((file) => {
 	} catch (error) {
 		console.error(`Error transforming model: ${error}`);
 	}
+	console.log('Transformed: ' + file);
 });
 
 // read dir again, but search for .svelte files only.
@@ -136,6 +137,7 @@ svelteFiles.forEach((file) => {
 			}
 		}
 		copyFileSync(path, newPath);
+		console.log('Created: ' + file);
 	} catch (error) {
 		console.error(`Error copying file: ${error}`);
 	}

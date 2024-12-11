@@ -1,19 +1,9 @@
-<svelte:options runes={true} />
-
 <script lang="ts">
 	import { Canvas } from '@threlte/core';
 	import { cardState, gameState, mainTimeline } from '$lib/state.svelte';
-	import type { Card } from '$lib/types';
 
 	import Scene from './Scene.svelte';
-	import { dealCard } from './cards/cardActions';
-
-	//let runie = $derived(cardState.cards[0].position.x);
-
-	const lotsOfCubes = () => {
-		const newId = cardState.addCard({ health: Math.random() * 15 });
-		dealCard(newId);
-	};
+	import { dealCard, dealHand, discardHand } from './cards/cardActions';
 </script>
 
 <Canvas>
@@ -21,14 +11,15 @@
 </Canvas>
 
 <div style="background-color:white;position:absolute;bottom:0px;margin:20px">
-	<button onclick={lotsOfCubes}>hello</button>
-	<button
-		onclick={() => {
-			mainTimeline.addKeyframe(0, () => lotsOfCubes());
-			mainTimeline.addKeyframe(0.3, () => lotsOfCubes());
-		}}>t</button
-	>
+	Deck: {cardState.count.deck}
+	<button onclick={dealCard}>deal one</button>
+	<button onclick={dealHand}>deal three</button>
 	<!-- {runie} -->
+</div>
+
+<div style="background-color:white;position:absolute;bottom:0px;right:0;margin:20px">
+	Discard: {cardState.count.discard}
+	<button onclick={discardHand}>discard hand</button>
 </div>
 
 <svelte:window

@@ -1,7 +1,10 @@
 export type XYZ = { x: number; y: number; z: number };
 
+export type CardGroup = 'none' | 'deck' | 'hand' | 'discard';
+
 export type Card = {
 	id: string;
+	typeId: number;
 	position: XYZ;
 	moveTo: XYZ;
 	moveVelocity: XYZ;
@@ -10,6 +13,7 @@ export type Card = {
 	rotateVelocity: XYZ;
 	settled: boolean;
 	stiffness: number;
-	inHand: boolean;
+	group: CardGroup;
 	health: number;
+	order: number;
 };

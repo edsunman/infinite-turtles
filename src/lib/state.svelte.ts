@@ -1,7 +1,12 @@
 import { timeline } from './helpers/animation';
 import type { Card } from './types';
 
-export const gameState = $state({
+export const gameState = $state<{
+	state: 'playerTurn' | 'enemyTurn' | 'dealing' | 'discarding';
+	dev: boolean;
+	locked: boolean;
+}>({
+	state: 'dealing',
 	dev: false,
 	locked: false
 });
@@ -11,13 +16,14 @@ const createCardState = () => {
 	let hoverCardId = '';
 	let slots: string[] = ['', '', '', ''];
 	let cards = $state.raw<Card[]>([]);
-	let dealing = false;
+	let count = $state({ deck: 0, discard: 0 });
 
 	const addCard = (args: Partial<Card>) => {
 		const newId = Math.random().toString(16).slice(2);
 		const defaults: Card = {
 			id: newId,
 			health: 0,
+			typeId: 10,
 			moveTo: { x: 0, y: 0, z: 0 },
 			position: { x: 0, y: 0, z: 0 },
 			moveVelocity: { x: 0, y: 0, z: 0 },
@@ -26,7 +32,8 @@ const createCardState = () => {
 			rotateVelocity: { x: 0, y: 0, z: 0 },
 			stiffness: 0.3,
 			settled: true,
-			inHand: false
+			group: 'none',
+			order: 0
 		};
 		const newCard = { ...defaults, ...args };
 		cards = [...cards, newCard];
@@ -40,7 +47,6 @@ const createCardState = () => {
 		set cards(c) {
 			cards = c;
 		},
-
 		get selectedCardId() {
 			return selectedCardId;
 		},
@@ -59,11 +65,11 @@ const createCardState = () => {
 		set slots(c) {
 			slots = c;
 		},
-		get dealing() {
-			return dealing;
+		get count() {
+			return count;
 		},
-		set dealing(d) {
-			dealing = d;
+		set count(c) {
+			count = c;
 		},
 		addCard
 	};

@@ -25,9 +25,13 @@ Command: npx @threlte/gltf@3.0.0-next.10 D:\Node\turtles\static\models\cards.glb
 
   type GLTFResult = {
     nodes: {
-      Border: THREE.Mesh
-      Rune: THREE.Mesh
       Background: THREE.Mesh
+      Border: THREE.Mesh
+      Enemy: THREE.Mesh
+      Player: THREE.Mesh
+      Potion: THREE.Mesh
+      Turtle: THREE.Mesh
+      Rune: THREE.Mesh
     }
     materials: {}
   }
@@ -44,16 +48,32 @@ Command: npx @threlte/gltf@3.0.0-next.10 D:\Node\turtles\static\models\cards.glb
     {@render fallback?.()}
   {:then gltf}
     <T.Mesh
+      geometry={gltf.nodes.Background.geometry}
+      material={gltf.nodes.Background.material}
+    />
+    <T.Mesh
       geometry={gltf.nodes.Border.geometry}
       material={gltf.nodes.Border.material}
     />
     <T.Mesh
-      geometry={gltf.nodes.Rune.geometry}
-      material={gltf.nodes.Rune.material}
+      geometry={gltf.nodes.Enemy.geometry}
+      material={gltf.nodes.Enemy.material}
     />
     <T.Mesh
-      geometry={gltf.nodes.Background.geometry}
-      material={gltf.nodes.Background.material}
+      geometry={gltf.nodes.Player.geometry}
+      material={gltf.nodes.Player.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.Potion.geometry}
+      material={gltf.nodes.Potion.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.Turtle.geometry}
+      material={gltf.nodes.Turtle.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.Rune.geometry}
+      material={gltf.nodes.Rune.material}
     />
   {:catch err}
     {@render error?.({ error: err })}
