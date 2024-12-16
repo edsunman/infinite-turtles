@@ -1,6 +1,6 @@
 import { cardState, gameState, mainTimeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
-import type { Card, XYZ, CardGroup } from '$lib/types';
+import type { Card } from '$lib/types';
 
 export const dealCard = () => {
 	if (cardState.count.deck < 1) refillDeck();
@@ -24,11 +24,9 @@ export const dealCard = () => {
 };
 
 export const dealHand = () => {
-	gameState.state = 'dealing';
 	mainTimeline.addKeyframe(0, () => dealCard());
 	mainTimeline.addKeyframe(0.3, () => dealCard());
 	mainTimeline.addKeyframe(0.6, () => dealCard());
-	mainTimeline.addKeyframe(1, () => (gameState.state = 'playerTurn'));
 };
 
 export const discardCardFromHand = () => {
@@ -46,15 +44,66 @@ export const discardCardFromHand = () => {
 
 export const discardHand = () => {
 	const handLength = cardState.cards.filter((card) => card.group === 'hand').length;
-	gameState.state = 'discarding';
 	discardCardFromHand();
 	for (let i = 1; i < handLength; i++) {
 		mainTimeline.addKeyframe(0.2 * i, () => {
 			discardCardFromHand();
 		});
 	}
-	mainTimeline.addKeyframe(0.3 * handLength, () => {
-		gameState.state = 'playerTurn';
+};
+
+export const discardTurtle = (side: 'left' | 'right') => {
+	gameState.locked = true;
+	const slotOffset = side === 'left' ? 0 : 3;
+	const turtleId = cardState.slots[0 + slotOffset];
+	updateCard(turtleId, {
+		moveTo: { x: -7, y: 5, z: -2 },
+		settled: false,
+		rotateTo: { x: -1.57, y: 0, z: 1.57 },
+		stiffness: 0.08
+	});
+	if (cardState.slots[1 + slotOffset] !== '') {
+		mainTimeline.addKeyframe(0.1, () => {
+			updateCard(cardState.slots[1 + slotOffset], {
+				moveTo: { x: 6, y: 0, z: 3.7 },
+				settled: false,
+				rotateTo: { x: -1.57, y: 0, z: 0 },
+				stiffness: 0.06,
+				group: 'discard'
+			});
+			cardState.slots[1 + slotOffset] = '';
+		});
+	}
+	if (cardState.slots[2 + slotOffset] !== '') {
+		mainTimeline.addKeyframe(0.2, () => {
+			updateCard(cardState.slots[2 + slotOffset], {
+				moveTo: { x: 6, y: 0, z: 3.7 },
+				settled: false,
+				rotateTo: { x: -1.57, y: 0, z: 0 },
+				stiffness: 0.06,
+				group: 'discard'
+			});
+			cardState.slots[2 + slotOffset] = '';
+		});
+	}
+	mainTimeline.addKeyframe(0.5, () => {
+		updateCard(turtleId, {
+			health: -1
+		});
+		cardState.slots[0 + slotOffset] = '';
+	});
+	/* mainTimeline.addKeyframe(0.6, () => {
+		updateCard(turtleId, {
+			health: 1,
+			position: { x: 0, y: 0, z: -6 },
+			moveTo: { x: -2, y: 0, z: -1 },
+			settled: false,
+			rotateTo: { x: -1.57, y: 0, z: 0 },
+			stiffness: 0.2
+		});
+	}); */
+	mainTimeline.addKeyframe(1, () => {
+		gameState.locked = false;
 	});
 };
 
@@ -66,31 +115,163 @@ export const refillDeck = () => {
 	});
 };
 
-export const placeCard = (cardId: string, on: 'left' | 'right') => {
+export const updateCard = (cardId: string, args: Partial<Card>) => {
+	const oldCard = cardState.cards.find((card) => card.id === cardId);
+	const cardIndex = cardState.cards.findIndex((card) => card.id === cardId);
+	if (!oldCard) return;
+	const newCard = { ...oldCard, ...args };
+	cardState.cards[cardIndex] = newCard;
+};
+
+export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' | 'rune') => {
 	let selectedSlot = 0;
 	if (on === 'left') {
-		if (cardState.slots[0] !== '' && cardState.slots[1] !== '') {
+		if (cardState.slots[1] !== '' && cardState.slots[2] !== '') {
 			return;
 		}
-		selectedSlot = cardState.slots[0] === '' ? 0 : 1;
+		selectedSlot = cardState.slots[1] === '' ? 1 : 2;
 	} else {
-		if (cardState.slots[2] !== '' && cardState.slots[3] !== '') {
+		if (cardState.slots[4] !== '' && cardState.slots[5] !== '') {
 			return;
 		}
-		selectedSlot = cardState.slots[2] === '' ? 2 : 3;
+		selectedSlot = cardState.slots[4] === '' ? 4 : 5;
 	}
-	const slots = [
+	if (type === 'turtle' && on === 'left') {
+		if (cardState.slots[0]) {
+			return;
+		}
+		selectedSlot = 0;
+	} else if (type === 'turtle' && on === 'right') {
+		if (cardState.slots[3]) {
+			return;
+		}
+		selectedSlot = 3;
+	}
+	const slotPositions = [
+		{ x: -2, y: 0, z: -1 },
 		{ x: -2.6, y: 0, z: 0.6 },
 		{ x: -1.4, y: 0, z: 0.6 },
+		{ x: 2, y: 0, z: -1 },
 		{ x: 1.4, y: 0, z: 0.6 },
 		{ x: 2.6, y: 0, z: 0.6 }
 	];
-	moveCard(cardId, 'none', 0.02, { x: 0, y: 5, z: 0 });
+	updateCard(cardId, {
+		group: 'placed',
+		stiffness: 0.03,
+		moveTo: { x: 0, y: 5, z: 0 },
+		rotateTo: { x: -1.57, y: 0, z: 0 },
+		settled: false
+	});
 	gameState.locked = true;
-	mainTimeline.addKeyframe(0.3, () => moveCard(cardId, 'none', 0.2, slots[selectedSlot]));
-	mainTimeline.addKeyframe(0.5, () => (gameState.locked = false));
+	mainTimeline.addKeyframe(0.3, () =>
+		updateCard(cardId, {
+			group: 'placed',
+			stiffness: 0.2,
+			moveTo: slotPositions[selectedSlot],
+			rotateTo: { x: -1.57, y: 0, z: 0 },
+			settled: false
+		})
+	);
+
 	cardState.slots[selectedSlot] = cardId;
 	closeGapInHand(cardId);
+	gameState.actionsRemaining--;
+	if (gameState.actionsRemaining == 0) {
+		mainTimeline.addKeyframe(1, () => endTurn());
+	} else {
+		mainTimeline.addKeyframe(0.5, () => (gameState.locked = false));
+	}
+};
+
+export const endTurn = () => {
+	if (gameState.state !== 'playerTurn') return;
+	//let delay = 0;
+	gameState.state = 'discarding';
+	discardHand();
+
+	// turtles attack
+
+	// enemy attacks
+	mainTimeline.addKeyframe(1.5, () => {
+		gameState.state = 'enemyTurn';
+		const enemy = cardState.cards.find((card) => card.typeId === 2);
+		const leftTurtle = cardState.cards.find((card) => card.id === cardState.slots[0]);
+		const rightTurtle = cardState.cards.find((card) => card.id === cardState.slots[3]);
+
+		if (!enemy) return;
+		// left attack animation
+		updateCard(enemy.id, {
+			moveTo: { x: -1, y: 2, z: -1 },
+			rotateTo: { x: -0.5, y: -0.5, z: 0 },
+			settled: false,
+			stiffness: 0.3
+		});
+		mainTimeline.addKeyframe(0.1, () => {
+			updateCard(enemy.id, {
+				moveTo: { x: 0, y: 0, z: -3.2 },
+				rotateTo: { x: -1.57, y: 0, z: 0 },
+				settled: false,
+				stiffness: 0.15
+			});
+		});
+		if (leftTurtle) {
+			updateCard(leftTurtle.id, { health: leftTurtle.health - 1 });
+			mainTimeline.addKeyframe(0.5, () => {
+				if (leftTurtle.health <= 1) {
+					// kill turtle
+					discardTurtle('left');
+				}
+			});
+		} else {
+			const player = cardState.cards.find((card) => card.typeId === 1);
+			if (!player) return;
+			updateCard(player.id, { health: player.health - 1 });
+		}
+
+		// right attack animation
+		mainTimeline.addKeyframe(1, () => {
+			updateCard(enemy.id, {
+				moveTo: { x: 1, y: 2, z: -1 },
+				rotateTo: { x: -0.5, y: 0.5, z: 0 },
+				settled: false,
+				stiffness: 0.3
+			});
+		});
+		mainTimeline.addKeyframe(1.1, () => {
+			updateCard(enemy.id, {
+				moveTo: { x: 0, y: 0, z: -3.2 },
+				rotateTo: { x: -1.57, y: 0, z: 0 },
+				settled: false,
+				stiffness: 0.15
+			});
+		});
+		mainTimeline.addKeyframe(1.1, () => {
+			if (rightTurtle) {
+				updateCard(rightTurtle.id, { health: rightTurtle.health - 1 });
+				mainTimeline.addKeyframe(0.5, () => {
+					if (rightTurtle.health <= 1) {
+						// kill turtle
+						discardTurtle('right');
+					}
+				});
+			} else {
+				console.log('hello', rightTurtle);
+				const player = cardState.cards.find((card) => card.typeId === 1);
+				if (!player) return;
+				updateCard(player.id, { health: player.health - 1 });
+			}
+		});
+	});
+
+	mainTimeline.addKeyframe(3, () => {
+		gameState.state = 'dealing';
+		dealHand();
+	});
+	mainTimeline.addKeyframe(4, () => {
+		gameState.state = 'playerTurn';
+		gameState.actionsRemaining = 2;
+		gameState.locked = false;
+	});
 };
 
 export const closeGapInHand = (cardId: string = '') => {
@@ -101,27 +282,6 @@ export const closeGapInHand = (cardId: string = '') => {
 	cardState.cards.forEach((card) => {
 		if (card.order > order) card.order--;
 	});
-};
-
-export const moveCard = (
-	cardId: string,
-	group: CardGroup,
-	stiffness: number,
-	moveTo: XYZ,
-	rotateTo: XYZ = { x: -1.57, y: 0, z: 0 }
-) => {
-	let foundCard: Card | undefined;
-	cardState.cards.forEach((card) => {
-		if (card.id === cardId) {
-			card.rotateTo = rotateTo;
-			card.moveTo = moveTo;
-			card.stiffness = stiffness;
-			card.settled = false;
-			card.group = group;
-			foundCard = card;
-		}
-	});
-	if (!foundCard) console.error('no card with id ' + cardId);
 };
 
 export const positionHand = () => {
@@ -154,36 +314,40 @@ export const setupInitialCards = () => {
 	cardState.addCard({
 		typeId: 1,
 		health: 10,
-		rotation: { x: -1.57, y: 0, z: 0 },
 		position: { x: 0, y: 0, z: -0.5 }
 	});
 	// Enemy
 	cardState.addCard({
 		typeId: 2,
 		health: 10,
-		rotation: { x: -1.57, y: 0, z: 0 },
 		position: { x: 0, y: 0, z: -3.2 }
 	});
 	// Left turtle
-	cardState.addCard({
-		health: 1,
-		rotation: { x: -1.57, y: 0, z: 0 },
-		position: { x: -2, y: 0, z: -1 }
-	});
+	/*cardState.slots[0] = cardState.addCard({
+		health: 3,
+		position: { x: -2, y: 0, z: -1 },
+		moveTo: { x: -2, y: 0, z: -1 },
+		settled: false
+	}); 
 	// Right turtle
-	cardState.addCard({
+	cardState.slots[3] = cardState.addCard({
 		health: 1,
-		rotation: { x: -1.57, y: 0, z: 0 },
-		position: { x: 2, y: 0, z: -1 }
-	});
+		position: { x: 2, y: 0, z: -1 },
+		moveTo: { x: 2, y: 0, z: -1 },
+		settled: false
+	});*/
 	// Starting Deck
 	for (let i = 0; i < 9; i++) {
 		const j = Math.floor(i / 3);
 		cardState.addCard({
+			health: j === 0 ? 1 : 0,
 			typeId: 10 + j,
 			group: 'deck',
-			rotation: { x: -1.57, y: 0, z: 0 },
 			position: { x: -6, y: 0, z: 3.7 }
 		});
 	}
+	dealHand();
+	mainTimeline.addKeyframe(1, () => {
+		gameState.state = 'playerTurn';
+	});
 };

@@ -31,31 +31,55 @@
 
 	const pointerUp = (e: any) => {
 		if (gameState.state !== 'playerTurn' || gameState.locked) return;
-		let cardId = '';
+		let card;
 		for (let intersect of e.intersections) {
 			if (Object.hasOwn(intersect, 'instanceId')) {
-				cardId = cardState.cards[intersect.instanceId].id;
+				card = cardState.cards[intersect.instanceId];
 				break;
 			}
 		}
-		if (cardId === '' && cardState.selectedCardId !== '') {
-			if (e.point.x > -2.5 && e.point.x < -1.5 && e.point.z < -0.3 && e.point.z > -1.8) {
-				// left turtle
-				placeCard(cardState.selectedCardId, 'left');
-			} else if (e.point.x < 2.5 && e.point.x > 1.5 && e.point.z < -0.3 && e.point.z > -1.8) {
-				// right turtle
-				placeCard(cardState.selectedCardId, 'right');
+		const selectedCard = cardState.cards.find(
+			(card) => card.id === cardState.selectedCardId && card.group === 'hand'
+		);
+		if (!card) {
+			// clicked ground
+			if (selectedCard && selectedCard.typeId === 10) {
+				// turtle card is selected
+				if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x < -1.5 && e.point.x > -2.5)
+					placeCard(cardState.selectedCardId, 'left', 'turtle');
+				if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x > 1.5 && e.point.x < 2.5)
+					placeCard(cardState.selectedCardId, 'right', 'turtle');
 			}
-
 			cardState.selectedCardId = '';
 			cardState.hoverCardId = '';
 			positionHand();
-		} else if (cardState.selectedCardId !== cardId) {
-			// clicked a differnt card so select that one
-			cardState.selectedCardId = cardId;
+			return;
+		} else if (card.id === cardState.hoverCardId) {
+			// clicked hovered card so select
+			cardState.selectedCardId = card.id;
 			cardState.hoverCardId = '';
 			positionHand();
+			return;
+		} else if (card.group === 'hand') {
+			// clicked a different card in hand
+			cardState.selectedCardId = card.id;
+			cardState.hoverCardId = '';
+			positionHand();
+			return;
 		}
+
+		if (!selectedCard) return;
+		// Clicked a placed card with rune card selected
+		if (card.id === cardState.slots[0] && selectedCard.typeId >= 12)
+			//  clicked left turtle
+			placeCard(cardState.selectedCardId, 'left', 'rune');
+		if (card.id === cardState.slots[3] && selectedCard.typeId >= 12)
+			//  clicked right turtle
+			placeCard(cardState.selectedCardId, 'right', 'rune');
+
+		cardState.selectedCardId = '';
+		cardState.hoverCardId = '';
+		positionHand();
 	};
 
 	const plane = new PlaneGeometry();
@@ -67,14 +91,16 @@
 	mesh.instanceMatrix.setUsage(DynamicDrawUsage);
 	mesh.name = 'hitbox';
 
+	// TODO: maybe optimise this, do we need a hitbox for off-screen cards?
 	useTask((delta) => {
+		if (gameState.state !== 'playerTurn') return;
 		cardState.cards.forEach((card, i) => {
-			if (card.settled) return;
 			dummy.position.set(card.position.x, card.position.y, card.position.z);
 			dummy.rotation.set(card.rotation.x, card.rotation.y, card.rotation.z);
 			dummy.updateMatrix();
 			mesh.setMatrixAt(i, dummy.matrix);
 		});
+		mesh.count = cardState.cards.length;
 		mesh.instanceMatrix.needsUpdate = true;
 		mesh.computeBoundingSphere();
 	});

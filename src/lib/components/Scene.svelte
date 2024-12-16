@@ -13,10 +13,10 @@
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
 
 	setupInitialCards();
-	dealHand();
 
 	onDestroy(() => {
 		cardState.cards = [];
+		cardState.slots = ['', '', '', '', '', ''];
 	});
 
 	useTask((delta) => {

@@ -1,6 +1,6 @@
 export type XYZ = { x: number; y: number; z: number };
 
-export type CardGroup = 'none' | 'deck' | 'hand' | 'discard';
+export type CardGroup = 'none' | 'deck' | 'hand' | 'discard' | 'placed';
 
 export type Card = {
 	id: string;

@@ -70,7 +70,11 @@
 		temp = cardState.cards.concat();
 		temp.forEach((card, index, array) => {
 			card = movingBehaviour(card, delta);
+			if (card.health < 0) {
+				array.splice(index, 1);
+			}
 		});
+
 		cardState.cards = temp;
 		cardsCount = temp.length;
 
