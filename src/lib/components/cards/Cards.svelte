@@ -120,8 +120,8 @@
 			dummy.translateY(0.6);
 			dummy.translateZ(0.02);
 			dummy.updateMatrix();
-			instancedNumbers.setMatrixAt(i, dummy.matrix);
-			numbersFloat.set([temp[i].health], i);
+			instancedNumbers.setMatrixAt(numbersCount, dummy.matrix);
+			numbersFloat.set([temp[numbersCount].health], numbersCount);
 			numbersCount++;
 		}
 		instancedBorders.count = cardsCount;

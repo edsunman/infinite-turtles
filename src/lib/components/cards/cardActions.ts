@@ -4,22 +4,32 @@ import type { Card } from '$lib/types';
 
 export const dealCard = () => {
 	if (cardState.count.deck < 1) refillDeck();
-	const random = randomNumber(0, cardState.count.deck - 1);
 	const handLength = cardState.cards.filter((card) => {
 		return card.group === 'hand';
 	}).length;
-	let deckCardCount = 0;
-	cardState.cards.forEach((card) => {
-		if (card.group !== 'deck') return;
-		if (deckCardCount === random) {
-			card.rotateTo = { x: -1.15, y: 0, z: 0 };
-			card.settled = false;
-			card.group = 'hand';
-			card.order = handLength;
-		}
-		deckCardCount++;
-	});
+	const dealTurtle = randomNumber(0, 1);
+	if (dealTurtle) {
+		cardState.addCard({
+			health: 1,
+			typeId: 10,
+			group: 'hand',
+			order: handLength,
+			position: { x: -6, y: 0, z: 3.7 }
+		});
+	} else {
+		const random = randomNumber(0, cardState.count.deck - 1);
+		let deckCardCount = 0;
+		cardState.cards.forEach((card) => {
+			if (card.group !== 'deck') return;
+			if (deckCardCount === random) {
+				card.group = 'hand';
+				card.order = handLength;
+			}
+			deckCardCount++;
+		});
+	}
 	cardState.selectedCardId = '';
+
 	positionHand();
 };
 
@@ -36,7 +46,7 @@ export const discardCardFromHand = () => {
 		card.rotateTo = { x: -1.57, y: 0, z: 0 };
 		card.settled = false;
 		card.stiffness = 0.1;
-		card.group = 'discard';
+		card.group = card.typeId === 10 ? 'none' : 'discard';
 	});
 	closeGapInHand();
 	positionHand();
@@ -255,7 +265,6 @@ export const endTurn = () => {
 					}
 				});
 			} else {
-				console.log('hello', rightTurtle);
 				const player = cardState.cards.find((card) => card.typeId === 1);
 				if (!player) return;
 				updateCard(player.id, { health: player.health - 1 });
@@ -266,6 +275,11 @@ export const endTurn = () => {
 	mainTimeline.addKeyframe(3, () => {
 		gameState.state = 'dealing';
 		dealHand();
+		cardState.cards.forEach((card) => {
+			if (card.typeId === 10 && card.group === 'none') {
+				card.health = -1;
+			}
+		});
 	});
 	mainTimeline.addKeyframe(4, () => {
 		gameState.state = 'playerTurn';
@@ -337,11 +351,10 @@ export const setupInitialCards = () => {
 		settled: false
 	});*/
 	// Starting Deck
-	for (let i = 0; i < 9; i++) {
+	for (let i = 0; i < 6; i++) {
 		const j = Math.floor(i / 3);
 		cardState.addCard({
-			health: j === 0 ? 1 : 0,
-			typeId: 10 + j,
+			typeId: 11 + j,
 			group: 'deck',
 			position: { x: -6, y: 0, z: 3.7 }
 		});
