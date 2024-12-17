@@ -2,7 +2,7 @@
 	import { T, useTask } from '@threlte/core';
 	import { Grid, OrbitControls, useGltf, useDraco } from '@threlte/extras';
 	import { gameState, cardState, mainTimeline } from '$lib/state.svelte';
-	import { dealHand, setupInitialCards } from './cards/cardActions';
+	import { setupInitialCards } from '$lib/gameplay';
 
 	import Peformance from './misc/Peformance.svelte';
 	import Cards from './cards/Cards.svelte';

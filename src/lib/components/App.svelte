@@ -3,7 +3,8 @@
 	import { cardState, gameState, mainTimeline } from '$lib/state.svelte';
 
 	import Scene from './Scene.svelte';
-	import { dealCard, dealHand, discardHand, discardTurtle, endTurn } from './cards/cardActions';
+	import { dealHand } from './cards/cardActions';
+	import { endTurn } from '$lib/gameplay';
 </script>
 
 <Canvas>
@@ -12,7 +13,6 @@
 
 <div style="background-color:white;position:absolute;bottom:0px;margin:20px">
 	Deck: {cardState.count.deck}
-	<button onclick={dealCard}>deal one</button>
 	<button onclick={dealHand}>deal three</button>
 	<!-- {runie} -->
 </div>
@@ -21,7 +21,7 @@
 	Discard: {cardState.count.discard}
 	Actions: {gameState.actionsRemaining}
 	<!-- <button onclick={discardHand}>discard hand</button> -->
-	<button onclick={endTurn}>end yurn</button>
+	<button onclick={endTurn}>end turn</button>
 </div>
 
 <svelte:window

@@ -1,14 +1,28 @@
 import { cardState, gameState, mainTimeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
+import { endTurn } from '$lib/gameplay';
 import type { Card } from '$lib/types';
 
-export const dealCard = () => {
-	if (cardState.count.deck < 1) refillDeck();
+export const dealHand = () => {
+	mainTimeline.addKeyframe(0, () => dealCard());
+	mainTimeline.addKeyframe(0.3, () => dealCard());
+	mainTimeline.addKeyframe(0.6, () => dealCard());
+};
+
+const dealCard = () => {
+	if (cardState.count.deck < 1) {
+		// need to refill deck
+		cardState.cards.forEach((card) => {
+			if (card.group !== 'discard') return;
+			card.position = { x: -6, y: 0, z: 3.7 };
+			card.group = 'deck';
+		});
+	}
 	const handLength = cardState.cards.filter((card) => {
 		return card.group === 'hand';
 	}).length;
-	const dealTurtle = randomNumber(0, 1);
-	if (dealTurtle) {
+	const dealTurtle = randomNumber(0, 2);
+	if (dealTurtle === 0) {
 		cardState.addCard({
 			health: 1,
 			typeId: 10,
@@ -33,13 +47,17 @@ export const dealCard = () => {
 	positionHand();
 };
 
-export const dealHand = () => {
-	mainTimeline.addKeyframe(0, () => dealCard());
-	mainTimeline.addKeyframe(0.3, () => dealCard());
-	mainTimeline.addKeyframe(0.6, () => dealCard());
+export const discardHand = () => {
+	const handLength = cardState.cards.filter((card) => card.group === 'hand').length;
+	discardCardFromHand();
+	for (let i = 1; i < handLength; i++) {
+		mainTimeline.addKeyframe(0.2 * i, () => {
+			discardCardFromHand();
+		});
+	}
 };
 
-export const discardCardFromHand = () => {
+const discardCardFromHand = () => {
 	cardState.cards.forEach((card) => {
 		if (!(card.group === 'hand' && card.order === 0)) return;
 		card.moveTo = { x: 6, y: 0, z: 3.7 };
@@ -50,16 +68,6 @@ export const discardCardFromHand = () => {
 	});
 	closeGapInHand();
 	positionHand();
-};
-
-export const discardHand = () => {
-	const handLength = cardState.cards.filter((card) => card.group === 'hand').length;
-	discardCardFromHand();
-	for (let i = 1; i < handLength; i++) {
-		mainTimeline.addKeyframe(0.2 * i, () => {
-			discardCardFromHand();
-		});
-	}
 };
 
 export const discardTurtle = (side: 'left' | 'right') => {
@@ -102,26 +110,8 @@ export const discardTurtle = (side: 'left' | 'right') => {
 		});
 		cardState.slots[0 + slotOffset] = '';
 	});
-	/* mainTimeline.addKeyframe(0.6, () => {
-		updateCard(turtleId, {
-			health: 1,
-			position: { x: 0, y: 0, z: -6 },
-			moveTo: { x: -2, y: 0, z: -1 },
-			settled: false,
-			rotateTo: { x: -1.57, y: 0, z: 0 },
-			stiffness: 0.2
-		});
-	}); */
 	mainTimeline.addKeyframe(1, () => {
 		gameState.locked = false;
-	});
-};
-
-export const refillDeck = () => {
-	cardState.cards.forEach((card) => {
-		if (card.group !== 'discard') return;
-		card.position = { x: -6, y: 0, z: 3.7 };
-		card.group = 'deck';
 	});
 };
 
@@ -193,102 +183,7 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 	}
 };
 
-export const endTurn = () => {
-	if (gameState.state !== 'playerTurn') return;
-	//let delay = 0;
-	gameState.state = 'discarding';
-	discardHand();
-
-	// turtles attack
-
-	// enemy attacks
-	mainTimeline.addKeyframe(1.5, () => {
-		gameState.state = 'enemyTurn';
-		const enemy = cardState.cards.find((card) => card.typeId === 2);
-		const leftTurtle = cardState.cards.find((card) => card.id === cardState.slots[0]);
-		const rightTurtle = cardState.cards.find((card) => card.id === cardState.slots[3]);
-
-		if (!enemy) return;
-		// left attack animation
-		updateCard(enemy.id, {
-			moveTo: { x: -1, y: 2, z: -1 },
-			rotateTo: { x: -0.5, y: -0.5, z: 0 },
-			settled: false,
-			stiffness: 0.3
-		});
-		mainTimeline.addKeyframe(0.1, () => {
-			updateCard(enemy.id, {
-				moveTo: { x: 0, y: 0, z: -3.2 },
-				rotateTo: { x: -1.57, y: 0, z: 0 },
-				settled: false,
-				stiffness: 0.15
-			});
-		});
-		if (leftTurtle) {
-			updateCard(leftTurtle.id, { health: leftTurtle.health - 1 });
-			mainTimeline.addKeyframe(0.5, () => {
-				if (leftTurtle.health <= 1) {
-					// kill turtle
-					discardTurtle('left');
-				}
-			});
-		} else {
-			const player = cardState.cards.find((card) => card.typeId === 1);
-			if (!player) return;
-			updateCard(player.id, { health: player.health - 1 });
-		}
-
-		// right attack animation
-		mainTimeline.addKeyframe(1, () => {
-			updateCard(enemy.id, {
-				moveTo: { x: 1, y: 2, z: -1 },
-				rotateTo: { x: -0.5, y: 0.5, z: 0 },
-				settled: false,
-				stiffness: 0.3
-			});
-		});
-		mainTimeline.addKeyframe(1.1, () => {
-			updateCard(enemy.id, {
-				moveTo: { x: 0, y: 0, z: -3.2 },
-				rotateTo: { x: -1.57, y: 0, z: 0 },
-				settled: false,
-				stiffness: 0.15
-			});
-		});
-		mainTimeline.addKeyframe(1.1, () => {
-			if (rightTurtle) {
-				updateCard(rightTurtle.id, { health: rightTurtle.health - 1 });
-				mainTimeline.addKeyframe(0.5, () => {
-					if (rightTurtle.health <= 1) {
-						// kill turtle
-						discardTurtle('right');
-					}
-				});
-			} else {
-				const player = cardState.cards.find((card) => card.typeId === 1);
-				if (!player) return;
-				updateCard(player.id, { health: player.health - 1 });
-			}
-		});
-	});
-
-	mainTimeline.addKeyframe(3, () => {
-		gameState.state = 'dealing';
-		dealHand();
-		cardState.cards.forEach((card) => {
-			if (card.typeId === 10 && card.group === 'none') {
-				card.health = -1;
-			}
-		});
-	});
-	mainTimeline.addKeyframe(4, () => {
-		gameState.state = 'playerTurn';
-		gameState.actionsRemaining = 2;
-		gameState.locked = false;
-	});
-};
-
-export const closeGapInHand = (cardId: string = '') => {
+const closeGapInHand = (cardId: string = '') => {
 	let order = 0;
 	cardState.cards.forEach((card) => {
 		if (card.id === cardId) order = card.order;
@@ -320,47 +215,5 @@ export const positionHand = () => {
 		card.stiffness = stiffness;
 		card.settled = false;
 		hoverHeight = 0;
-	});
-};
-
-export const setupInitialCards = () => {
-	// Player
-	cardState.addCard({
-		typeId: 1,
-		health: 10,
-		position: { x: 0, y: 0, z: -0.5 }
-	});
-	// Enemy
-	cardState.addCard({
-		typeId: 2,
-		health: 10,
-		position: { x: 0, y: 0, z: -3.2 }
-	});
-	// Left turtle
-	/*cardState.slots[0] = cardState.addCard({
-		health: 3,
-		position: { x: -2, y: 0, z: -1 },
-		moveTo: { x: -2, y: 0, z: -1 },
-		settled: false
-	}); 
-	// Right turtle
-	cardState.slots[3] = cardState.addCard({
-		health: 1,
-		position: { x: 2, y: 0, z: -1 },
-		moveTo: { x: 2, y: 0, z: -1 },
-		settled: false
-	});*/
-	// Starting Deck
-	for (let i = 0; i < 6; i++) {
-		const j = Math.floor(i / 3);
-		cardState.addCard({
-			typeId: 11 + j,
-			group: 'deck',
-			position: { x: -6, y: 0, z: 3.7 }
-		});
-	}
-	dealHand();
-	mainTimeline.addKeyframe(1, () => {
-		gameState.state = 'playerTurn';
 	});
 };
