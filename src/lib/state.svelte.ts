@@ -18,12 +18,12 @@ class CardState {
 	hoverCardId = '';
 	slots: string[] = ['', '', '', '', '', ''];
 	cards = $state.raw<Card[]>([]);
-	count = $state({ deck: 0, discard: 0 });
 	addCard = (args: Partial<Card>) => {
 		const newId = Math.random().toString(16).slice(2);
 		const defaults: Card = {
 			id: newId,
 			health: 0,
+			startingHealth: 0,
 			typeId: 10,
 			moveTo: { x: 0, y: 0, z: 0 },
 			position: { x: 0, y: 0, z: 0 },

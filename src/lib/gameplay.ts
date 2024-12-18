@@ -18,24 +18,12 @@ export const endTurn = () => {
 		gameState.state = 'enemyTurn';
 		if (leftTurtle) {
 			attack(enemy.id, leftTurtle.id);
-			mainTimeline.addKeyframe(0.5, () => {
-				if (leftTurtle.health <= 1) {
-					// kill turtle
-					discardTurtle('left');
-				}
-			});
 		} else {
 			attack(enemy.id, player.id);
 		}
 		mainTimeline.addKeyframe(1, () => {
 			if (rightTurtle) {
 				attack(enemy.id, rightTurtle.id);
-				mainTimeline.addKeyframe(0.5, () => {
-					if (rightTurtle.health <= 1) {
-						// kill turtle
-						discardTurtle('right');
-					}
-				});
 			} else {
 				attack(enemy.id, player.id);
 			}
@@ -83,7 +71,30 @@ const attack = (cardId: string, targetId: string) => {
 	});
 	mainTimeline.addKeyframe(0.08, () => {
 		updateCard(cardId, { moveTo: card.position, settled: false, stiffness: 0.15 });
+
+		// inflict damage
+		if (target.typeId === 10) {
+			const targetSlotNumber = cardState.slots.findIndex((s) => s === target.id);
+			const runeCards = cardState.cards.filter(
+				(c) =>
+					c.id === cardState.slots[1 + targetSlotNumber] ||
+					c.id === cardState.slots[2 + targetSlotNumber]
+			);
+			for (const r of runeCards) {
+				// state rune absorb damage
+				if (r && r.typeId === 12 && r.health > 0) {
+					updateCard(r.id, { health: r.health - 1 });
+					return;
+				}
+			}
+		}
 		updateCard(targetId, { health: target.health - 1 });
+		mainTimeline.addKeyframe(0.5, () => {
+			if (target.health <= 1 && target.typeId === 10) {
+				// kill turtle
+				discardTurtle(target.id);
+			}
+		});
 	});
 };
 
@@ -101,12 +112,20 @@ export const setupInitialCards = () => {
 		position: { x: 0, y: 0, z: -3.2 }
 	});
 	// Starting Deck
-	for (let i = 0; i < 6; i++) {
-		const j = Math.floor(i / 3);
+	for (let i = 0; i < 3; i++) {
 		cardState.addCard({
-			typeId: 11 + j,
+			typeId: 11,
 			group: 'deck',
 			position: { x: -6, y: 0, z: 3.7 }
+		});
+	}
+	for (let i = 0; i < 3; i++) {
+		cardState.addCard({
+			typeId: 12,
+			group: 'deck',
+			position: { x: -6, y: 0, z: 3.7 },
+			health: 2,
+			startingHealth: 2
 		});
 	}
 	dealHand();

@@ -131,9 +131,6 @@
 		instancedNumbers.count = numbersCount;
 		instancedNumbers.instanceMatrix.needsUpdate = true;
 		instancedNumbers.geometry.attributes.custom.needsUpdate = true;
-
-		cardState.count.deck = deckCount;
-		cardState.count.discard = discardCount;
 	});
 </script>
 

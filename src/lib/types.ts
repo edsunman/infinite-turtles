@@ -15,5 +15,6 @@ export type Card = {
 	stiffness: number;
 	group: CardGroup;
 	health: number;
+	startingHealth: number;
 	order: number;
 };
