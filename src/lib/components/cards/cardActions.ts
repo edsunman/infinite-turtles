@@ -21,7 +21,7 @@ const dealCard = () => {
 	const handLength = cardState.cards.filter((card) => {
 		return card.group === 'hand';
 	}).length;
-	const dealTurtle = randomNumber(0, 2);
+	const dealTurtle = randomNumber(0, 1);
 	if (dealTurtle === 0) {
 		cardState.addCard({
 			health: 1,
@@ -123,6 +123,56 @@ export const updateCard = (cardId: string, args: Partial<Card>) => {
 	cardState.cards[cardIndex] = newCard;
 };
 
+export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
+	const card = cardState.cards.find((c) => c.id === cardId);
+	if (!card) return;
+	gameState.locked = true;
+	if (at === 'enemy' && card.typeId === 10) {
+		const enemy = cardState.cards.find((c) => c.typeId === 2);
+		if (!enemy) return;
+		updateCard(cardId, {
+			moveTo: { x: 0, y: 0, z: -5 },
+			rotateTo: { x: -1, y: 0, z: 3 },
+			settled: false,
+			group: 'none',
+			stiffness: 0.1
+		});
+		closeGapInHand(cardId);
+		mainTimeline.addKeyframe(0.25, () => {
+			updateCard(cardId, {
+				moveTo: { x: randomNumber(-6, 6), y: 1, z: -6 },
+				rotateTo: { x: -1, y: 0, z: -3 },
+				settled: false,
+				stiffness: 0.08
+			});
+			updateCard(enemy.id, { health: enemy.health - 1 });
+		});
+	}
+	if (at === 'player' && card.typeId === 11) {
+		const player = cardState.cards.find((c) => c.typeId === 1);
+		if (!player) return;
+		updateCard(cardId, {
+			group: 'none',
+			stiffness: 0.03,
+			moveTo: { x: 0, y: 5, z: 0 },
+			rotateTo: { x: -1.57, y: 0, z: 0 },
+			settled: false
+		});
+		closeGapInHand(cardId);
+		mainTimeline.addKeyframe(0.3, () => {
+			updateCard(cardId, {
+				moveTo: { x: 6, y: 0, z: 3.7 },
+				rotateTo: { x: -1.57, y: 0, z: 0 },
+				settled: false,
+				group: 'discard',
+				stiffness: 0.08
+			});
+			updateCard(player.id, { health: player.health + 1 });
+		});
+	}
+	mainTimeline.addKeyframe(0.8, () => actionUsed());
+};
+
 export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' | 'rune') => {
 	let selectedSlot = 0;
 	if (on === 'left') {
@@ -172,14 +222,17 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 			settled: false
 		})
 	);
-
 	cardState.slots[selectedSlot] = cardId;
 	closeGapInHand(cardId);
+	mainTimeline.addKeyframe(0.8, () => actionUsed());
+};
+
+const actionUsed = () => {
 	gameState.actionsRemaining--;
 	if (gameState.actionsRemaining == 0) {
-		mainTimeline.addKeyframe(1, () => endTurn());
+		endTurn();
 	} else {
-		mainTimeline.addKeyframe(0.5, () => (gameState.locked = false));
+		gameState.locked = false;
 	}
 };
 

@@ -2,7 +2,7 @@
 	import { T, useTask } from '@threlte/core';
 	import { interactivity } from '@threlte/extras';
 	import { cardState, gameState } from '$lib/state.svelte';
-	import { positionHand, placeCard } from './cardActions';
+	import { positionHand, placeCard, throwCard } from './cardActions';
 	import {
 		InstancedMesh,
 		MeshStandardMaterial,
@@ -76,6 +76,12 @@
 		if (card.id === cardState.slots[3] && selectedCard.typeId >= 12)
 			//  clicked right turtle
 			placeCard(cardState.selectedCardId, 'right', 'rune');
+		if (card.typeId === 2 && selectedCard.typeId === 10)
+			//  clicked enemy
+			throwCard(selectedCard.id, 'enemy');
+		if (card.typeId === 1 && selectedCard.typeId === 11)
+			//  clicked player
+			throwCard(selectedCard.id, 'player');
 
 		cardState.selectedCardId = '';
 		cardState.hoverCardId = '';

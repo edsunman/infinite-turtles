@@ -114,7 +114,7 @@
 				batched.setVisibleAt(stateCount, true);
 				stateCount++;
 			}
-			if (temp[i].typeId > 10) continue;
+			if (temp[i].typeId > 10 && temp[i].typeId !== 12) continue;
 			// no runes or potions
 			dummy.translateX(0.3);
 			dummy.translateY(0.6);
