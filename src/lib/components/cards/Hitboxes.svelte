@@ -23,8 +23,14 @@
 				break;
 			}
 		}
-		if (cardState.hoverCardId !== cardId) {
-			cardState.hoverCardId = cardId;
+		if (cardId === '') {
+			cardState.hoverCard = null;
+			positionHand();
+		} else {
+			if (cardState.hoverCard && cardId === cardState.hoverCard.id) return;
+			const card = cardState.cards.find((c) => c.id === cardId);
+			if (!card) return;
+			cardState.hoverCard = card;
 			positionHand();
 		}
 	};
@@ -51,19 +57,23 @@
 					placeCard(cardState.selectedCardId, 'right', 'turtle');
 			}
 			cardState.selectedCardId = '';
-			cardState.hoverCardId = '';
+			cardState.hoverCard = null;
 			positionHand();
 			return;
-		} else if (card.id === cardState.hoverCardId) {
+		} else if (
+			cardState.hoverCard &&
+			cardState.hoverCard.group === 'hand' &&
+			card.id === cardState.hoverCard.id
+		) {
 			// clicked hovered card so select
 			cardState.selectedCardId = card.id;
-			cardState.hoverCardId = '';
+			cardState.hoverCard = null;
 			positionHand();
 			return;
 		} else if (card.group === 'hand') {
 			// clicked a different card in hand
 			cardState.selectedCardId = card.id;
-			cardState.hoverCardId = '';
+			cardState.hoverCard = null;
 			positionHand();
 			return;
 		}
@@ -84,7 +94,7 @@
 			throwCard(selectedCard.id, 'player');
 
 		cardState.selectedCardId = '';
-		cardState.hoverCardId = '';
+		cardState.hoverCard = null;
 		positionHand();
 	};
 
@@ -98,18 +108,22 @@
 	mesh.name = 'hitbox';
 
 	// TODO: maybe optimise this, do we need a hitbox for off-screen cards?
-	useTask((delta) => {
-		if (gameState.state !== 'playerTurn') return;
-		cardState.cards.forEach((card, i) => {
-			dummy.position.set(card.position.x, card.position.y, card.position.z);
-			dummy.rotation.set(card.rotation.x, card.rotation.y, card.rotation.z);
-			dummy.updateMatrix();
-			mesh.setMatrixAt(i, dummy.matrix);
-		});
-		mesh.count = cardState.cards.length;
-		mesh.instanceMatrix.needsUpdate = true;
-		mesh.computeBoundingSphere();
-	});
+	useTask(
+		'hitbox-task',
+		() => {
+			if (gameState.state !== 'playerTurn') return;
+			cardState.cards.forEach((card, i) => {
+				dummy.position.set(card.position.x, card.position.y, card.position.z);
+				dummy.rotation.set(card.rotation.x, card.rotation.y, card.rotation.z);
+				dummy.updateMatrix();
+				mesh.setMatrixAt(i, dummy.matrix);
+			});
+			mesh.count = cardState.cards.length;
+			mesh.instanceMatrix.needsUpdate = true;
+			mesh.computeBoundingSphere();
+		},
+		{ stage: 'gameplay-stage' }
+	);
 </script>
 
 <T is={mesh} onclick={() => {}} />

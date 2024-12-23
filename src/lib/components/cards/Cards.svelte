@@ -66,72 +66,76 @@
 		batched.addInstance(4);
 	}
 
-	useTask((delta) => {
-		temp = cardState.cards.concat();
-		temp.forEach((card, index, array) => {
-			card = movingBehaviour(card, delta);
-			if (card.health < 0) {
-				array.splice(index, 1);
-			}
-		});
+	useTask(
+		'cards-task',
+		(delta) => {
+			temp = cardState.cards.concat();
+			temp.forEach((card, index, array) => {
+				card = movingBehaviour(card, delta);
+				if (card.health < 0) {
+					array.splice(index, 1);
+				}
+			});
 
-		cardState.cards = temp;
-		cardsCount = temp.length;
+			cardState.cards = temp;
+			cardsCount = temp.length;
 
-		for (let i = 0; i < 50; i++) {
-			batched.setVisibleAt(i, false);
-		}
-		let turtleCount = 2;
-		let potionCount = 10;
-		let stateCount = 20;
-		let numbersCount = 0;
-		let deckCount = 0;
-		let discardCount = 0;
-		for (let i = 0; i < cardsCount; i++) {
-			if (temp[i].group === 'deck') deckCount++;
-			if (temp[i].group === 'discard') discardCount++;
-			dummy.position.set(temp[i].position.x, temp[i].position.y, temp[i].position.z);
-			dummy.rotation.set(temp[i].rotation.x, temp[i].rotation.y, temp[i].rotation.z);
-			dummy.updateMatrix();
-			instancedBorders.setMatrixAt(i, dummy.matrix);
-			instancedBackgrounds.setMatrixAt(i, dummy.matrix);
-			if (temp[i].typeId === 1) {
-				batched.setMatrixAt(0, dummy.matrix);
-				batched.setVisibleAt(0, true);
-			} else if (temp[i].typeId === 2) {
-				batched.setMatrixAt(1, dummy.matrix);
-				batched.setVisibleAt(1, true);
-			} else if (temp[i].typeId === 10) {
-				batched.setMatrixAt(turtleCount, dummy.matrix);
-				batched.setVisibleAt(turtleCount, true);
-				turtleCount++;
-			} else if (temp[i].typeId === 11) {
-				batched.setMatrixAt(potionCount, dummy.matrix);
-				batched.setVisibleAt(potionCount, true);
-				potionCount++;
-			} else if (temp[i].typeId === 12) {
-				batched.setMatrixAt(stateCount, dummy.matrix);
-				batched.setVisibleAt(stateCount, true);
-				stateCount++;
+			for (let i = 0; i < 50; i++) {
+				batched.setVisibleAt(i, false);
 			}
-			if (temp[i].typeId > 10 && temp[i].typeId !== 12) continue;
-			// no runes or potions
-			dummy.translateX(0.3);
-			dummy.translateY(0.6);
-			dummy.translateZ(0.02);
-			dummy.updateMatrix();
-			instancedNumbers.setMatrixAt(numbersCount, dummy.matrix);
-			numbersFloat.set([temp[i].health], numbersCount);
-			numbersCount++;
-		}
-		instancedBorders.count = cardsCount;
-		instancedBorders.instanceMatrix.needsUpdate = true;
-		instancedBackgrounds.count = cardsCount;
-		instancedBackgrounds.instanceMatrix.needsUpdate = true;
-		instancedNumbers.count = numbersCount;
-		instancedNumbers.instanceMatrix.needsUpdate = true;
-		instancedNumbers.geometry.attributes.custom.needsUpdate = true;
-	});
+			let turtleCount = 2;
+			let potionCount = 10;
+			let stateCount = 20;
+			let numbersCount = 0;
+			let deckCount = 0;
+			let discardCount = 0;
+			for (let i = 0; i < cardsCount; i++) {
+				if (temp[i].group === 'deck') deckCount++;
+				if (temp[i].group === 'discard') discardCount++;
+				dummy.position.set(temp[i].position.x, temp[i].position.y, temp[i].position.z);
+				dummy.rotation.set(temp[i].rotation.x, temp[i].rotation.y, temp[i].rotation.z);
+				dummy.updateMatrix();
+				instancedBorders.setMatrixAt(i, dummy.matrix);
+				instancedBackgrounds.setMatrixAt(i, dummy.matrix);
+				if (temp[i].typeId === 1) {
+					batched.setMatrixAt(0, dummy.matrix);
+					batched.setVisibleAt(0, true);
+				} else if (temp[i].typeId === 2) {
+					batched.setMatrixAt(1, dummy.matrix);
+					batched.setVisibleAt(1, true);
+				} else if (temp[i].typeId === 10) {
+					batched.setMatrixAt(turtleCount, dummy.matrix);
+					batched.setVisibleAt(turtleCount, true);
+					turtleCount++;
+				} else if (temp[i].typeId === 11) {
+					batched.setMatrixAt(potionCount, dummy.matrix);
+					batched.setVisibleAt(potionCount, true);
+					potionCount++;
+				} else if (temp[i].typeId === 12) {
+					batched.setMatrixAt(stateCount, dummy.matrix);
+					batched.setVisibleAt(stateCount, true);
+					stateCount++;
+				}
+				if (temp[i].typeId > 10 && temp[i].typeId !== 12) continue;
+				// no runes or potions
+				dummy.translateX(0.3);
+				dummy.translateY(0.6);
+				dummy.translateZ(0.02);
+				dummy.updateMatrix();
+				instancedNumbers.setMatrixAt(numbersCount, dummy.matrix);
+				numbersFloat.set([temp[i].health], numbersCount);
+				numbersCount++;
+			}
+			instancedBorders.count = cardsCount;
+			instancedBorders.instanceMatrix.needsUpdate = true;
+			instancedBackgrounds.count = cardsCount;
+			instancedBackgrounds.instanceMatrix.needsUpdate = true;
+			instancedNumbers.count = numbersCount;
+			instancedNumbers.instanceMatrix.needsUpdate = true;
+			instancedNumbers.geometry.attributes.custom.needsUpdate = true;
+		},
+		{ stage: 'gameplay-stage' }
+	);
 </script>
 
 <T is={instancedBorders} frustumCulled={false}>

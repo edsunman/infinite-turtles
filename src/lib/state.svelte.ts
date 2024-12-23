@@ -6,16 +6,18 @@ export const gameState = $state<{
 	dev: boolean;
 	locked: boolean;
 	actionsRemaining: number;
+	hoverPosition: { x: number; y: number };
 }>({
 	state: 'dealing',
 	dev: false,
 	locked: false,
-	actionsRemaining: 2
+	actionsRemaining: 2,
+	hoverPosition: { x: 0, y: 0 }
 });
 
 class CardState {
 	selectedCardId = '';
-	hoverCardId = '';
+	hoverCard = $state<Card | null>(null);
 	slots: string[] = ['', '', '', '', '', ''];
 	cards = $state.raw<Card[]>([]);
 	addCard = (args: Partial<Card>) => {

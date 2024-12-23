@@ -5,27 +5,27 @@ type Data = {
 export const data: Data = {
 	cardTypes: {
 		'1': {
-			name: 'Player',
+			name: 'player',
 			health: 5,
 			strength: 1
 		},
 		'2': {
-			name: 'Enemy',
+			name: 'enemy',
 			health: 10,
 			strength: 1
 		},
 		'10': {
-			name: 'Turtle',
+			name: 'turtle',
 			health: 1,
 			strength: 1
 		},
 		'11': {
-			name: 'Potion',
+			name: 'potion',
 			health: 0,
 			strength: 0
 		},
 		'12': {
-			name: 'State Rune',
+			name: 'state Rune',
 			health: 0,
 			strength: 0
 		}

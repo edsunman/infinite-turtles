@@ -127,6 +127,7 @@
 	});
 
 	useTask(
+		'peformance-task',
 		() => {
 			then = window.performance.now();
 			if (ext) measureGpu();
@@ -139,6 +140,7 @@
 	);
 
 	useTask(
+		'peformance-task',
 		(delta) => {
 			d = delta * 1000;
 			clock += delta;

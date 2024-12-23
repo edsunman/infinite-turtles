@@ -253,7 +253,7 @@ export const positionHand = () => {
 	let hoverHeight = 0;
 	const offset = handLength / 2 - 0.5;
 	const heights = createAscendingDescendingArray(handLength);
-	const hoverId = cardState.hoverCardId;
+	const hoverId = cardState.hoverCard ? cardState.hoverCard.id : '';
 	const selectedId = cardState.selectedCardId;
 	cardState.cards.forEach((card) => {
 		if (card.group !== 'hand') return;
