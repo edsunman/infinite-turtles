@@ -107,7 +107,6 @@
 	mesh.instanceMatrix.setUsage(DynamicDrawUsage);
 	mesh.name = 'hitbox';
 
-	// TODO: maybe optimise this, do we need a hitbox for off-screen cards?
 	useTask(
 		'hitbox-task',
 		() => {

@@ -15,6 +15,8 @@
 
 	setupInitialCards();
 
+	let devCamera = $state(false);
+
 	onDestroy(() => {
 		cardState.cards = [];
 		cardState.slots = ['', '', '', '', '', ''];
@@ -84,10 +86,10 @@
 	position={[0, 22, 9.3]}
 	rotation={[-1.15, 0, 0]}
 	fov={15}
-	makeDefault={!gameState.dev}
+	makeDefault={!devCamera}
 />
 
-<T.PerspectiveCamera name="dev camera" position={[0, 10, 10]} fov={15} makeDefault={gameState.dev}>
+<T.PerspectiveCamera name="dev camera" position={[0, 10, 10]} fov={15} makeDefault={devCamera}>
 	<OrbitControls />
 </T.PerspectiveCamera>
 
@@ -110,6 +112,9 @@
 				speed = 1;
 				console.log('1x');
 			}
+		}
+		if (e.key === 'd') {
+			devCamera = !devCamera;
 		}
 	}}
 />

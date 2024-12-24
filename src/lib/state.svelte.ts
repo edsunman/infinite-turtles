@@ -3,13 +3,11 @@ import type { Card } from './types';
 
 export const gameState = $state<{
 	state: 'playerTurn' | 'enemyTurn' | 'dealing' | 'discarding';
-	dev: boolean;
 	locked: boolean;
 	actionsRemaining: number;
 	hoverPosition: { x: number; y: number };
 }>({
 	state: 'dealing',
-	dev: false,
 	locked: false,
 	actionsRemaining: 2,
 	hoverPosition: { x: 0, y: 0 }
