@@ -12,7 +12,6 @@ const springTick = (
 	stiffness: number,
 	delta: number
 ) => {
-	//const stiffness = 0.3;
 	const damping = 1;
 	const precision = 0.01;
 	const tensionForce = -stiffness * (currentValue - endValue);

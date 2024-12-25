@@ -93,8 +93,7 @@
 	<OrbitControls />
 </T.PerspectiveCamera>
 
-<T.DirectionalLight intensity={1.5} position={[5, 5, 5]} />
-<T.AmbientLight intensity={1.2} />
+<T.AmbientLight intensity={3.5} />
 
 <svelte:window
 	onkeydown={(e: KeyboardEvent) => {

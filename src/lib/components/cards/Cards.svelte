@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
-	import { type ThrelteGltf } from '@threlte/extras';
+	import { useTexture, type ThrelteGltf } from '@threlte/extras';
 	import { cardState, gameState } from '$lib/state.svelte';
 	import { movingBehaviour } from './cardBehaviour';
 	import type { Card } from '$lib/types';
 
 	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
 	import NumbersMaterial from '../materials/numbers/NumbersMaterial.svelte';
+	import CardMaterial from '../materials/card/CardMaterial.svelte';
 
 	import {
 		BatchedMesh,
@@ -35,7 +36,7 @@
 	const instancedBackgrounds = new InstancedMesh(gltf.nodes.Background.geometry, undefined, 100);
 	instancedBackgrounds.instanceMatrix.setUsage(DynamicDrawUsage);
 
-	const instancedNumbers = new InstancedMesh(new PlaneGeometry(0.3, 0.3), undefined, 100);
+	const instancedNumbers = new InstancedMesh(new PlaneGeometry(0.17, 0.17), undefined, 100);
 	instancedNumbers.instanceMatrix.setUsage(DynamicDrawUsage);
 	const numbersFloat = new Float32Array(100);
 	const numbersBufferAttribute = new InstancedBufferAttribute(numbersFloat, 1);
@@ -66,19 +67,24 @@
 		batched.addInstance(4);
 	}
 
+	batched.addGeometry(gltf.nodes.Heart.geometry);
+	for (let i = 0; i < 10; i++) {
+		batched.addInstance(5);
+	}
+
 	useTask(
 		'cards-task',
 		(delta) => {
 			temp = cardState.cards.concat();
-			temp.forEach((card, index, array) => {
+			cardState.cards.forEach((card, index, array) => {
 				card = movingBehaviour(card, delta);
 				if (card.health < 0) {
 					array.splice(index, 1);
 				}
 			});
 
-			cardState.cards = temp;
-			cardsCount = temp.length;
+			//cardState.cards = temp;
+			cardsCount = cardState.cards.length;
 
 			for (let i = 0; i < 50; i++) {
 				batched.setVisibleAt(i, false);
@@ -89,6 +95,7 @@
 			let numbersCount = 0;
 			let deckCount = 0;
 			let discardCount = 0;
+			let heartCount = 30;
 			for (let i = 0; i < cardsCount; i++) {
 				if (temp[i].group === 'deck') deckCount++;
 				if (temp[i].group === 'discard') discardCount++;
@@ -118,9 +125,13 @@
 				}
 				if (temp[i].typeId > 10 && temp[i].typeId !== 12) continue;
 				// no runes or potions
-				dummy.translateX(0.3);
-				dummy.translateY(0.6);
-				dummy.translateZ(0.02);
+				batched.setMatrixAt(heartCount, dummy.matrix);
+				batched.setVisibleAt(heartCount, true);
+				heartCount++;
+
+				dummy.translateX(0.305);
+				dummy.translateY(0.58);
+				dummy.translateZ(0.03);
 				dummy.updateMatrix();
 				instancedNumbers.setMatrixAt(numbersCount, dummy.matrix);
 				numbersFloat.set([temp[i].health], numbersCount);
@@ -139,7 +150,12 @@
 </script>
 
 <T is={instancedBorders} frustumCulled={false}>
-	<T.MeshStandardMaterial />
+	<!-- {#await tex then tex}
+		<T.MeshStandardMaterial map={tex}>
+			<T is={tex} attach="map" flipY={false} />
+		</T.MeshStandardMaterial>
+	{/await} -->
+	<CardMaterial />
 </T>
 
 <T is={instancedBackgrounds} frustumCulled={false}>
@@ -150,4 +166,6 @@
 	<NumbersMaterial />
 </T>
 
-<T is={batched} matrixAutoUpdate={false} frustumCulled={false} />
+<T is={batched} matrixAutoUpdate={false} frustumCulled={false}>
+	<CardMaterial />
+</T>

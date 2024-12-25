@@ -15,7 +15,10 @@
 			style:top="{gameState.hoverPosition.y}px"
 			in:scale|global={{ delay: 500, duration: 200, easing: backOut }}
 		>
-			<p>{data.cardTypes[cardState.hoverCard.typeId.toString()].name}</p>
+			<h3>{data.cardTypes[cardState.hoverCard.typeId.toString()].name}</h3>
+			{#if data.cardTypes[cardState.hoverCard.typeId.toString()].description}
+				<p>{@html data.cardTypes[cardState.hoverCard.typeId.toString()].description}</p>
+			{/if}
 		</div>
 	{/key}
 {/if}
@@ -25,16 +28,21 @@
 		position: absolute;
 		border-radius: 10px;
 		padding: 10px;
-		background: black;
+		background: #111;
 		color: white;
 		pointer-events: none;
+		width: 150px;
 	}
 	#infoBox p {
-		font-size: 30px;
+		text-align: center;
+		font-size: 25px;
+		padding: 0;
+		margin: 5px 0 0 0;
+	}
+	#infoBox h3 {
+		text-align: center;
+		font-size: 32px;
 		padding: 0;
 		margin: 0;
-		font-family: 'Delicious Handrawn', serif;
-		font-weight: 400;
-		font-style: normal;
 	}
 </style>

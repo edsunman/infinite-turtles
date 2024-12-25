@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
-	import { interactivity } from '@threlte/extras';
+	import { interactivity, useTexture } from '@threlte/extras';
 	import { cardState, gameState } from '$lib/state.svelte';
 	import { positionHand, placeCard, throwCard } from './cardActions';
 	import {
@@ -10,8 +10,12 @@
 		DynamicDrawUsage,
 		Object3D
 	} from 'three';
+	import SplatMaterial from '../materials/splat/SplatMaterial.svelte';
 
 	interactivity();
+
+	let time = $state(0);
+	const circleImage = useTexture('images/circle.png');
 
 	const pointerMoved = (e: any) => {
 		if (gameState.state !== 'playerTurn' || gameState.locked) return;
@@ -109,7 +113,8 @@
 
 	useTask(
 		'hitbox-task',
-		() => {
+		(delta) => {
+			time += delta;
 			if (gameState.state !== 'playerTurn') return;
 			cardState.cards.forEach((card, i) => {
 				dummy.position.set(card.position.x, card.position.y, card.position.z);
@@ -129,12 +134,15 @@
 
 <T.Mesh
 	name="ground"
-	scale={[40, 40, 40]}
+	scale={[25, 25, 25]}
 	rotation.x={-1.57}
 	position.y={-0.1}
+	position.z={-6}
 	onpointermove={pointerMoved}
 	onpointerup={pointerUp}
 >
 	<T.PlaneGeometry />
-	<T.MeshStandardMaterial color="#121212" />
+	{#await circleImage then circleImage}
+		<SplatMaterial blendImage={circleImage} noiseOffset={time / 6} />
+	{/await}
 </T.Mesh>

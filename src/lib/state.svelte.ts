@@ -17,7 +17,8 @@ class CardState {
 	selectedCardId = '';
 	hoverCard = $state<Card | null>(null);
 	slots: string[] = ['', '', '', '', '', ''];
-	cards = $state.raw<Card[]>([]);
+	//cards = $state.raw<Card[]>([]);
+	cards: Card[] = [];
 	addCard = (args: Partial<Card>) => {
 		const newId = Math.random().toString(16).slice(2);
 		const defaults: Card = {
