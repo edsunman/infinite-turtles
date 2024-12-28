@@ -86,11 +86,15 @@ const attack = (cardId: string, targetId: string) => {
 				// state rune absorb damage
 				if (r && r.typeId === 12 && r.health > 0) {
 					updateCard(r.id, { health: r.health - 1 });
+					cardState.damagedCard = r;
+					gameState.damage.text = '-1';
 					return;
 				}
 			}
 		}
 		updateCard(targetId, { health: target.health - 1, redAmount: 1 });
+		cardState.damagedCard = target;
+		gameState.damage.text = '-1';
 		if (target.health <= 1 && target.typeId === 10) {
 			mainTimeline.addKeyframe(0.5, () => {
 				// kill turtle

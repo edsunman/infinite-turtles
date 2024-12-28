@@ -43,7 +43,6 @@
 	const numbersBufferAttribute = new InstancedBufferAttribute(numbersFloat, 1);
 	instancedNumbers.geometry.setAttribute('custom', numbersBufferAttribute);
 
-	console.log(gltf.nodes.Turtle.geometry);
 	const maxGeometryCount = 100;
 	const maxIndexCount = 100;
 	const maxVertexCount = 100;

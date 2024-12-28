@@ -1,30 +1,26 @@
 <script lang="ts">
 	import { T, useTask, useThrelte, useStage } from '@threlte/core';
-	import { Grid, OrbitControls, useGltf, useDraco } from '@threlte/extras';
-	import { gameState, cardState, mainTimeline } from '$lib/state.svelte';
+	import { Grid, useGltf, useDraco } from '@threlte/extras';
+	import { cardState, mainTimeline } from '$lib/state.svelte';
 	import { setupInitialCards } from '$lib/gameplay';
+	import { onDestroy } from 'svelte';
 
 	import Peformance from './misc/Peformance.svelte';
 	import Cards from './cards/Cards.svelte';
 	import Hitboxes from './cards/Hitboxes.svelte';
-	import { onDestroy } from 'svelte';
-	import { Vector3 } from 'three';
+	import Camera from './Camera.svelte';
 
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
 
 	setupInitialCards();
 
-	let devCamera = $state(false);
-
 	onDestroy(() => {
 		cardState.cards = [];
 		cardState.slots = ['', '', '', '', '', ''];
 	});
 
-	const { camera, size, scheduler, mainStage, renderStage } = useThrelte();
-	const vect = new Vector3();
-
+	const { mainStage, renderStage } = useThrelte();
 	let paused = false;
 	let speed = 1;
 
@@ -43,20 +39,6 @@
 		},
 		{ stage: 'gameplay-stage' }
 	);
-
-	$effect(() => {
-		const p = cardState.hoverCard?.position;
-		if (!p) return;
-		const offset = cardState.hoverCard?.group === 'hand' ? 1 : 0.5;
-		vect.set(p.x + 0.6, p.y, p.z - offset);
-		vect.project(camera.current);
-		const widthHalf = size.current.width / 2;
-		const heightHalf = size.current.height / 2;
-		gameState.hoverPosition = {
-			x: vect.x * widthHalf + widthHalf,
-			y: -(vect.y * heightHalf) + heightHalf
-		};
-	});
 </script>
 
 <!-- <T.Mesh rotation.x={rotate}>
@@ -81,19 +63,9 @@
 {/await}
 <Hitboxes />
 
-<T.PerspectiveCamera
-	name="main camera"
-	position={[0, 22, 9.3]}
-	rotation={[-1.15, 0, 0]}
-	fov={15}
-	makeDefault={!devCamera}
-/>
-
-<T.PerspectiveCamera name="dev camera" position={[0, 10, 10]} fov={15} makeDefault={devCamera}>
-	<OrbitControls />
-</T.PerspectiveCamera>
-
 <T.AmbientLight intensity={3.5} />
+
+<Camera />
 
 <svelte:window
 	onkeydown={(e: KeyboardEvent) => {
@@ -111,9 +83,6 @@
 				speed = 1;
 				console.log('1x');
 			}
-		}
-		if (e.key === 'd') {
-			devCamera = !devCamera;
 		}
 	}}
 />

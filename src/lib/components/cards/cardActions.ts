@@ -146,7 +146,15 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 				settled: false,
 				stiffness: 0.08
 			});
-			updateCard(enemy.id, { health: enemy.health - randomNumber(0, 1) });
+			const hit = randomNumber(0, 1);
+			if (hit) {
+				updateCard(enemy.id, { health: enemy.health - 1, redAmount: 1 });
+				cardState.damagedCard = enemy;
+				gameState.damage.text = '-1';
+			} else {
+				cardState.damagedCard = enemy;
+				gameState.damage.text = '<small>miss</small>';
+			}
 		});
 	}
 	if (at === 'player' && card.typeId === 11) {

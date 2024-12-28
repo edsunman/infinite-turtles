@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
 	import { useTexture } from '@threlte/extras';
-	import { RepeatWrapping, ShaderMaterial, Texture, DoubleSide, SRGBColorSpace } from 'three';
+	import { RepeatWrapping, ShaderMaterial, Texture } from 'three';
 	import fragmentShader from './card-fragment.glsl?raw';
 	import vertexShader from './card-vertex.glsl?raw';
 

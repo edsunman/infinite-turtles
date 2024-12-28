@@ -6,18 +6,20 @@ export const gameState = $state<{
 	locked: boolean;
 	actionsRemaining: number;
 	hoverPosition: { x: number; y: number };
+	damage: { x: number; y: number; text: string; key: string };
 }>({
 	state: 'dealing',
 	locked: false,
 	actionsRemaining: 2,
-	hoverPosition: { x: 0, y: 0 }
+	hoverPosition: { x: 0, y: 0 },
+	damage: { x: 0, y: 0, text: '', key: '' }
 });
 
 class CardState {
 	selectedCardId = '';
 	hoverCard = $state<Card | null>(null);
+	damagedCard = $state<Card | null>(null);
 	slots: string[] = ['', '', '', '', '', ''];
-	//cards = $state.raw<Card[]>([]);
 	cards: Card[] = [];
 	addCard = (args: Partial<Card>) => {
 		const newId = Math.random().toString(16).slice(2);
