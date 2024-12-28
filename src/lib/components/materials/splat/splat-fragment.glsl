@@ -81,17 +81,22 @@ void main() {
 
     vec4 blendMap = texture2D(blendTexture, center);
 
-    vec4 color1 = vec4(0.40, 0.22, 0.78, 1.0);
-    vec4 color2 = vec4(0.945, 0.816, 0.608, 1.0);
+    vec4 color1 = vec4(0.36, 0.22, 0.67, 1.0);
+    vec4 color2 = vec4(0.53, 0.43, 0.35, 1.0);
+    vec4 color3 = vec4(0.15, 0.05, 0.33, 1.0);
 
     // noise 
     float f = snoise(vec3(noiseScale * vUv, noiseOffset));
     f = 1.5 + 0.3 * f;
 
     float clampAmount = 0.49;
-    float noiseFloat = clampNoise(f * blendMap.r, clampAmount, blurAmount);
+    float noiseFloat = clampNoise(f * blendMap.r + 0.1, clampAmount, blurAmount);
+    float noiseFloat2 = clampNoise(f * blendMap.r - 0.05, clampAmount, blurAmount);
 
-    vec4 finalOutput = mix(color1, color2, smoothstep(0.00, 1.00, noiseFloat));
+    vec4 layer1 = mix(color1, color3, smoothstep(0.00, 1.00, noiseFloat));
+    vec4 layer2 = mix(color3, color2, smoothstep(0.00, 1.00, noiseFloat2));
+
+    vec4 finalOutput = mix(layer1, layer2, smoothstep(0.00, 1.00, noiseFloat));
 
     gl_FragColor = finalOutput;
 

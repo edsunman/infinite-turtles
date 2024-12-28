@@ -7,7 +7,7 @@
 
 	let { offset = 1 } = $props();
 
-	let map = useTexture('https://threejs.org/examples/textures/uv_grid_opengl.jpg');
+	let map = useTexture('images/background.png');
 
 	const material = new ShaderMaterial({
 		side: DoubleSide,
