@@ -1,9 +1,12 @@
 varying vec2 vUv;
 varying vec3 vNormal;
 varying vec3 vViewPosition;
+attribute float custom;
+varying float vCustom;
 
 void main() {
     vUv = uv;
+    vCustom = custom;
 
     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
     vec3 transformedNormal = normal;

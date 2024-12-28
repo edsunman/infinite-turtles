@@ -16,5 +16,6 @@ export type Card = {
 	group: CardGroup;
 	health: number;
 	startingHealth: number;
+	redAmount: number;
 	order: number;
 };

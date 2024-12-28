@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
-	import { useTexture, type ThrelteGltf } from '@threlte/extras';
-	import { cardState, gameState } from '$lib/state.svelte';
+	import { type ThrelteGltf } from '@threlte/extras';
+	import { cardState } from '$lib/state.svelte';
 	import { movingBehaviour } from './cardBehaviour';
-	import type { Card } from '$lib/types';
 
 	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
 	import NumbersMaterial from '../materials/numbers/NumbersMaterial.svelte';
@@ -28,13 +27,15 @@
 		}>;
 	} = $props();
 
-	//let temp: Card[] = [];
 	let cardsCount = 0;
 	const dummy = new Object3D();
 	const dummyColor = new Color(0, 0, 0);
 
 	const instancedBackgrounds = new InstancedMesh(gltf.nodes.Background.geometry, undefined, 100);
 	instancedBackgrounds.instanceMatrix.setUsage(DynamicDrawUsage);
+	const backgroundsFloat = new Float32Array(100);
+	const backgroundsBufferAttribute = new InstancedBufferAttribute(backgroundsFloat, 1);
+	instancedBackgrounds.geometry.setAttribute('custom', backgroundsBufferAttribute);
 
 	const instancedNumbers = new InstancedMesh(new PlaneGeometry(0.17, 0.17), undefined, 100);
 	instancedNumbers.instanceMatrix.setUsage(DynamicDrawUsage);
@@ -42,6 +43,7 @@
 	const numbersBufferAttribute = new InstancedBufferAttribute(numbersFloat, 1);
 	instancedNumbers.geometry.setAttribute('custom', numbersBufferAttribute);
 
+	console.log(gltf.nodes.Turtle.geometry);
 	const maxGeometryCount = 100;
 	const maxIndexCount = 100;
 	const maxVertexCount = 100;
@@ -66,12 +68,10 @@
 	for (let i = 0; i < 10; i++) {
 		batched.addInstance(4);
 	}
-
 	batched.addGeometry(gltf.nodes.Heart.geometry);
 	for (let i = 0; i < 10; i++) {
 		batched.addInstance(5);
 	}
-
 	batched.addGeometry(gltf.nodes.Border.geometry);
 	for (let i = 0; i < 50; i++) {
 		batched.addInstance(6);
@@ -83,7 +83,6 @@
 	useTask(
 		'cards-task',
 		(delta) => {
-			//temp = cardState.cards.concat();
 			cardState.cards.forEach((card, index, array) => {
 				card = movingBehaviour(card, delta);
 				if (card.health < 0) {
@@ -93,20 +92,18 @@
 					card.redAmount -= delta;
 				}
 			});
-
-			//cardState.cards = temp;
 			cardsCount = cardState.cards.length;
 
 			for (let i = 0; i < 90; i++) {
 				batched.setVisibleAt(i, false);
 			}
+
 			let turtleCount = 2;
 			let potionCount = 10;
 			let stateCount = 20;
 			let numbersCount = 0;
 			let heartCount = 30;
 			let bordersCount = 40;
-
 			for (let i = 0; i < cardsCount; i++) {
 				dummy.position.set(
 					cardState.cards[i].position.x,
@@ -120,8 +117,8 @@
 				);
 				dummy.updateMatrix();
 				dummyColor.setRGB(cardState.cards[i].redAmount, 0, 0);
-
 				instancedBackgrounds.setMatrixAt(i, dummy.matrix);
+				backgroundsFloat.set([cardState.cards[i].typeId === 2 ? 1 : 0], i);
 				if (cardState.cards[i].typeId === 1) {
 					batched.setMatrixAt(0, dummy.matrix);
 					batched.setVisibleAt(0, true);
@@ -152,7 +149,6 @@
 				batched.setMatrixAt(heartCount, dummy.matrix);
 				batched.setVisibleAt(heartCount, true);
 				heartCount++;
-
 				dummy.translateX(0.305);
 				dummy.translateY(0.58);
 				dummy.translateZ(0.03);
@@ -164,6 +160,7 @@
 
 			instancedBackgrounds.count = cardsCount;
 			instancedBackgrounds.instanceMatrix.needsUpdate = true;
+			instancedBackgrounds.geometry.attributes.custom.needsUpdate = true;
 			instancedNumbers.count = numbersCount;
 			instancedNumbers.instanceMatrix.needsUpdate = true;
 			instancedNumbers.geometry.attributes.custom.needsUpdate = true;

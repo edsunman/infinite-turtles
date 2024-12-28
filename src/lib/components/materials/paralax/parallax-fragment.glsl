@@ -1,8 +1,9 @@
-uniform sampler2D map;
+uniform sampler2D textures[2];
 uniform float offset;
 varying vec2 vUv;
 varying vec3 vViewPosition;
 varying vec3 vNormal;
+varying float vCustom;
 
 // Converts a color from linear light gamma to sRGB gamma
 vec4 fromLinear(vec4 linearRGB) {
@@ -37,8 +38,15 @@ vec2 perturbUv(vec3 surfPosition, vec3 surfNormal, vec3 viewPosition) {
 }
 
 void main() {
+
     vec2 mapUv = perturbUv(-vViewPosition, normalize(vNormal), normalize(vViewPosition));
-    gl_FragColor = fromLinear(texture2D(map, mapUv));
+    vec4 tex = texture2D(textures[0], mapUv);
+
+    if(vCustom > 0.5) {
+        tex = texture2D(textures[1], mapUv);
+    }
+
+    gl_FragColor = fromLinear(tex);
 
    // #include <tonemapping_fragment>
   //  #include <colorspace_fragment> 

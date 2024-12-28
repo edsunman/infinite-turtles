@@ -1,31 +1,38 @@
 <script lang="ts">
-	import { T } from '@threlte/core';
-	import { useTexture } from '@threlte/extras';
-	import { RepeatWrapping, ShaderMaterial, Texture, DoubleSide } from 'three';
+	import { T, useLoader } from '@threlte/core';
+	import { RepeatWrapping, ShaderMaterial, DoubleSide, TextureLoader, SRGBColorSpace } from 'three';
 	import fragmentShader from './parallax-fragment.glsl?raw';
 	import vertexShader from './parallax-vertex.glsl?raw';
 
 	let { offset = 1 } = $props();
 
-	let map = useTexture('images/background.png');
+	const textures = useLoader(TextureLoader).load(
+		{
+			texture1: 'images/background.png',
+			texture2: 'images/background-purple.png'
+		},
+		{
+			transform: (texture) => {
+				texture.flipY = false;
+				texture.wrapS = RepeatWrapping;
+				texture.wrapT = RepeatWrapping;
+				texture.colorSpace = SRGBColorSpace;
+			}
+		}
+	);
 
 	const material = new ShaderMaterial({
 		side: DoubleSide,
 		fragmentShader,
 		vertexShader,
-		uniforms: { map: { value: map }, offset: { value: offset } }
+		uniforms: { textures: { value: [] }, offset: { value: offset } }
 	});
 
-	const mapLoaded = (map: Texture | undefined) => {
-		if (!map) return;
-		map.flipY = false;
-		map.wrapS = RepeatWrapping;
-		map.wrapT = RepeatWrapping;
-		material.uniforms.map.value = map;
-	};
-
 	$effect(() => {
-		mapLoaded($map);
+		textures.then((t) => {
+			if (!material) return;
+			material.uniforms.textures.value = [t.texture1, t.texture2];
+		});
 	});
 
 	$effect(() => {
