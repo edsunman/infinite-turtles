@@ -3,9 +3,11 @@ attribute float custom;
 varying float vCustom;
 
 #include <batching_pars_vertex>
+#include <color_pars_vertex>
 
 void main() {
     #include <batching_vertex>
+    #include <color_vertex>
 
     vUv = uv;
     vCustom = custom;

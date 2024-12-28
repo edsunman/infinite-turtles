@@ -11,6 +11,7 @@
 
 	import {
 		BatchedMesh,
+		Color,
 		DynamicDrawUsage,
 		InstancedBufferAttribute,
 		InstancedMesh,
@@ -30,9 +31,8 @@
 	//let temp: Card[] = [];
 	let cardsCount = 0;
 	const dummy = new Object3D();
+	const dummyColor = new Color(0, 0, 0);
 
-	const instancedBorders = new InstancedMesh(gltf.nodes.Border.geometry, undefined, 100);
-	instancedBorders.instanceMatrix.setUsage(DynamicDrawUsage);
 	const instancedBackgrounds = new InstancedMesh(gltf.nodes.Background.geometry, undefined, 100);
 	instancedBackgrounds.instanceMatrix.setUsage(DynamicDrawUsage);
 
@@ -42,7 +42,7 @@
 	const numbersBufferAttribute = new InstancedBufferAttribute(numbersFloat, 1);
 	instancedNumbers.geometry.setAttribute('custom', numbersBufferAttribute);
 
-	const maxGeometryCount = 50;
+	const maxGeometryCount = 100;
 	const maxIndexCount = 100;
 	const maxVertexCount = 100;
 	const batched = new BatchedMesh(
@@ -72,6 +72,14 @@
 		batched.addInstance(5);
 	}
 
+	batched.addGeometry(gltf.nodes.Border.geometry);
+	for (let i = 0; i < 50; i++) {
+		batched.addInstance(6);
+	}
+	for (let i = 0; i < 90; i++) {
+		batched.setColorAt(i, dummyColor);
+	}
+
 	useTask(
 		'cards-task',
 		(delta) => {
@@ -81,24 +89,25 @@
 				if (card.health < 0) {
 					array.splice(index, 1);
 				}
+				if (card.redAmount > 0) {
+					card.redAmount -= delta;
+				}
 			});
 
 			//cardState.cards = temp;
 			cardsCount = cardState.cards.length;
 
-			for (let i = 0; i < 50; i++) {
+			for (let i = 0; i < 90; i++) {
 				batched.setVisibleAt(i, false);
 			}
 			let turtleCount = 2;
 			let potionCount = 10;
 			let stateCount = 20;
 			let numbersCount = 0;
-			let deckCount = 0;
-			let discardCount = 0;
 			let heartCount = 30;
+			let bordersCount = 40;
+
 			for (let i = 0; i < cardsCount; i++) {
-				if (cardState.cards[i].group === 'deck') deckCount++;
-				if (cardState.cards[i].group === 'discard') discardCount++;
 				dummy.position.set(
 					cardState.cards[i].position.x,
 					cardState.cards[i].position.y,
@@ -110,17 +119,21 @@
 					cardState.cards[i].rotation.z
 				);
 				dummy.updateMatrix();
-				instancedBorders.setMatrixAt(i, dummy.matrix);
+				dummyColor.setRGB(cardState.cards[i].redAmount, 0, 0);
+
 				instancedBackgrounds.setMatrixAt(i, dummy.matrix);
 				if (cardState.cards[i].typeId === 1) {
 					batched.setMatrixAt(0, dummy.matrix);
 					batched.setVisibleAt(0, true);
+					batched.setColorAt(0, dummyColor);
 				} else if (cardState.cards[i].typeId === 2) {
 					batched.setMatrixAt(1, dummy.matrix);
 					batched.setVisibleAt(1, true);
+					batched.setColorAt(1, dummyColor);
 				} else if (cardState.cards[i].typeId === 10) {
 					batched.setMatrixAt(turtleCount, dummy.matrix);
 					batched.setVisibleAt(turtleCount, true);
+					batched.setColorAt(turtleCount, dummyColor);
 					turtleCount++;
 				} else if (cardState.cards[i].typeId === 11) {
 					batched.setMatrixAt(potionCount, dummy.matrix);
@@ -131,6 +144,9 @@
 					batched.setVisibleAt(stateCount, true);
 					stateCount++;
 				}
+				batched.setMatrixAt(bordersCount, dummy.matrix);
+				batched.setVisibleAt(bordersCount, true);
+				bordersCount++;
 				if (cardState.cards[i].typeId > 10 && cardState.cards[i].typeId !== 12) continue;
 				// no runes or potions
 				batched.setMatrixAt(heartCount, dummy.matrix);
@@ -145,8 +161,7 @@
 				numbersFloat.set([cardState.cards[i].health], numbersCount);
 				numbersCount++;
 			}
-			instancedBorders.count = cardsCount;
-			instancedBorders.instanceMatrix.needsUpdate = true;
+
 			instancedBackgrounds.count = cardsCount;
 			instancedBackgrounds.instanceMatrix.needsUpdate = true;
 			instancedNumbers.count = numbersCount;
@@ -156,15 +171,6 @@
 		{ stage: 'gameplay-stage' }
 	);
 </script>
-
-<T is={instancedBorders} frustumCulled={false}>
-	<!-- {#await tex then tex}
-		<T.MeshStandardMaterial map={tex}>
-			<T is={tex} attach="map" flipY={false} />
-		</T.MeshStandardMaterial>
-	{/await} -->
-	<CardMaterial />
-</T>
 
 <T is={instancedBackgrounds} frustumCulled={false}>
 	<ParallaxMaterial />

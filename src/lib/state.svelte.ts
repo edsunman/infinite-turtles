@@ -35,7 +35,8 @@ class CardState {
 			stiffness: 0.3,
 			settled: true,
 			group: 'none',
-			order: 0
+			order: 0,
+			redAmount: 0
 		};
 		const newCard = { ...defaults, ...args };
 		this.cards = [...this.cards, newCard];

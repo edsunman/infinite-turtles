@@ -31,20 +31,20 @@ export const endTurn = () => {
 	});
 
 	// turtles attack
-	if (leftTurtle) {
-		mainTimeline.addKeyframe(3, () => {
+	if (leftTurtle && !willTurtleDie(leftTurtle.id)) {
+		mainTimeline.addKeyframe(3.5, () => {
 			attack(leftTurtle.id, enemy.id);
 		});
 		delay += 1;
 	}
-	if (rightTurtle) {
-		mainTimeline.addKeyframe(3 + delay, () => {
+	if (rightTurtle && !willTurtleDie(rightTurtle.id)) {
+		mainTimeline.addKeyframe(3.5 + delay, () => {
 			attack(rightTurtle.id, enemy.id);
 		});
 		delay += 1;
 	}
 
-	mainTimeline.addKeyframe(3 + delay, () => {
+	mainTimeline.addKeyframe(3.5 + delay, () => {
 		gameState.state = 'dealing';
 		dealHand();
 		cardState.cards.forEach((card) => {
@@ -53,7 +53,7 @@ export const endTurn = () => {
 			}
 		});
 	});
-	mainTimeline.addKeyframe(4 + delay, () => {
+	mainTimeline.addKeyframe(4.5 + delay, () => {
 		gameState.state = 'playerTurn';
 		gameState.actionsRemaining = 2;
 		gameState.locked = false;
@@ -63,7 +63,9 @@ export const endTurn = () => {
 const attack = (cardId: string, targetId: string) => {
 	const card = cardState.cards.find((c) => c.id === cardId);
 	const target = cardState.cards.find((c) => c.id === targetId);
-	if (!card || !target) return;
+	if (!card || !target) {
+		return;
+	}
 	updateCard(cardId, {
 		moveTo: { x: target.position.x, y: 0.5, z: target.position.z },
 		settled: false,
@@ -88,14 +90,29 @@ const attack = (cardId: string, targetId: string) => {
 				}
 			}
 		}
-		updateCard(targetId, { health: target.health - 1 });
-		mainTimeline.addKeyframe(0.5, () => {
-			if (target.health <= 1 && target.typeId === 10) {
+		updateCard(targetId, { health: target.health - 1, redAmount: 1 });
+		if (target.health <= 1 && target.typeId === 10) {
+			mainTimeline.addKeyframe(0.5, () => {
 				// kill turtle
 				discardTurtle(target.id);
-			}
-		});
+			});
+		}
 	});
+};
+
+const willTurtleDie = (turtleId: string) => {
+	const turtleSlotNumber = cardState.slots.findIndex((s) => s === turtleId);
+	const runeCards = cardState.cards.filter(
+		(c) =>
+			c.id === cardState.slots[1 + turtleSlotNumber] ||
+			c.id === cardState.slots[2 + turtleSlotNumber]
+	);
+	for (const r of runeCards) {
+		if (r && r.typeId === 12 && r.health > 0) {
+			return false;
+		}
+	}
+	return true;
 };
 
 export const setupInitialCards = () => {
