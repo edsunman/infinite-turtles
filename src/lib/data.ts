@@ -26,13 +26,13 @@ export const data: Data = {
 		},
 		'11': {
 			name: 'potion',
-			description: 'drink for <span style="color:var(--purple);font-size:35px">+1</span> health',
+			description: 'drink for <span style="color:var(--purple);font-size:33px">+1</span> health',
 			health: 0,
 			strength: 0
 		},
 		'12': {
 			name: 'state rune',
-			description: 'gives turtle <span style="color:var(--green);font-size:35px">+2</span> health',
+			description: 'gives turtle <span style="color:var(--green);font-size:33px">+2</span> health',
 			health: 0,
 			strength: 0
 		}

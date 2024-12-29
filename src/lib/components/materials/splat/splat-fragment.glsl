@@ -1,5 +1,5 @@
 varying vec2 vUv;
-uniform sampler2D textures[4];
+uniform sampler2D textures[2];
 uniform sampler2D blendTexture;
 uniform float colors[9];
 uniform float noiseOffset;
@@ -69,7 +69,6 @@ float clampNoise(float noiseTex, float clampAmount, float blurAmount) {
 
 void main() {
 
-    //float scale = 0.4;
     float scale = sin(noiseOffset) * 0.05 + 0.4;
     float noiseScale = 80.0;
 
@@ -78,12 +77,19 @@ void main() {
     vec2 uv = vUv;
     uv = uv * repeat;
     vec2 center = (1.0 - scale) * (vUv - 0.5) + 0.5;
+    vec2 smaller = 2.2 * (vUv - 0.5) + 0.5;
 
-    vec4 blendMap = texture2D(blendTexture, center);
+    vec4 blendMap = texture2D(textures[0], center);
+    vec4 backgroundImage = texture2D(textures[1], vec2(smaller.x, smaller.y + 0.43));
 
     vec4 color1 = vec4(0.36, 0.22, 0.67, 1.0);
-    vec4 color2 = vec4(0.53, 0.43, 0.35, 1.0);
-    vec4 color3 = vec4(0.15, 0.05, 0.33, 1.0);
+    vec4 color2 = vec4(0.71, 0.61, 0.51, 1.0);
+    vec4 color3 = vec4(0.24, 0.13, 0.44, 1.0);
+    vec4 color4 = vec4(0.68, 0.56, 0.45, 1.0);
+
+    // blend background texture colors
+
+    vec4 backgroundColor = mix(color4, color2, smoothstep(0.00, 1.00, backgroundImage.r));
 
     // noise 
     float f = snoise(vec3(noiseScale * vUv, noiseOffset));
@@ -94,7 +100,7 @@ void main() {
     float noiseFloat2 = clampNoise(f * blendMap.r - 0.05, clampAmount, blurAmount);
 
     vec4 layer1 = mix(color1, color3, smoothstep(0.00, 1.00, noiseFloat));
-    vec4 layer2 = mix(color3, color2, smoothstep(0.00, 1.00, noiseFloat2));
+    vec4 layer2 = mix(color3, backgroundColor, smoothstep(0.00, 1.00, noiseFloat2));
 
     vec4 finalOutput = mix(layer1, layer2, smoothstep(0.00, 1.00, noiseFloat));
 

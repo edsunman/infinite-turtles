@@ -27,17 +27,18 @@
 	#infoBox {
 		position: absolute;
 		border-radius: 10px;
-		padding: 10px;
-		background: #111;
+		padding: 8px 10px 10px 10px;
+		background: #151515;
 		color: white;
 		pointer-events: none;
 		width: 150px;
 	}
 	#infoBox p {
 		text-align: center;
-		font-size: 25px;
+		font-size: 26px;
 		padding: 0;
 		margin: 5px 0 0 0;
+		line-height: 26px;
 	}
 	#infoBox h3 {
 		text-align: center;

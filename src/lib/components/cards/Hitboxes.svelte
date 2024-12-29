@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
-	import { interactivity, useTexture } from '@threlte/extras';
+	import { interactivity } from '@threlte/extras';
 	import { cardState, gameState } from '$lib/state.svelte';
 	import { positionHand, placeCard, throwCard } from './cardActions';
 	import {
@@ -15,7 +15,6 @@
 	interactivity();
 
 	let time = $state(0);
-	const circleImage = useTexture('images/circle.png');
 
 	const pointerMoved = (e: any) => {
 		if (gameState.state !== 'playerTurn' || gameState.locked) return;
@@ -142,7 +141,6 @@
 	onpointerup={pointerUp}
 >
 	<T.PlaneGeometry />
-	{#await circleImage then circleImage}
-		<SplatMaterial blendImage={circleImage} noiseOffset={time / 6} />
-	{/await}
+
+	<SplatMaterial noiseOffset={time / 6} />
 </T.Mesh>

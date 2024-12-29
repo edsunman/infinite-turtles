@@ -76,9 +76,9 @@ export const discardTurtle = (turtleId: string) => {
 	gameState.locked = true;
 	const slotOffset = turtleId === cardState.slots[0] ? 0 : 3;
 	updateCard(turtleId, {
-		moveTo: { x: -7, y: 5, z: -2 },
+		moveTo: { x: turtleId === cardState.slots[0] ? -7 : 7, y: 5, z: -2 },
 		settled: false,
-		rotateTo: { x: -1.57, y: 0, z: 1.57 },
+		rotateTo: { x: -1.57, y: 0, z: 4 },
 		stiffness: 0.08
 	});
 	if (cardState.slots[1 + slotOffset] !== '') {

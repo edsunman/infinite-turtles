@@ -10,14 +10,11 @@
 <style>
 	:global(body) {
 		margin: 0;
-		font-family: 'Share Tech', sans-serif;
-		font-weight: 400;
-		font-style: normal;
 	}
 	:global {
 		p,
 		h3 {
-			font-family: 'Delicious Handrawn', serif;
+			font-family: 'Gamja Flower', serif;
 			font-weight: 400;
 			font-style: normal;
 		}
