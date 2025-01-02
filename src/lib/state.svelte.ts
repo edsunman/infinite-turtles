@@ -1,18 +1,13 @@
 import { timeline } from './helpers/animation';
-import type { Card } from './types';
+import type { Card, GameState } from './types';
 
-export const gameState = $state<{
-	state: 'playerTurn' | 'enemyTurn' | 'dealing' | 'discarding';
-	locked: boolean;
-	actionsRemaining: number;
-	hoverPosition: { x: number; y: number };
-	damage: { x: number; y: number; text: string; key: string };
-}>({
-	state: 'dealing',
+export const gameState = $state<GameState>({
+	state: 'mainMenu',
 	locked: false,
 	actionsRemaining: 2,
 	hoverPosition: { x: 0, y: 0 },
-	damage: { x: 0, y: 0, text: '', key: '' }
+	damage: { x: 0, y: 0, text: '', key: '' },
+	portalSize: 0
 });
 
 class CardState {

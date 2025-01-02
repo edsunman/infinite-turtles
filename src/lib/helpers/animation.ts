@@ -180,8 +180,8 @@ const springTick = (
  * import { cubicInOut } from 'svelte/easing';
  *
  * // create tween
- * let tweenedValue = 0
- * let newTween = spring(tweenedValue, 2, cubicInOut)
+ * let tweenedValue = $state(0)
+ * let newTween = tween(tweenedValue, 2, cubicInOut)
  *
  * // set new value to move towards
  * newTween.set(10)

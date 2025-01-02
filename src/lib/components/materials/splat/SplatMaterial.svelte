@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { T, useLoader } from '@threlte/core';
-	import { RepeatWrapping, ShaderMaterial, SRGBColorSpace, Texture, TextureLoader } from 'three';
+	import { ShaderMaterial, SRGBColorSpace, TextureLoader } from 'three';
 	import fragmentShader from './splat-fragment.glsl?raw';
 	import vertexShader from './splat-vertex.glsl?raw';
 
 	let {
-		noiseOffset
+		noiseOffset,
+		portalSize
 	}: {
 		noiseOffset: number;
+		portalSize: number;
 	} = $props();
 
 	const textures = useLoader(TextureLoader).load(
@@ -17,9 +19,6 @@
 		},
 		{
 			transform: (texture) => {
-				//texture.flipY = false;
-				//texture.wrapS = RepeatWrapping;
-				//texture.wrapT = RepeatWrapping;
 				texture.colorSpace = SRGBColorSpace;
 			}
 		}
@@ -28,6 +27,7 @@
 	const sm = new ShaderMaterial({
 		uniforms: {
 			noiseOffset: { value: noiseOffset },
+			portalSize: { value: portalSize },
 			textures: { value: [] }
 		},
 		fragmentShader,
@@ -43,6 +43,10 @@
 
 	$effect(() => {
 		sm.uniforms.noiseOffset.value = noiseOffset;
+	});
+
+	$effect(() => {
+		sm.uniforms.portalSize.value = portalSize;
 	});
 </script>
 

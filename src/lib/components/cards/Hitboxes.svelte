@@ -11,10 +11,15 @@
 		Object3D
 	} from 'three';
 	import SplatMaterial from '../materials/splat/SplatMaterial.svelte';
+	import { tween } from '$lib/helpers/animation';
+	import { cubicInOut } from 'svelte/easing';
 
 	interactivity();
 
 	let time = $state(0);
+	let portalSize = $state(0);
+	// svelte-ignore state_referenced_locally
+	let portalTween = tween(portalSize, 3, cubicInOut);
 
 	const pointerMoved = (e: any) => {
 		if (gameState.state !== 'playerTurn' || gameState.locked) return;
@@ -110,10 +115,15 @@
 	mesh.instanceMatrix.setUsage(DynamicDrawUsage);
 	mesh.name = 'hitbox';
 
+	$effect(() => {
+		portalTween.set(gameState.portalSize);
+	});
+
 	useTask(
 		'hitbox-task',
 		(delta) => {
 			time += delta;
+			portalSize = portalTween.update(delta);
 			if (gameState.state !== 'playerTurn') return;
 			cardState.cards.forEach((card, i) => {
 				dummy.position.set(card.position.x, card.position.y, card.position.z);
@@ -142,5 +152,5 @@
 >
 	<T.PlaneGeometry />
 
-	<SplatMaterial noiseOffset={time / 6} />
+	<SplatMaterial noiseOffset={time / 6} {portalSize} />
 </T.Mesh>

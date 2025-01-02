@@ -1,11 +1,7 @@
 varying vec2 vUv;
 uniform sampler2D textures[2];
-uniform sampler2D blendTexture;
-uniform float colors[9];
 uniform float noiseOffset;
-uniform float useNoise;
-uniform float useColors;
-uniform float repeat;
+uniform float portalSize;
 
 vec4 permute(vec4 x) {
     return mod(((x * 34.0) + 1.0) * x, 289.0);
@@ -69,13 +65,11 @@ float clampNoise(float noiseTex, float clampAmount, float blurAmount) {
 
 void main() {
 
-    float scale = sin(noiseOffset) * 0.05 + 0.4;
+   // float scale = sin(noiseOffset) * 0.05 + 0.4;
+    float scale = portalSize - 0.5;
     float noiseScale = 80.0;
-
     float blurAmount = 0.01;
 
-    vec2 uv = vUv;
-    uv = uv * repeat;
     vec2 center = (1.0 - scale) * (vUv - 0.5) + 0.5;
     vec2 smaller = 2.2 * (vUv - 0.5) + 0.5;
 
@@ -86,12 +80,8 @@ void main() {
     vec4 color2 = vec4(0.71, 0.61, 0.51, 1.0);
     vec4 color3 = vec4(0.24, 0.13, 0.44, 1.0);
     vec4 color4 = vec4(0.68, 0.56, 0.45, 1.0);
-
-    // blend background texture colors
-
     vec4 backgroundColor = mix(color4, color2, smoothstep(0.00, 1.00, backgroundImage.r));
 
-    // noise 
     float f = snoise(vec3(noiseScale * vUv, noiseOffset));
     f = 1.5 + 0.3 * f;
 

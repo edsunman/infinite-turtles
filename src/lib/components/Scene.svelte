@@ -2,7 +2,7 @@
 	import { T, useTask, useThrelte, useStage } from '@threlte/core';
 	import { Grid, useGltf, useDraco } from '@threlte/extras';
 	import { cardState, mainTimeline } from '$lib/state.svelte';
-	import { setupInitialCards } from '$lib/gameplay';
+
 	import { onDestroy } from 'svelte';
 
 	import Peformance from './misc/Peformance.svelte';
@@ -13,7 +13,7 @@
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
 
-	setupInitialCards();
+	//setupInitialCards();
 
 	onDestroy(() => {
 		cardState.cards = [];

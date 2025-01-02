@@ -119,18 +119,19 @@ const willTurtleDie = (turtleId: string) => {
 	return true;
 };
 
-export const setupInitialCards = () => {
+export const startGame = () => {
+	gameState.state = 'dealing';
 	// Player
-	cardState.addCard({
+	const playerId = cardState.addCard({
 		typeId: 1,
 		health: 10,
-		position: { x: 0, y: 0, z: -0.5 }
+		position: { x: 0, y: 2, z: 5 }
 	});
 	// Enemy
-	cardState.addCard({
+	const enemyId = cardState.addCard({
 		typeId: 2,
 		health: 10,
-		position: { x: 0, y: 0, z: -3.2 }
+		position: { x: 0, y: 2, z: -4 }
 	});
 	// Starting Deck
 	for (let i = 0; i < 3; i++) {
@@ -149,8 +150,17 @@ export const setupInitialCards = () => {
 			startingHealth: 2
 		});
 	}
-	dealHand();
 	mainTimeline.addKeyframe(1, () => {
+		updateCard(playerId, { moveTo: { x: 0, y: 0, z: -0.5 }, stiffness: 0.15, settled: false });
+		gameState.portalSize = 0.93;
+	});
+	mainTimeline.addKeyframe(3.5, () => {
+		updateCard(enemyId, { moveTo: { x: 0, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
+	});
+	mainTimeline.addKeyframe(5, () => {
+		dealHand();
+	});
+	mainTimeline.addKeyframe(6, () => {
 		gameState.state = 'playerTurn';
 	});
 };

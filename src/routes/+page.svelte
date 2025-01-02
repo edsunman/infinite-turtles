@@ -13,13 +13,23 @@
 	}
 	:global {
 		p,
-		h3 {
+		h1,
+		h3,
+		button {
 			font-family: 'Gamja Flower', serif;
 			font-weight: 400;
 			font-style: normal;
 		}
-	}
 
+		button {
+			background: none;
+			color: inherit;
+			border: none;
+			padding: 0;
+			cursor: pointer;
+			outline: inherit;
+		}
+	}
 	:global(:root) {
 		--green: #4eff98;
 		--purple: #a56eff;

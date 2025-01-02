@@ -26,10 +26,6 @@
 	$effect(() => {
 		mapLoaded($map);
 	});
-
-	/* 	$effect(() => {
-		material.uniforms.number.value = number;
-	}); */
 </script>
 
 <T is={material} />
