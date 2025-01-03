@@ -42,8 +42,8 @@
 
 {#await gltf then gltf}
 	<Cards {gltf} />
+	<Hitboxes {gltf} />
 {/await}
-<Hitboxes />
 
 <T.AmbientLight intensity={3.5} />
 

@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
-	import { interactivity, type Intersection, type IntersectionEvent } from '@threlte/extras';
+	import {
+		interactivity,
+		type Intersection,
+		type IntersectionEvent,
+		type ThrelteGltf
+	} from '@threlte/extras';
 	import { cardState, gameState } from '$lib/state.svelte';
 	import { positionHand, placeCard, throwCard } from './cardActions';
 	import {
@@ -17,12 +22,21 @@
 
 	interactivity();
 
-	let needToPositionHand = false;
+	let {
+		gltf
+	}: {
+		gltf: ThrelteGltf<{
+			nodes: Record<string, any>;
+			materials: Record<string, any>;
+		}>;
+	} = $props();
+
+	let pointerMovedOffCard = false;
 	let time = $state(0);
 	let portalSize = $state(0);
 	// svelte-ignore state_referenced_locally
 	let portalTween = new Tween(portalSize, 3, cubicInOut);
-	let cardOutlinePosition = $state({ x: 0, z: -0.5 });
+	let cardOutlinePosition = $state({ x: 10, z: 10 });
 
 	const findIntersectedCard = (intersections: Intersection[]) => {
 		let card: Card | null = null;
@@ -39,15 +53,45 @@
 		if (gameState.state !== 'playerTurn' || gameState.locked) return;
 		let card = findIntersectedCard(e.intersections);
 		if (cardState.selectedCard) {
+			if (!card) {
+				// pointer over ground with card selected
+				if (cardState.selectedCard && cardState.selectedCard.typeId === 10) {
+					// turtle card is selected
+					if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x < -1.5 && e.point.x > -2.5) {
+						document.body.classList.add('hovering');
+						cardOutlinePosition = { x: -2, z: -1 };
+					} else if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x > 1.5 && e.point.x < 2.5) {
+						document.body.classList.add('hovering');
+						cardOutlinePosition = { x: 2, z: -1 };
+					} else {
+						pointerMovedOffCard = true;
+					}
+				}
+				if (pointerMovedOffCard) {
+					document.body.classList.remove('hovering');
+					cardOutlinePosition = { x: 10, z: 10 };
+					pointerMovedOffCard = false;
+				}
+			} else if (
+				(card.id === cardState.slots[0] && cardState.selectedCard.typeId >= 12) ||
+				(card.id === cardState.slots[3] && cardState.selectedCard.typeId >= 12) ||
+				(card.typeId === 2 && cardState.selectedCard.typeId === 10) ||
+				(card.typeId === 1 && cardState.selectedCard.typeId === 11)
+			) {
+				document.body.classList.add('hovering');
+				cardOutlinePosition = { x: card.position.x, z: card.position.z };
+				pointerMovedOffCard = true;
+			}
 		} else {
 			if (!card) {
-				// pointer over ground
-				cardState.hoverCard = null;
-				if (needToPositionHand) {
+				// pointer over ground no card selected
+				if (pointerMovedOffCard) {
+					console.log('yes');
+					cardState.hoverCard = null;
 					positionHand();
-					needToPositionHand = false;
+					pointerMovedOffCard = false;
+					document.body.classList.remove('hovering');
 				}
-				document.body.classList.remove('hovering');
 			} else if (
 				!(cardState.hoverCard && card.id === cardState.hoverCard.id) &&
 				card.group === 'hand'
@@ -55,7 +99,7 @@
 				// pointer over different card in hand
 				cardState.hoverCard = card;
 				positionHand();
-				needToPositionHand = true;
+				pointerMovedOffCard = true;
 				if (card.group === 'hand') document.body.classList.add('hovering');
 			}
 		}
@@ -64,6 +108,7 @@
 	const pointerUp = (e: IntersectionEvent<Event>) => {
 		if (gameState.state !== 'playerTurn' || gameState.locked) return;
 		document.body.classList.remove('hovering');
+		cardOutlinePosition = { x: 10, z: 10 };
 		let card = findIntersectedCard(e.intersections);
 		if (!card) {
 			// clicked ground
@@ -87,16 +132,16 @@
 		} else if (cardState.selectedCard) {
 			// clicked a placed card with a card in hand selected
 			if (card.id === cardState.slots[0] && cardState.selectedCard.typeId >= 12)
-				//  clicked left turtle
+				//  clicked left turtle with rune
 				placeCard(cardState.selectedCard.id, 'left', 'rune');
 			if (card.id === cardState.slots[3] && cardState.selectedCard.typeId >= 12)
-				//  clicked right turtle
+				//  clicked right turtle with rune
 				placeCard(cardState.selectedCard.id, 'right', 'rune');
 			if (card.typeId === 2 && cardState.selectedCard.typeId === 10)
-				//  clicked enemy
+				//  clicked enemy with turtle
 				throwCard(cardState.selectedCard.id, 'enemy');
 			if (card.typeId === 1 && cardState.selectedCard.typeId === 11)
-				//  clicked player
+				//  clicked player with potion
 				throwCard(cardState.selectedCard.id, 'player');
 
 			cardState.selectedCard = null;
@@ -157,8 +202,8 @@
 	position.x={cardOutlinePosition.x}
 	position.z={cardOutlinePosition.z}
 	rotation.x={-1.57}
-	scale={[1.2, 1.75, 1]}
+	scale={[1.1, 1.1, 1]}
 >
-	<T.PlaneGeometry />
+	<T is={gltf.nodes.Border.geometry} />
 	<T.MeshBasicMaterial />
 </T.Mesh>

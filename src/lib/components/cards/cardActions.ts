@@ -177,6 +177,8 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 				stiffness: 0.08
 			});
 			updateCard(player.id, { health: player.health + 1 });
+			cardState.damagedCard = player;
+			gameState.damage.text = '+1';
 		});
 	}
 	timeline.addKeyframe(0.5, () => actionUsed());
