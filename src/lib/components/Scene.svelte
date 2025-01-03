@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { T, useTask, useThrelte, useStage } from '@threlte/core';
 	import { Grid, useGltf, useDraco } from '@threlte/extras';
-	import { cardState, mainTimeline } from '$lib/state.svelte';
+	import { cardState, timeline } from '$lib/state.svelte';
 
 	import { onDestroy } from 'svelte';
 
@@ -35,7 +35,7 @@
 	useTask(
 		'timeline-task',
 		(delta) => {
-			mainTimeline.update(delta);
+			timeline.update(delta);
 		},
 		{ stage: 'gameplay-stage' }
 	);

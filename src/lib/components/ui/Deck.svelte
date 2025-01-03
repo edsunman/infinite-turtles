@@ -4,6 +4,7 @@
 	import { endTurn } from '$lib/gameplay';
 	import type { Card } from '$lib/types';
 	import { untrack } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	let deck: Card[] = $state([]);
 	let discard: Card[] = $state([]);
@@ -25,6 +26,7 @@
 	role="tooltip"
 	onmouseenter={() => (deckHover = true)}
 	onmouseleave={() => (deckHover = false)}
+	transition:fade={{ delay: 500 }}
 >
 	Deck: {deck.length}
 </div>
@@ -37,7 +39,7 @@
 	</div>
 {/if}
 
-<div class="ui" id="actions">
+<div class="ui" id="actions" transition:fade={{ delay: 500 }}>
 	Actions: {gameState.actionsRemaining}
 </div>
 
@@ -47,6 +49,7 @@
 	role="tooltip"
 	onmouseenter={() => (discardHover = true)}
 	onmouseleave={() => (discardHover = false)}
+	transition:fade={{ delay: 500 }}
 >
 	Discard: {discard.length}
 </div>
@@ -59,7 +62,7 @@
 	</div>
 {/if}
 
-<button class="ui" id="endTurn" onclick={endTurn}>end turn</button>
+<button class="ui" id="endTurn" onclick={endTurn} transition:fade={{ delay: 500 }}>end turn</button>
 
 <style>
 	.ui {

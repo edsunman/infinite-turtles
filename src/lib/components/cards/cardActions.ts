@@ -1,12 +1,12 @@
-import { cardState, gameState, mainTimeline } from '$lib/state.svelte';
+import { cardState, gameState, timeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
 import { endTurn } from '$lib/gameplay';
 import type { Card } from '$lib/types';
 
 export const dealHand = () => {
-	mainTimeline.addKeyframe(0, () => dealCard());
-	mainTimeline.addKeyframe(0.3, () => dealCard());
-	mainTimeline.addKeyframe(0.6, () => dealCard());
+	timeline.addKeyframe(0, () => dealCard());
+	timeline.addKeyframe(0.3, () => dealCard());
+	timeline.addKeyframe(0.6, () => dealCard());
 };
 
 const dealCard = () => {
@@ -53,7 +53,7 @@ export const discardHand = () => {
 	const handLength = cardState.cards.filter((card) => card.group === 'hand').length;
 	discardCardFromHand();
 	for (let i = 1; i < handLength; i++) {
-		mainTimeline.addKeyframe(0.2 * i, () => {
+		timeline.addKeyframe(0.2 * i, () => {
 			discardCardFromHand();
 		});
 	}
@@ -82,7 +82,7 @@ export const discardTurtle = (turtleId: string) => {
 		stiffness: 0.08
 	});
 	if (cardState.slots[1 + slotOffset] !== '') {
-		mainTimeline.addKeyframe(0.1, () => {
+		timeline.addKeyframe(0.1, () => {
 			updateCard(cardState.slots[1 + slotOffset], {
 				moveTo: { x: 6, y: 0, z: 3.7 },
 				settled: false,
@@ -94,7 +94,7 @@ export const discardTurtle = (turtleId: string) => {
 		});
 	}
 	if (cardState.slots[2 + slotOffset] !== '') {
-		mainTimeline.addKeyframe(0.2, () => {
+		timeline.addKeyframe(0.2, () => {
 			updateCard(cardState.slots[2 + slotOffset], {
 				moveTo: { x: 6, y: 0, z: 3.7 },
 				settled: false,
@@ -105,13 +105,13 @@ export const discardTurtle = (turtleId: string) => {
 			cardState.slots[2 + slotOffset] = '';
 		});
 	}
-	mainTimeline.addKeyframe(0.5, () => {
+	timeline.addKeyframe(0.5, () => {
 		updateCard(turtleId, {
 			health: -1
 		});
 		cardState.slots[0 + slotOffset] = '';
 	});
-	mainTimeline.addKeyframe(1, () => {
+	timeline.addKeyframe(1, () => {
 		gameState.locked = false;
 	});
 };
@@ -139,7 +139,7 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 			stiffness: 0.1
 		});
 		closeGapInHand(cardId);
-		mainTimeline.addKeyframe(0.25, () => {
+		timeline.addKeyframe(0.25, () => {
 			updateCard(cardId, {
 				moveTo: { x: randomNumber(-6, 6), y: 1, z: -6 },
 				rotateTo: { x: -1, y: 0, z: -3 },
@@ -168,7 +168,7 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 			settled: false
 		});
 		closeGapInHand(cardId);
-		mainTimeline.addKeyframe(0.3, () => {
+		timeline.addKeyframe(0.3, () => {
 			updateCard(cardId, {
 				moveTo: { x: 6, y: 0, z: 3.7 },
 				rotateTo: { x: -1.57, y: 0, z: 0 },
@@ -179,7 +179,7 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 			updateCard(player.id, { health: player.health + 1 });
 		});
 	}
-	mainTimeline.addKeyframe(0.5, () => actionUsed());
+	timeline.addKeyframe(0.5, () => actionUsed());
 };
 
 export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' | 'rune') => {
@@ -222,7 +222,7 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 		settled: false
 	});
 	gameState.locked = true;
-	mainTimeline.addKeyframe(0.3, () =>
+	timeline.addKeyframe(0.3, () =>
 		updateCard(cardId, {
 			group: 'placed',
 			stiffness: 0.2,
@@ -233,7 +233,7 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 	);
 	cardState.slots[selectedSlot] = cardId;
 	closeGapInHand(cardId);
-	mainTimeline.addKeyframe(0.5, () => actionUsed());
+	timeline.addKeyframe(0.5, () => actionUsed());
 };
 
 const actionUsed = () => {

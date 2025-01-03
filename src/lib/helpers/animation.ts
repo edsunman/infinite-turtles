@@ -1,26 +1,25 @@
-export const timeline = () => {
-	let clock = 0;
-	let keyframes: { offset: number; action: () => void; played: boolean }[] = [];
-	const addKeyframe = (offset: number, action: () => void) => {
-		keyframes.push({
-			offset: (offset += clock),
+export class Timeline {
+	#clock = 0;
+	#keyframes: { offset: number; action: () => void; played: boolean }[] = [];
+	addKeyframe(offset: number, action: () => void) {
+		this.#keyframes.push({
+			offset: (offset += this.#clock),
 			action,
 			played: false
 		});
-	};
-	const update = (delta: number) => {
-		clock += delta;
-		if (keyframes.length < 1) return;
-		for (const keyframe of keyframes) {
-			if (clock > keyframe.offset && !keyframe.played) {
+	}
+	update(delta: number) {
+		this.#clock += delta;
+		if (this.#keyframes.length < 1) return;
+		for (const keyframe of this.#keyframes) {
+			if (this.#clock > keyframe.offset && !keyframe.played) {
 				keyframe.action();
 				keyframe.played = true;
 			}
 		}
-		keyframes = keyframes.filter((k) => !k.played);
-	};
-	return { update, addKeyframe };
-};
+		this.#keyframes = this.#keyframes.filter((k) => !k.played);
+	}
+}
 
 /**
  * Returns a function that can be used to execute a child function every given number of seconds.

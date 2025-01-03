@@ -1,7 +1,8 @@
 export type XYZ = { x: number; y: number; z: number };
 
 export type GameState = {
-	state: 'mainMenu' | 'playerTurn' | 'enemyTurn' | 'dealing' | 'discarding';
+	state: 'menu' | 'playerTurn' | 'enemyTurn' | 'dealing' | 'discarding';
+	menuState: 'none' | 'mainMenu';
 	locked: boolean;
 	actionsRemaining: number;
 	hoverPosition: { x: number; y: number };

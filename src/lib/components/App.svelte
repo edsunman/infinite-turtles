@@ -13,9 +13,11 @@
 	<Scene />
 </Canvas>
 
-{#if gameState.state === 'mainMenu'}
+{#if gameState.menuState === 'mainMenu'}
 	<MainMenu />
-{:else}
+{/if}
+
+{#if gameState.state !== 'menu'}
 	<InfoBox />
 	<Deck />
 	<DamageNumbers />

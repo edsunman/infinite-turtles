@@ -1,8 +1,9 @@
-import { timeline } from './helpers/animation';
+import { Timeline } from './helpers/animation';
 import type { Card, GameState } from './types';
 
 export const gameState = $state<GameState>({
-	state: 'mainMenu',
+	state: 'menu',
+	menuState: 'mainMenu',
 	locked: false,
 	actionsRemaining: 2,
 	hoverPosition: { x: 0, y: 0 },
@@ -43,4 +44,6 @@ class CardState {
 
 export const cardState = new CardState();
 
-export const mainTimeline = timeline();
+//export const mainTimeline = timeline();
+
+export const timeline = new Timeline();
