@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { T, useTask } from '@threlte/core';
-	import { interactivity } from '@threlte/extras';
+	import { interactivity, type Intersection, type IntersectionEvent } from '@threlte/extras';
 	import { cardState, gameState } from '$lib/state.svelte';
 	import { positionHand, placeCard, throwCard } from './cardActions';
 	import {
@@ -13,97 +13,96 @@
 	import SplatMaterial from '../materials/splat/SplatMaterial.svelte';
 	import { Tween } from '$lib/helpers/animation';
 	import { cubicInOut } from 'svelte/easing';
+	import type { Card } from '$lib/types';
 
 	interactivity();
 
+	let needToPositionHand = false;
 	let time = $state(0);
 	let portalSize = $state(0);
 	// svelte-ignore state_referenced_locally
 	let portalTween = new Tween(portalSize, 3, cubicInOut);
+	let cardOutlinePosition = $state({ x: 0, z: -0.5 });
 
-	const pointerMoved = (e: any) => {
-		if (gameState.state !== 'playerTurn' || gameState.locked) return;
-		if (cardState.selectedCardId !== '') return;
-		let cardId = '';
-		for (let intersect of e.intersections) {
-			if (Object.hasOwn(intersect, 'instanceId')) {
-				cardId = cardState.cards[intersect.instanceId].id;
-				break;
-			}
-		}
-		if (cardId === '') {
-			cardState.hoverCard = null;
-			positionHand();
-		} else {
-			if (cardState.hoverCard && cardId === cardState.hoverCard.id) return;
-			const card = cardState.cards.find((c) => c.id === cardId);
-			if (!card) return;
-			cardState.hoverCard = card;
-			positionHand();
-		}
-	};
-
-	const pointerUp = (e: any) => {
-		if (gameState.state !== 'playerTurn' || gameState.locked) return;
-		let card;
-		for (let intersect of e.intersections) {
-			if (Object.hasOwn(intersect, 'instanceId')) {
+	const findIntersectedCard = (intersections: Intersection[]) => {
+		let card: Card | null = null;
+		for (let intersect of intersections) {
+			if (Object.hasOwn(intersect, 'instanceId') && intersect.instanceId !== undefined) {
 				card = cardState.cards[intersect.instanceId];
 				break;
 			}
 		}
-		const selectedCard = cardState.cards.find(
-			(card) => card.id === cardState.selectedCardId && card.group === 'hand'
-		);
+		return card;
+	};
+
+	const pointerMoved = (e: any) => {
+		if (gameState.state !== 'playerTurn' || gameState.locked) return;
+		let card = findIntersectedCard(e.intersections);
+		if (cardState.selectedCard) {
+		} else {
+			if (!card) {
+				// pointer over ground
+				cardState.hoverCard = null;
+				if (needToPositionHand) {
+					positionHand();
+					needToPositionHand = false;
+				}
+				document.body.classList.remove('hovering');
+			} else if (
+				!(cardState.hoverCard && card.id === cardState.hoverCard.id) &&
+				card.group === 'hand'
+			) {
+				// pointer over different card in hand
+				cardState.hoverCard = card;
+				positionHand();
+				needToPositionHand = true;
+				if (card.group === 'hand') document.body.classList.add('hovering');
+			}
+		}
+	};
+
+	const pointerUp = (e: IntersectionEvent<Event>) => {
+		if (gameState.state !== 'playerTurn' || gameState.locked) return;
+		document.body.classList.remove('hovering');
+		let card = findIntersectedCard(e.intersections);
 		if (!card) {
 			// clicked ground
-			if (selectedCard && selectedCard.typeId === 10) {
+			if (cardState.selectedCard && cardState.selectedCard.typeId === 10) {
 				// turtle card is selected
 				if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x < -1.5 && e.point.x > -2.5)
-					placeCard(cardState.selectedCardId, 'left', 'turtle');
+					placeCard(cardState.selectedCard.id, 'left', 'turtle');
 				if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x > 1.5 && e.point.x < 2.5)
-					placeCard(cardState.selectedCardId, 'right', 'turtle');
+					placeCard(cardState.selectedCard.id, 'right', 'turtle');
 			}
-			cardState.selectedCardId = '';
-			cardState.hoverCard = null;
-			positionHand();
-			return;
-		} else if (
-			cardState.hoverCard &&
-			cardState.hoverCard.group === 'hand' &&
-			card.id === cardState.hoverCard.id
-		) {
-			// clicked hovered card so select
-			cardState.selectedCardId = card.id;
+			cardState.selectedCard = null;
 			cardState.hoverCard = null;
 			positionHand();
 			return;
 		} else if (card.group === 'hand') {
-			// clicked a different card in hand
-			cardState.selectedCardId = card.id;
+			// clicked a card in hand
+			cardState.selectedCard = card;
 			cardState.hoverCard = null;
 			positionHand();
 			return;
+		} else if (cardState.selectedCard) {
+			// clicked a placed card with a card in hand selected
+			if (card.id === cardState.slots[0] && cardState.selectedCard.typeId >= 12)
+				//  clicked left turtle
+				placeCard(cardState.selectedCard.id, 'left', 'rune');
+			if (card.id === cardState.slots[3] && cardState.selectedCard.typeId >= 12)
+				//  clicked right turtle
+				placeCard(cardState.selectedCard.id, 'right', 'rune');
+			if (card.typeId === 2 && cardState.selectedCard.typeId === 10)
+				//  clicked enemy
+				throwCard(cardState.selectedCard.id, 'enemy');
+			if (card.typeId === 1 && cardState.selectedCard.typeId === 11)
+				//  clicked player
+				throwCard(cardState.selectedCard.id, 'player');
+
+			cardState.selectedCard = null;
+			cardState.hoverCard = null;
+			positionHand();
 		}
-
-		if (!selectedCard) return;
-		// Clicked a placed card with rune card selected
-		if (card.id === cardState.slots[0] && selectedCard.typeId >= 12)
-			//  clicked left turtle
-			placeCard(cardState.selectedCardId, 'left', 'rune');
-		if (card.id === cardState.slots[3] && selectedCard.typeId >= 12)
-			//  clicked right turtle
-			placeCard(cardState.selectedCardId, 'right', 'rune');
-		if (card.typeId === 2 && selectedCard.typeId === 10)
-			//  clicked enemy
-			throwCard(selectedCard.id, 'enemy');
-		if (card.typeId === 1 && selectedCard.typeId === 11)
-			//  clicked player
-			throwCard(selectedCard.id, 'player');
-
-		cardState.selectedCardId = '';
-		cardState.hoverCard = null;
-		positionHand();
 	};
 
 	const plane = new PlaneGeometry();
@@ -151,6 +150,15 @@
 	onpointerup={pointerUp}
 >
 	<T.PlaneGeometry />
-
 	<SplatMaterial noiseOffset={time / 6} {portalSize} />
+</T.Mesh>
+
+<T.Mesh
+	position.x={cardOutlinePosition.x}
+	position.z={cardOutlinePosition.z}
+	rotation.x={-1.57}
+	scale={[1.2, 1.75, 1]}
+>
+	<T.PlaneGeometry />
+	<T.MeshBasicMaterial />
 </T.Mesh>

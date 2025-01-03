@@ -10,6 +10,10 @@
 <style>
 	:global(body) {
 		margin: 0;
+		cursor: image-set('/cursor/cursor.png' 1x, '/cursor/cursor-x2.png' 2x), default;
+	}
+	:global(body.hovering, button) {
+		cursor: image-set('/cursor/cursorHover.png' 1x, '/cursor/cursorHover-x2.png' 2x), pointer;
 	}
 	:global {
 		p,
@@ -27,7 +31,6 @@
 			color: inherit;
 			border: none;
 			padding: 0;
-			cursor: pointer;
 			outline: inherit;
 		}
 	}

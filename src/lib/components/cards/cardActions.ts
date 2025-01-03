@@ -44,7 +44,7 @@ const dealCard = () => {
 			i++;
 		});
 	}
-	cardState.selectedCardId = '';
+	cardState.selectedCard = null;
 
 	positionHand();
 };
@@ -262,7 +262,7 @@ export const positionHand = () => {
 	const offset = handLength / 2 - 0.5;
 	const heights = createAscendingDescendingArray(handLength);
 	const hoverId = cardState.hoverCard ? cardState.hoverCard.id : '';
-	const selectedId = cardState.selectedCardId;
+	const selectedId = cardState.selectedCard ? cardState.selectedCard.id : '';
 	cardState.cards.forEach((card) => {
 		if (card.group !== 'hand') return;
 		if (card.id === hoverId || card.id === selectedId) hoverHeight = 0.5;

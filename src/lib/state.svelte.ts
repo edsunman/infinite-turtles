@@ -13,7 +13,7 @@ export const gameState = $state<GameState>({
 });
 
 class CardState {
-	selectedCardId = '';
+	selectedCard = $state<Card | null>(null);
 	hoverCard = $state<Card | null>(null);
 	damagedCard = $state<Card | null>(null);
 	slots: string[] = ['', '', '', '', '', ''];
