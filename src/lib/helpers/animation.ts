@@ -1,3 +1,19 @@
+/**
+ * A timeline with internal clock to schedule simple animations.
+ * @example
+ * // create timeline
+ * let timeline = new Timeline();
+ *
+ * // schedule a function to be run in two seconds time
+ * timeline.addKeyframe(2, ()=>{
+ * 	console.log('Two second delay');
+ * });
+ *
+ * useTask((delta) => {
+ * 	// update timeline every frame
+ * 	timeline.update(delta);
+ * }
+ */
 export class Timeline {
 	#clock = 0;
 	#keyframes: { offset: number; action: () => void; played: boolean }[] = [];
@@ -26,7 +42,6 @@ export class Timeline {
  * @param interval - The interval in seconds.
  * @param [randomMax]- The interval will be random, using this value as the upper bound and the interval param as the lower bound.
  * @example
- *
  * const everyFiveSeconds = interval(5)
  *
  * useTask((delta) => {
@@ -169,53 +184,55 @@ const springTick = (
 };
 
 /**
- * Similar behvour to Svelte's tweened funtion but linked to Threlte's useTask.
- * An example of easing functions available here: https://svelte.dev/examples/spring
- * @param currentValue - The starting value
+ * Similar behvour to Svelte's Tween but can be linked to Threlte's useTask.
+ * @param startingValue - The starting value
  * @param [duration] - The duration of the tween in seconds
  * @param [easing] - Easing function
  * @example
- *
  * import { cubicInOut } from 'svelte/easing';
  *
  * // create tween
- * let tweenedValue = $state(0)
- * let newTween = tween(tweenedValue, 2, cubicInOut)
+ * let tweenedValue = $state(0);
+ * let tween = new Tween(tweenedValue, 2, cubicInOut);
  *
  * // set new value to move towards
- * newTween.set(10)
+ * tween.set(10);
  *
  * useTask((delta) => {
  *		// update value every frame
- *		tweenedValue = newTween.update(delta);
+ *		tweenedValue = tween.update(delta);
  * }
  */
-export const tween = <T extends Record<string, number> | number>(
-	currentValue: T,
-	duration = 1,
-	easing = (t: number) => t
-) => {
-	let elapsed = 0;
-	let startValue = currentValue;
-	let endValue = currentValue;
-	let inter = tweenInterpolator(startValue, endValue);
-	const set = (value: T) => {
-		elapsed = 0;
-		startValue = currentValue;
-		endValue = value;
-		inter = tweenInterpolator(startValue, endValue);
-	};
-	const update = (delta: number) => {
-		if (elapsed < duration) {
-			elapsed += delta;
-			currentValue = inter(easing(elapsed / duration)) as T & number;
-		} else {
-			startValue = currentValue;
+export class Tween<T extends Record<string, number> | number> {
+	#elapsed = 0;
+	#startValue;
+	#currentValue;
+	#endValue;
+	#inter;
+	#duration;
+	#easing;
+	constructor(startingValue: T, duration = 1, easing = (t: number) => t) {
+		this.#startValue = startingValue;
+		this.#currentValue = startingValue;
+		this.#endValue = startingValue;
+		this.#duration = duration;
+		this.#easing = easing;
+		this.#inter = tweenInterpolator(this.#startValue, this.#endValue);
+	}
+	set(value: T) {
+		this.#elapsed = 0;
+		this.#startValue = this.#currentValue;
+		this.#endValue = value;
+		this.#inter = tweenInterpolator(this.#startValue, this.#endValue);
+	}
+	update(delta: number) {
+		if (this.#elapsed < this.#duration) {
+			this.#elapsed += delta;
+			this.#currentValue = this.#inter(this.#easing(this.#elapsed / this.#duration)) as T & number;
 		}
-		return currentValue;
-	};
-	return { set, update };
-};
+		return this.#currentValue;
+	}
+}
 
 const tweenInterpolator = <T extends Record<string, number> | number>(a: T, b: T) => {
 	if (a === b || a !== a) return () => a;

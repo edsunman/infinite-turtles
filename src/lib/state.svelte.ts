@@ -43,7 +43,4 @@ class CardState {
 }
 
 export const cardState = new CardState();
-
-//export const mainTimeline = timeline();
-
 export const timeline = new Timeline();
