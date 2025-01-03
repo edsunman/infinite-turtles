@@ -5,6 +5,7 @@ export const gameState = $state<GameState>({
 	state: 'menu',
 	menuState: 'mainMenu',
 	locked: false,
+	paused: false,
 	actionsRemaining: 2,
 	hoverPosition: { x: 0, y: 0 },
 	damage: { x: 0, y: 0, text: '', key: '' },

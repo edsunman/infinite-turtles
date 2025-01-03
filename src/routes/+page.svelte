@@ -19,6 +19,7 @@
 			font-family: 'Gamja Flower', serif;
 			font-weight: 400;
 			font-style: normal;
+			user-select: none;
 		}
 
 		button {

@@ -102,7 +102,7 @@
 	const mainDiv = document.createElement('div');
 	mainDiv.style.cssText =
 		'color:#fff;font-family:Roboto Mono, Source Code Pro, Menlo, Courier, monospace;font-size:11px;font-weight:400;' +
-		'position:absolute;z-index:100;background:hsl(230, 7%, 17%);margin:8px;padding:0 15px 12px;border-radius: 10px;';
+		'position:absolute;z-index:100;background:hsl(230, 7%, 17%);margin:8px;padding:0 15px 12px;border-radius: 10px;z-index: 99999;';
 	const deltaNumbersDiv = createFlexDiv('delta', mainDiv, dCanvas);
 	const threlteNumbersDiv = createFlexDiv('js', mainDiv, tCanvas);
 	const gpuNumbersDiv = createFlexDiv('gpu', mainDiv, gCanvas);

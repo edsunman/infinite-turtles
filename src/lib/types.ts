@@ -2,8 +2,9 @@ export type XYZ = { x: number; y: number; z: number };
 
 export type GameState = {
 	state: 'menu' | 'playerTurn' | 'enemyTurn' | 'dealing' | 'discarding';
-	menuState: 'none' | 'mainMenu';
+	menuState: 'none' | 'mainMenu' | 'settingsMenu';
 	locked: boolean;
+	paused: boolean;
 	actionsRemaining: number;
 	hoverPosition: { x: number; y: number };
 	damage: { x: number; y: number; text: string; key: string };

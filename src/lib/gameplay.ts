@@ -2,7 +2,7 @@ import { cardState, gameState, timeline } from '$lib/state.svelte';
 import { discardHand, updateCard, discardTurtle, dealHand } from './components/cards/cardActions';
 
 export const endTurn = () => {
-	if (gameState.state !== 'playerTurn') return;
+	if (gameState.state !== 'playerTurn' || gameState.menuState === 'settingsMenu') return;
 	let delay = 0;
 	const enemy = cardState.cards.find((card) => card.typeId === 2);
 	const leftTurtle = cardState.cards.find((card) => card.id === cardState.slots[0]);

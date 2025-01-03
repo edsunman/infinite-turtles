@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { T, useTask, useThrelte, useStage } from '@threlte/core';
-	import { Grid, useGltf, useDraco } from '@threlte/extras';
-	import { cardState, timeline } from '$lib/state.svelte';
+	import { useGltf, useDraco } from '@threlte/extras';
+	import { cardState, gameState, timeline } from '$lib/state.svelte';
 
 	import { onDestroy } from 'svelte';
 
@@ -13,22 +13,19 @@
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
 
-	//setupInitialCards();
-
-	onDestroy(() => {
+	/* 	onDestroy(() => {
 		cardState.cards = [];
 		cardState.slots = ['', '', '', '', '', ''];
-	});
+	}); */
 
 	const { mainStage, renderStage } = useThrelte();
-	let paused = false;
 	let speed = 1;
 
 	useStage('gameplay-stage', {
 		after: mainStage,
 		before: renderStage,
 		callback: (delta, runTasks) => {
-			if (!paused) runTasks(delta * speed);
+			if (!gameState.paused) runTasks(delta * speed);
 		}
 	});
 
@@ -40,21 +37,6 @@
 		{ stage: 'gameplay-stage' }
 	);
 </script>
-
-<!-- <T.Mesh rotation.x={rotate}>
-	<T.PlaneGeometry />
-	<ParallaxMaterial />
-</T.Mesh> -->
-
-<!-- <Grid
-	name="debug"
-	gridSize={[50, 50]}
-	cellColor={'#46536b'}
-	sectionColor="#ffffff"
-	sectionThickness={0}
-	fadeDistance={50}
-	position.y={-0.01}
-/> -->
 
 <Peformance />
 
@@ -70,18 +52,15 @@
 <svelte:window
 	onkeydown={(e: KeyboardEvent) => {
 		if (e.key === 'p') {
-			paused = !paused;
+			gameState.paused = !gameState.paused;
 		}
 		if (e.key === 'ArrowRight') {
 			if (speed === 1) {
 				speed = 0.5;
-				console.log('0.5x');
 			} else if (speed === 0.5) {
 				speed = 0.25;
-				console.log('0.25x');
 			} else if (speed === 0.25) {
 				speed = 1;
-				console.log('1x');
 			}
 		}
 	}}
