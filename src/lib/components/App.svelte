@@ -8,6 +8,7 @@
 	import DamageNumbers from './ui/DamageNumbers.svelte';
 	import MainMenu from './ui/MainMenu.svelte';
 	import SettingsMenu from './ui/SettingsMenu.svelte';
+	import NewCardMenu from './ui/NewCardMenu.svelte';
 </script>
 
 <Canvas>
@@ -20,6 +21,10 @@
 
 {#if gameState.menuState === 'settingsMenu'}
 	<SettingsMenu />
+{/if}
+
+{#if gameState.menuState === 'newCardMenu'}
+	<NewCardMenu />
 {/if}
 
 {#if gameState.state !== 'menu'}

@@ -2,7 +2,7 @@ export type XYZ = { x: number; y: number; z: number };
 
 export type GameState = {
 	state: 'menu' | 'playerTurn' | 'enemyTurn' | 'dealing' | 'discarding';
-	menuState: 'none' | 'mainMenu' | 'settingsMenu';
+	menuState: 'none' | 'mainMenu' | 'settingsMenu' | 'newCardMenu';
 	locked: boolean;
 	paused: boolean;
 	actionsRemaining: number;

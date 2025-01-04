@@ -35,14 +35,14 @@
 	}
 	#infoBox p {
 		text-align: center;
-		font-size: 26px;
+		font-size: 20px;
 		padding: 0;
 		margin: 5px 0 0 0;
 		line-height: 26px;
 	}
 	#infoBox h3 {
 		text-align: center;
-		font-size: 32px;
+		font-size: 28px;
 		padding: 0;
 		margin: 0;
 	}

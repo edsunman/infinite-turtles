@@ -57,10 +57,22 @@
 				// pointer over ground with card selected
 				if (cardState.selectedCard && cardState.selectedCard.typeId === 10) {
 					// turtle card is selected
-					if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x < -1.5 && e.point.x > -2.5) {
+					if (
+						e.point.z > -1.7 &&
+						e.point.z < -0.3 &&
+						e.point.x < -1.5 &&
+						e.point.x > -2.5 &&
+						cardState.slots[0] === ''
+					) {
 						document.body.classList.add('hovering');
 						cardOutlinePosition = { x: -2, z: -1 };
-					} else if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x > 1.5 && e.point.x < 2.5) {
+					} else if (
+						e.point.z > -1.7 &&
+						e.point.z < -0.3 &&
+						e.point.x > 1.5 &&
+						e.point.x < 2.5 &&
+						cardState.slots[3] === ''
+					) {
 						document.body.classList.add('hovering');
 						cardOutlinePosition = { x: 2, z: -1 };
 					} else {
@@ -73,7 +85,9 @@
 					pointerMovedOffCard = false;
 				}
 			} else if (
-				(card.id === cardState.slots[0] && cardState.selectedCard.typeId >= 12) ||
+				(card.id === cardState.slots[0] &&
+					cardState.selectedCard.typeId >= 12 &&
+					cardState.slots[2] === '') ||
 				(card.id === cardState.slots[3] && cardState.selectedCard.typeId >= 12) ||
 				(card.typeId === 2 && cardState.selectedCard.typeId === 10) ||
 				(card.typeId === 1 && cardState.selectedCard.typeId === 11)
@@ -86,16 +100,12 @@
 			if (!card) {
 				// pointer over ground no card selected
 				if (pointerMovedOffCard) {
-					console.log('yes');
 					cardState.hoverCard = null;
 					positionHand();
 					pointerMovedOffCard = false;
 					document.body.classList.remove('hovering');
 				}
-			} else if (
-				!(cardState.hoverCard && card.id === cardState.hoverCard.id) &&
-				card.group === 'hand'
-			) {
+			} else if (!(cardState.hoverCard && card.id === cardState.hoverCard.id)) {
 				// pointer over different card in hand
 				cardState.hoverCard = card;
 				positionHand();

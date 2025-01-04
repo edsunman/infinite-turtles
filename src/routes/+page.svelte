@@ -20,9 +20,11 @@
 		h1,
 		h3,
 		button {
-			font-family: 'Gamja Flower', serif;
+			font-family: 'Sour Gummy', serif;
+			font-optical-sizing: auto;
 			font-weight: 400;
 			font-style: normal;
+			font-variation-settings: 'wdth' 100;
 			user-select: none;
 		}
 

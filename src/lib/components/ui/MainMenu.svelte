@@ -5,7 +5,7 @@
 
 <div id="mainMenu" transition:fade={{ duration: 300 }}>
 	<h1>infinite turtles</h1>
-	<div><button onclick={startGame}>start game</button></div>
+	<div><button onclick={() => startGame()}>start game</button></div>
 	<div><button>rules</button></div>
 	<div><button>settings</button></div>
 </div>

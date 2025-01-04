@@ -1,6 +1,6 @@
 import { cardState, gameState, timeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
-import { endTurn } from '$lib/gameplay';
+import { endGame, endTurn } from '$lib/gameplay';
 import type { Card } from '$lib/types';
 
 export const dealHand = () => {
@@ -12,13 +12,7 @@ export const dealHand = () => {
 const dealCard = () => {
 	const deckCount = cardState.cards.filter((c) => c.group === 'deck').length;
 	if (deckCount < 1) {
-		// need to refill deck
-		cardState.cards.forEach((card) => {
-			if (card.group !== 'discard') return;
-			card.position = { x: -6, y: 0, z: 3.7 };
-			card.group = 'deck';
-			if (card.typeId === 12) card.health = card.startingHealth;
-		});
+		refillDeckFromDiscardPile();
 	}
 	const handLength = cardState.cards.filter((card) => {
 		return card.group === 'hand';
@@ -49,6 +43,15 @@ const dealCard = () => {
 	positionHand();
 };
 
+export const refillDeckFromDiscardPile = () => {
+	cardState.cards.forEach((card) => {
+		if (card.group !== 'discard') return;
+		card.position = { x: -6, y: 0, z: 3.7 };
+		card.group = 'deck';
+		if (card.typeId === 12) card.health = card.startingHealth;
+	});
+};
+
 export const discardHand = () => {
 	const handLength = cardState.cards.filter((card) => card.group === 'hand').length;
 	discardCardFromHand();
@@ -73,7 +76,6 @@ const discardCardFromHand = () => {
 };
 
 export const discardTurtle = (turtleId: string) => {
-	gameState.locked = true;
 	const slotOffset = turtleId === cardState.slots[0] ? 0 : 3;
 	updateCard(turtleId, {
 		moveTo: { x: turtleId === cardState.slots[0] ? -7 : 7, y: 5, z: -2 },
@@ -106,13 +108,8 @@ export const discardTurtle = (turtleId: string) => {
 		});
 	}
 	timeline.addKeyframe(0.5, () => {
-		updateCard(turtleId, {
-			health: -1
-		});
+		updateCard(turtleId, { health: -1 });
 		cardState.slots[0 + slotOffset] = '';
-	});
-	timeline.addKeyframe(1, () => {
-		gameState.locked = false;
 	});
 };
 
@@ -151,6 +148,13 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 				updateCard(enemy.id, { health: enemy.health - 1, redAmount: 1 });
 				cardState.damagedCard = enemy;
 				gameState.damage.text = '-1';
+				if (enemy.health <= 1 && enemy.typeId === 2) {
+					timeline.addKeyframe(1, () => {
+						// kill enemy
+						updateCard(enemy.id, { health: -1 });
+					});
+					endGame(true);
+				}
 			} else {
 				cardState.damagedCard = enemy;
 				gameState.damage.text = '<small>miss</small>';
@@ -244,7 +248,7 @@ const actionUsed = () => {
 		endTurn();
 	} else {
 		gameState.locked = false;
-		// TODO: QOL check if mouse is hovered over a card
+		// TODO: check if mouse is hovered over a card
 	}
 };
 
