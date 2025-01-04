@@ -18,6 +18,7 @@ const dealCard = () => {
 	const handLength = cardState.cards.filter((card) => {
 		return card.group === 'hand';
 	}).length;
+	// TODO: if there are no turtles placed we should get at least one turtle
 	const dealTurtle = randomNumber(0, 1);
 	if (dealTurtle === 0) {
 		cardState.addCard({

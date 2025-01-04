@@ -1,10 +1,19 @@
 type Data = {
+	phases: {
+		[key: string]: { enemies: { type: number }[] };
+	};
 	cardTypes: {
 		[key: string]: { name: string; description: string; health: number; strength: number };
 	};
 };
 
 export const data: Data = {
+	phases: {
+		'1': { enemies: [{ type: 2 }] },
+		'2': {
+			enemies: [{ type: 2 }, { type: 3 }]
+		}
+	},
 	cardTypes: {
 		'1': {
 			name: 'you',
@@ -15,13 +24,13 @@ export const data: Data = {
 		'2': {
 			name: 'enemy',
 			description: '',
-			health: 10,
+			health: 5,
 			strength: 1
 		},
 		'3': {
 			name: 'enemy type 2',
 			description: '',
-			health: 10,
+			health: 3,
 			strength: 1
 		},
 		'10': {

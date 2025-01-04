@@ -15,7 +15,6 @@ export const startGame = (phase = 1) => {
 	gameState.actionsRemaining = 2;
 	cardState.slots = ['', '', '', '', '', ''];
 	if (phase === 1) {
-		// Player
 		const playerId = cardState.addCard({
 			typeId: 1,
 			health: data.cardTypes['1'].health,
@@ -44,43 +43,24 @@ export const startGame = (phase = 1) => {
 				startingHealth: 2
 			});
 		}
-		// Enemy
-		/*
-		middle position { x: 0, y: 0, z: -3.2 }
-		*/
-		const enemyId = cardState.addCard({
-			typeId: 2,
-			health: data.cardTypes['2'].health,
-			startingHealth: data.cardTypes['2'].health,
-			strength: data.cardTypes['2'].strength,
-			position: { x: 0, y: 2, z: -4 }
-		});
-		timeline.addKeyframe(3.5, () => {
-			updateCard(enemyId, { moveTo: { x: 0.7, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
-		});
-		const enemy2Id = cardState.addCard({
-			typeId: 3,
-			health: data.cardTypes['3'].health,
-			startingHealth: data.cardTypes['3'].health,
-			strength: data.cardTypes['3'].strength,
-			position: { x: 0, y: 2, z: -4 }
-		});
-		timeline.addKeyframe(3.5, () => {
-			updateCard(enemy2Id, { moveTo: { x: -0.7, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
-		});
-	}
-	if (phase === 2) {
-		// Enemy
-		const enemyId = cardState.addCard({
-			typeId: 2,
-			health: 10,
-			position: { x: 0, y: 2, z: -4 }
-		});
-		timeline.addKeyframe(1, () => {
-			updateCard(enemyId, { moveTo: { x: 0, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
-		});
 	}
 	const delay = phase === 1 ? 3 : 0;
+	const enemyCount = data.phases[phase.toString()].enemies.length;
+	let i = 0;
+	for (const enemy of data.phases[phase.toString()].enemies) {
+		const x = enemyCount === 1 ? 0 : i === 0 ? -0.7 : 0.7;
+		i++;
+		const enemyId = cardState.addCard({
+			typeId: enemy.type,
+			health: data.cardTypes[enemy.type.toString()].health,
+			startingHealth: data.cardTypes[enemy.type.toString()].health,
+			strength: data.cardTypes[enemy.type.toString()].strength,
+			position: { x: 0, y: 2, z: -4 }
+		});
+		timeline.addKeyframe(1 + delay, () => {
+			updateCard(enemyId, { moveTo: { x: x, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
+		});
+	}
 	timeline.addKeyframe(2 + delay, () => {
 		gameState.state = 'dealing';
 		dealHand();
