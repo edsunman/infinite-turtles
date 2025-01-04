@@ -6,6 +6,104 @@ import {
 	dealHand,
 	refillDeckFromDiscardPile
 } from './components/cards/cardActions';
+import { data } from './data';
+import type { Card } from './types';
+
+export const startGame = (phase = 1) => {
+	gameState.menuState = 'none';
+	cardState.damage.text = '';
+	gameState.actionsRemaining = 2;
+	cardState.slots = ['', '', '', '', '', ''];
+	if (phase === 1) {
+		// Player
+		const playerId = cardState.addCard({
+			typeId: 1,
+			health: data.cardTypes['1'].health,
+			startingHealth: data.cardTypes['1'].health,
+			strength: data.cardTypes['1'].strength,
+			position: { x: 0, y: 2, z: 5 }
+		});
+		timeline.addKeyframe(1, () => {
+			updateCard(playerId, { moveTo: { x: 0, y: 0, z: -0.5 }, stiffness: 0.15, settled: false });
+			gameState.portalSize = 0.93;
+		});
+		// Starting Deck
+		for (let i = 0; i < 3; i++) {
+			cardState.addCard({
+				typeId: 11,
+				group: 'deck',
+				position: { x: -6, y: 0, z: 3.7 }
+			});
+		}
+		for (let i = 0; i < 3; i++) {
+			cardState.addCard({
+				typeId: 12,
+				group: 'deck',
+				position: { x: -6, y: 0, z: 3.7 },
+				health: 2,
+				startingHealth: 2
+			});
+		}
+		// Enemy
+		const enemyId = cardState.addCard({
+			typeId: 2,
+			health: data.cardTypes['2'].health,
+			startingHealth: data.cardTypes['2'].health,
+			strength: data.cardTypes['2'].strength,
+			position: { x: 0, y: 2, z: -4 }
+		});
+		timeline.addKeyframe(3.5, () => {
+			updateCard(enemyId, { moveTo: { x: 0, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
+		});
+	}
+	if (phase === 2) {
+		// Enemy
+		const enemyId = cardState.addCard({
+			typeId: 2,
+			health: 10,
+			position: { x: 0, y: 2, z: -4 }
+		});
+		timeline.addKeyframe(1, () => {
+			updateCard(enemyId, { moveTo: { x: 0, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
+		});
+	}
+	const delay = phase === 1 ? 3 : 0;
+	timeline.addKeyframe(2 + delay, () => {
+		gameState.state = 'dealing';
+		dealHand();
+	});
+	timeline.addKeyframe(3 + delay, () => {
+		gameState.state = 'playerTurn';
+		gameState.locked = false;
+	});
+};
+
+export const endGame = (victory: boolean) => {
+	gameState.state = 'menu';
+	if (victory) {
+		timeline.addKeyframe(2, () => {
+			if (cardState.slots[0] !== '') {
+				discardTurtle(cardState.slots[0]);
+			}
+			if (cardState.slots[3] !== '') {
+				discardTurtle(cardState.slots[3]);
+			}
+			discardHand();
+			gameState.menuState = 'newCardMenu';
+		});
+		timeline.addKeyframe(4, () => {
+			refillDeckFromDiscardPile();
+		});
+	} else {
+		timeline.addKeyframe(2, () => {
+			gameState.menuState = 'gameOverMenu';
+		});
+		timeline.addKeyframe(4, () => {
+			gameState.portalSize = 0;
+			cardState.cards = [];
+		});
+	}
+};
 
 export const endTurn = () => {
 	if (gameState.state !== 'playerTurn' || gameState.menuState === 'settingsMenu') return;
@@ -28,6 +126,7 @@ export const endTurn = () => {
 			attack(enemy.id, player.id);
 		}
 		timeline.addKeyframe(1, () => {
+			if (gameState.state === 'menu') return;
 			if (rightTurtle) {
 				attack(enemy.id, rightTurtle.id);
 			} else {
@@ -70,6 +169,14 @@ export const endTurn = () => {
 	});
 };
 
+export const nextPhase = () => {
+	startGame(2);
+};
+
+export const quitToMainMenu = () => {
+	gameState.menuState = 'mainMenu';
+};
+
 const attack = (cardId: string, targetId: string) => {
 	const card = cardState.cards.find((c) => c.id === cardId);
 	const target = cardState.cards.find((c) => c.id === targetId);
@@ -94,23 +201,23 @@ const attack = (cardId: string, targetId: string) => {
 			for (const r of runeCards) {
 				// state rune absorb damage
 				if (r && r.typeId === 12 && r.health > 0) {
-					updateCard(r.id, { health: r.health - 1 });
-					cardState.damagedCard = r;
-					gameState.damage.text = '-1';
+					damageCard(card, r);
 					return;
 				}
 			}
 		}
-		updateCard(targetId, { health: target.health - 1, redAmount: 1 });
-		cardState.damagedCard = target;
-		gameState.damage.text = '-1';
+		damageCard(card, target);
 		if (target.health <= 1 && target.typeId === 10) {
 			timeline.addKeyframe(0.5, () => {
 				// kill turtle
 				discardTurtle(target.id);
 			});
 		}
-		if (target.health <= 1 && target.typeId === 1) {
+		if (target.health <= card.strength && target.typeId === 1) {
+			timeline.addKeyframe(1, () => {
+				// kill player
+				updateCard(target.id, { health: -1 });
+			});
 			endGame(false);
 		}
 		if (target.health <= 1 && target.typeId === 2) {
@@ -121,6 +228,14 @@ const attack = (cardId: string, targetId: string) => {
 			endGame(true);
 		}
 	});
+};
+
+const damageCard = (card: Card, target: Card) => {
+	let damagedHealth = target.health - card.strength;
+	if (damagedHealth < 0) damagedHealth = 0;
+	updateCard(target.id, { health: damagedHealth, redAmount: target.typeId <= 10 ? 1 : 0 });
+	cardState.damagedCard = target;
+	cardState.damage.text = '-' + card.strength;
 };
 
 const willTurtleDie = (turtleId: string) => {
@@ -138,89 +253,12 @@ const willTurtleDie = (turtleId: string) => {
 	return true;
 };
 
-export const startGame = (phase = 1) => {
-	gameState.menuState = 'none';
-	// Player
-	if (phase === 1) {
-		const playerId = cardState.addCard({
-			typeId: 1,
-			health: 10,
-			position: { x: 0, y: 2, z: 5 }
-		});
-		timeline.addKeyframe(1, () => {
-			updateCard(playerId, { moveTo: { x: 0, y: 0, z: -0.5 }, stiffness: 0.15, settled: false });
-			gameState.portalSize = 0.93;
-		});
-		// Starting Deck
-		for (let i = 0; i < 3; i++) {
-			cardState.addCard({
-				typeId: 11,
-				group: 'deck',
-				position: { x: -6, y: 0, z: 3.7 }
-			});
-		}
-		for (let i = 0; i < 3; i++) {
-			cardState.addCard({
-				typeId: 12,
-				group: 'deck',
-				position: { x: -6, y: 0, z: 3.7 },
-				health: 2,
-				startingHealth: 2
-			});
-		}
-		// Enemy
-		const enemyId = cardState.addCard({
-			typeId: 2,
-			health: 1,
-			position: { x: 0, y: 2, z: -4 }
-		});
-		timeline.addKeyframe(3.5, () => {
-			updateCard(enemyId, { moveTo: { x: 0, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
-		});
-	}
-	if (phase === 2) {
-		// Enemy
-		const enemyId = cardState.addCard({
-			typeId: 2,
-			health: 10,
-			position: { x: 0, y: 2, z: -4 }
-		});
-		timeline.addKeyframe(1, () => {
-			updateCard(enemyId, { moveTo: { x: 0, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
-		});
-	}
-	const delay = phase === 1 ? 3 : 0;
-	timeline.addKeyframe(2 + delay, () => {
-		gameState.state = 'dealing';
-		dealHand();
-	});
-	timeline.addKeyframe(3 + delay, () => {
-		gameState.state = 'playerTurn';
-	});
-};
-
-export const endGame = (victory: boolean) => {
-	gameState.state = 'menu';
-	if (victory) {
-		timeline.addKeyframe(2, () => {
-			if (cardState.slots[0] !== '') {
-				discardTurtle(cardState.slots[0]);
-			}
-			if (cardState.slots[3] !== '') {
-				discardTurtle(cardState.slots[3]);
-			}
-			discardHand();
-			gameState.menuState = 'newCardMenu';
-		});
-		timeline.addKeyframe(4, () => {
-			refillDeckFromDiscardPile();
-			gameState.damage.text = '';
-		});
+export const actionUsed = () => {
+	gameState.actionsRemaining--;
+	if (gameState.actionsRemaining == 0) {
+		endTurn();
 	} else {
-		console.log('loose');
+		gameState.locked = false;
+		// TODO: check if mouse is hovered over a card
 	}
-};
-
-export const nextPhase = () => {
-	startGame(2);
 };

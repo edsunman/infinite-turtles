@@ -1,6 +1,6 @@
 import { cardState, gameState, timeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
-import { endGame, endTurn } from '$lib/gameplay';
+import { endGame, actionUsed } from '$lib/gameplay';
 import type { Card } from '$lib/types';
 
 export const dealHand = () => {
@@ -147,7 +147,7 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 			if (hit) {
 				updateCard(enemy.id, { health: enemy.health - 1, redAmount: 1 });
 				cardState.damagedCard = enemy;
-				gameState.damage.text = '-1';
+				cardState.damage.text = '-1';
 				if (enemy.health <= 1 && enemy.typeId === 2) {
 					timeline.addKeyframe(1, () => {
 						// kill enemy
@@ -157,7 +157,7 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 				}
 			} else {
 				cardState.damagedCard = enemy;
-				gameState.damage.text = '<small>miss</small>';
+				cardState.damage.text = '<small>miss</small>';
 			}
 		});
 	}
@@ -182,7 +182,7 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 			});
 			updateCard(player.id, { health: player.health + 1 });
 			cardState.damagedCard = player;
-			gameState.damage.text = '+1';
+			cardState.damage.text = '+1';
 		});
 	}
 	timeline.addKeyframe(0.5, () => actionUsed());
@@ -242,26 +242,6 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 	timeline.addKeyframe(0.5, () => actionUsed());
 };
 
-const actionUsed = () => {
-	gameState.actionsRemaining--;
-	if (gameState.actionsRemaining == 0) {
-		endTurn();
-	} else {
-		gameState.locked = false;
-		// TODO: check if mouse is hovered over a card
-	}
-};
-
-const closeGapInHand = (cardId: string = '') => {
-	let order = 0;
-	cardState.cards.forEach((card) => {
-		if (card.id === cardId) order = card.order;
-	});
-	cardState.cards.forEach((card) => {
-		if (card.order > order) card.order--;
-	});
-};
-
 export const positionHand = () => {
 	const handLength = cardState.cards.filter((card) => card.group === 'hand').length;
 	let hoverHeight = 0;
@@ -284,5 +264,15 @@ export const positionHand = () => {
 		card.stiffness = stiffness;
 		card.settled = false;
 		hoverHeight = 0;
+	});
+};
+
+const closeGapInHand = (cardId: string = '') => {
+	let order = 0;
+	cardState.cards.forEach((card) => {
+		if (card.id === cardId) order = card.order;
+	});
+	cardState.cards.forEach((card) => {
+		if (card.order > order) card.order--;
 	});
 };

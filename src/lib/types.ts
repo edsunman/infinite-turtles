@@ -2,12 +2,12 @@ export type XYZ = { x: number; y: number; z: number };
 
 export type GameState = {
 	state: 'menu' | 'playerTurn' | 'enemyTurn' | 'dealing' | 'discarding';
-	menuState: 'none' | 'mainMenu' | 'settingsMenu' | 'newCardMenu';
+	menuState: 'none' | 'mainMenu' | 'settingsMenu' | 'newCardMenu' | 'gameOverMenu';
 	locked: boolean;
 	paused: boolean;
 	actionsRemaining: number;
 	hoverPosition: { x: number; y: number };
-	damage: { x: number; y: number; text: string; key: string };
+	//damage: { x: number; y: number; text: string; key: string };
 	portalSize: number;
 };
 
@@ -27,6 +27,8 @@ export type Card = {
 	group: CardGroup;
 	health: number;
 	startingHealth: number;
+	strength: number;
+
 	redAmount: number;
 	order: number;
 };

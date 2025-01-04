@@ -8,7 +8,6 @@ export const gameState = $state<GameState>({
 	paused: false,
 	actionsRemaining: 2,
 	hoverPosition: { x: 0, y: 0 },
-	damage: { x: 0, y: 0, text: '', key: '' },
 	portalSize: 0
 });
 
@@ -16,14 +15,16 @@ class CardState {
 	selectedCard = $state<Card | null>(null);
 	hoverCard = $state<Card | null>(null);
 	damagedCard = $state<Card | null>(null);
-	slots: string[] = ['', '', '', '', '', ''];
+	damage = $state({ x: 0, y: 0, text: '', key: '' });
+	slots: [string, string, string, string, string, string] = ['', '', '', '', '', ''];
 	cards: Card[] = [];
 	addCard = (args: Partial<Card>) => {
 		const newId = Math.random().toString(16).slice(2);
 		const defaults: Card = {
 			id: newId,
-			health: 0,
-			startingHealth: 0,
+			health: 1,
+			strength: 1,
+			startingHealth: 1,
 			typeId: 10,
 			moveTo: { x: 0, y: 0, z: 0 },
 			position: { x: 0, y: 0, z: 0 },

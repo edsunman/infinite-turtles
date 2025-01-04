@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { gameState } from '$lib/state.svelte';
+	import { cardState } from '$lib/state.svelte';
 	import { quadOut } from 'svelte/easing';
 
 	const fadeUpwards = (node: HTMLElement) => {
@@ -17,9 +17,9 @@
 	};
 </script>
 
-{#key gameState.damage.key}
-	<div style:left="{gameState.damage.x}px" style:top="{gameState.damage.y}px" in:fadeUpwards|global>
-		<p>{@html gameState.damage.text}</p>
+{#key cardState.damage.key}
+	<div style:left="{cardState.damage.x}px" style:top="{cardState.damage.y}px" in:fadeUpwards|global>
+		<p>{@html cardState.damage.text}</p>
 	</div>
 {/key}
 

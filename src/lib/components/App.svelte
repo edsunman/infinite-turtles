@@ -9,6 +9,7 @@
 	import MainMenu from './ui/MainMenu.svelte';
 	import SettingsMenu from './ui/SettingsMenu.svelte';
 	import NewCardMenu from './ui/NewCardMenu.svelte';
+	import GameOverMenu from './ui/GameOverMenu.svelte';
 </script>
 
 <Canvas>
@@ -25,6 +26,10 @@
 
 {#if gameState.menuState === 'newCardMenu'}
 	<NewCardMenu />
+{/if}
+
+{#if gameState.menuState === 'gameOverMenu'}
+	<GameOverMenu />
 {/if}
 
 {#if gameState.state !== 'menu'}

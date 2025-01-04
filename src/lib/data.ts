@@ -16,7 +16,7 @@ export const data: Data = {
 			name: 'enemy',
 			description: '',
 			health: 10,
-			strength: 1
+			strength: 5
 		},
 		'10': {
 			name: 'turtle',
