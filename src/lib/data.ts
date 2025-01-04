@@ -9,14 +9,20 @@ export const data: Data = {
 		'1': {
 			name: 'you',
 			description: '',
-			health: 5,
+			health: 10,
 			strength: 1
 		},
 		'2': {
 			name: 'enemy',
 			description: '',
 			health: 10,
-			strength: 5
+			strength: 1
+		},
+		'3': {
+			name: 'enemy type 2',
+			description: '',
+			health: 10,
+			strength: 1
 		},
 		'10': {
 			name: 'turtle',

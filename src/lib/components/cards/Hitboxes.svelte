@@ -89,7 +89,7 @@
 					cardState.selectedCard.typeId >= 12 &&
 					cardState.slots[2] === '') ||
 				(card.id === cardState.slots[3] && cardState.selectedCard.typeId >= 12) ||
-				(card.typeId === 2 && cardState.selectedCard.typeId === 10) ||
+				(card.typeId >= 2 && card.typeId <= 9 && cardState.selectedCard.typeId === 10) ||
 				(card.typeId === 1 && cardState.selectedCard.typeId === 11)
 			) {
 				document.body.classList.add('hovering');
@@ -147,12 +147,12 @@
 			if (card.id === cardState.slots[3] && cardState.selectedCard.typeId >= 12)
 				//  clicked right turtle with rune
 				placeCard(cardState.selectedCard.id, 'right', 'rune');
-			if (card.typeId === 2 && cardState.selectedCard.typeId === 10)
+			if (card.typeId >= 2 && card.typeId <= 9 && cardState.selectedCard.typeId === 10)
 				//  clicked enemy with turtle
-				throwCard(cardState.selectedCard.id, 'enemy');
+				throwCard(cardState.selectedCard, card);
 			if (card.typeId === 1 && cardState.selectedCard.typeId === 11)
 				//  clicked player with potion
-				throwCard(cardState.selectedCard.id, 'player');
+				throwCard(cardState.selectedCard, card);
 
 			cardState.selectedCard = null;
 			cardState.hoverCard = null;

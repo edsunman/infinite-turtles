@@ -7,7 +7,7 @@ export type GameState = {
 	paused: boolean;
 	actionsRemaining: number;
 	hoverPosition: { x: number; y: number };
-	//damage: { x: number; y: number; text: string; key: string };
+	phase: number;
 	portalSize: number;
 };
 

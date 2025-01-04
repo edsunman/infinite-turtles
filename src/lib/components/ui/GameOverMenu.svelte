@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { quitToMainMenu } from '$lib/gameplay';
+	import { gameState } from '$lib/state.svelte';
+
+	export const quitToMainMenu = () => {
+		gameState.menuState = 'mainMenu';
+	};
 </script>
 
 <div id="gameOverMenu">

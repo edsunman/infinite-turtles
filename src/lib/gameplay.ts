@@ -45,6 +45,9 @@ export const startGame = (phase = 1) => {
 			});
 		}
 		// Enemy
+		/*
+		middle position { x: 0, y: 0, z: -3.2 }
+		*/
 		const enemyId = cardState.addCard({
 			typeId: 2,
 			health: data.cardTypes['2'].health,
@@ -53,7 +56,17 @@ export const startGame = (phase = 1) => {
 			position: { x: 0, y: 2, z: -4 }
 		});
 		timeline.addKeyframe(3.5, () => {
-			updateCard(enemyId, { moveTo: { x: 0, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
+			updateCard(enemyId, { moveTo: { x: 0.7, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
+		});
+		const enemy2Id = cardState.addCard({
+			typeId: 3,
+			health: data.cardTypes['3'].health,
+			startingHealth: data.cardTypes['3'].health,
+			strength: data.cardTypes['3'].strength,
+			position: { x: 0, y: 2, z: -4 }
+		});
+		timeline.addKeyframe(3.5, () => {
+			updateCard(enemy2Id, { moveTo: { x: -0.7, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
 		});
 	}
 	if (phase === 2) {
@@ -108,50 +121,59 @@ export const endGame = (victory: boolean) => {
 export const endTurn = () => {
 	if (gameState.state !== 'playerTurn' || gameState.menuState === 'settingsMenu') return;
 	let delay = 0;
-	const enemy = cardState.cards.find((card) => card.typeId === 2);
+	const enemies = cardState.cards.filter((card) => card.typeId >= 2 && card.typeId < 10);
 	const leftTurtle = cardState.cards.find((card) => card.id === cardState.slots[0]);
 	const rightTurtle = cardState.cards.find((card) => card.id === cardState.slots[3]);
 	const player = cardState.cards.find((card) => card.typeId === 1);
-	if (!enemy || !player) return;
+	if (enemies.length < 1 || !player) return;
 
 	gameState.state = 'discarding';
 	discardHand();
 
 	// enemy attacks
-	timeline.addKeyframe(1, () => {
-		gameState.state = 'enemyTurn';
-		if (leftTurtle) {
-			attack(enemy.id, leftTurtle.id);
-		} else {
-			attack(enemy.id, player.id);
-		}
-		timeline.addKeyframe(1, () => {
-			if (gameState.state === 'menu') return;
-			if (rightTurtle) {
-				attack(enemy.id, rightTurtle.id);
+	for (const enemy of enemies) {
+		timeline.addKeyframe(1 + delay, () => {
+			gameState.state = 'enemyTurn';
+			if (leftTurtle && cardState.cards.find((card) => card.id === cardState.slots[0])) {
+				attack(enemy.id, leftTurtle.id);
 			} else {
 				attack(enemy.id, player.id);
 			}
+			timeline.addKeyframe(0.75, () => {
+				if (gameState.state === 'menu') return;
+				if (rightTurtle && cardState.cards.find((card) => card.id === cardState.slots[3])) {
+					attack(enemy.id, rightTurtle.id);
+				} else {
+					attack(enemy.id, player.id);
+				}
+			});
 		});
-	});
+		delay += 2;
+	}
 
 	// turtles attack
 	if (leftTurtle && !willTurtleDie(leftTurtle.id)) {
-		timeline.addKeyframe(3.5, () => {
+		timeline.addKeyframe(1 + delay, () => {
 			if (gameState.state === 'menu') return;
-			attack(leftTurtle.id, enemy.id);
+			findClosestEnemy(leftTurtle, enemies);
+			const enemy = findClosestEnemy(leftTurtle, enemies);
+			if (enemy) attack(leftTurtle.id, enemy.id);
+			//attack(leftTurtle.id, enemies[0].id);
 		});
 		delay += 1;
 	}
 	if (rightTurtle && !willTurtleDie(rightTurtle.id)) {
-		timeline.addKeyframe(3.5 + delay, () => {
+		timeline.addKeyframe(1 + delay, () => {
 			if (gameState.state === 'menu') return;
-			attack(rightTurtle.id, enemy.id);
+			findClosestEnemy(rightTurtle, enemies);
+			const enemy = findClosestEnemy(rightTurtle, enemies);
+			if (enemy) attack(rightTurtle.id, enemy.id);
+			//attack(rightTurtle.id, enemies[0].id);
 		});
 		delay += 1;
 	}
 
-	timeline.addKeyframe(3.5 + delay, () => {
+	timeline.addKeyframe(1.5 + delay, () => {
 		if (gameState.state === 'menu') return;
 		gameState.state = 'dealing';
 		dealHand();
@@ -161,7 +183,7 @@ export const endTurn = () => {
 			}
 		});
 	});
-	timeline.addKeyframe(4.5 + delay, () => {
+	timeline.addKeyframe(2.5 + delay, () => {
 		if (gameState.state === 'menu') return;
 		gameState.state = 'playerTurn';
 		gameState.actionsRemaining = 2;
@@ -169,12 +191,21 @@ export const endTurn = () => {
 	});
 };
 
-export const nextPhase = () => {
-	startGame(2);
+const findClosestEnemy = (turtle: Card, enemies: Card[]) => {
+	let closestCard: Card | undefined;
+	let distance = 100;
+	for (const enemy of enemies) {
+		const d = Math.abs(enemy.position.x - turtle.position.x);
+		if (d < distance) {
+			distance = d;
+			closestCard = enemy;
+		}
+	}
+	return closestCard;
 };
 
-export const quitToMainMenu = () => {
-	gameState.menuState = 'mainMenu';
+export const nextPhase = () => {
+	startGame(2);
 };
 
 const attack = (cardId: string, targetId: string) => {

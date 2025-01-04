@@ -2,6 +2,7 @@ import { cardState, gameState, timeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
 import { endGame, actionUsed } from '$lib/gameplay';
 import type { Card } from '$lib/types';
+import { data } from '$lib/data';
 
 export const dealHand = () => {
 	timeline.addKeyframe(0, () => dealCard());
@@ -20,7 +21,7 @@ const dealCard = () => {
 	const dealTurtle = randomNumber(0, 1);
 	if (dealTurtle === 0) {
 		cardState.addCard({
-			health: 1,
+			health: data.cardTypes['10'].health,
 			typeId: 10,
 			group: 'hand',
 			order: handLength,
@@ -121,23 +122,20 @@ export const updateCard = (cardId: string, args: Partial<Card>) => {
 	cardState.cards[cardIndex] = newCard;
 };
 
-export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
-	const card = cardState.cards.find((c) => c.id === cardId);
-	if (!card) return;
+export const throwCard = (card: Card, target: Card) => {
 	gameState.locked = true;
-	if (at === 'enemy' && card.typeId === 10) {
-		const enemy = cardState.cards.find((c) => c.typeId === 2);
-		if (!enemy) return;
-		updateCard(cardId, {
-			moveTo: { x: 0, y: 0, z: -5 },
+	if (target.typeId >= 2 && target.typeId <= 9 && card.typeId === 10) {
+		if (!target) return;
+		updateCard(card.id, {
+			moveTo: { x: target.position.x, y: 0, z: -5 },
 			rotateTo: { x: -1, y: 0, z: 3 },
 			settled: false,
 			group: 'none',
 			stiffness: 0.1
 		});
-		closeGapInHand(cardId);
+		closeGapInHand(card.id);
 		timeline.addKeyframe(0.25, () => {
-			updateCard(cardId, {
+			updateCard(card.id, {
 				moveTo: { x: randomNumber(-6, 6), y: 1, z: -6 },
 				rotateTo: { x: -1, y: 0, z: -3 },
 				settled: false,
@@ -145,43 +143,41 @@ export const throwCard = (cardId: string, at: 'player' | 'enemy') => {
 			});
 			const hit = randomNumber(0, 1);
 			if (hit) {
-				updateCard(enemy.id, { health: enemy.health - 1, redAmount: 1 });
-				cardState.damagedCard = enemy;
+				updateCard(target.id, { health: target.health - 1, redAmount: 1 });
+				cardState.damagedCard = target;
 				cardState.damage.text = '-1';
-				if (enemy.health <= 1 && enemy.typeId === 2) {
+				if (target.health <= 1 && target.typeId === 2) {
 					timeline.addKeyframe(1, () => {
 						// kill enemy
-						updateCard(enemy.id, { health: -1 });
+						updateCard(target.id, { health: -1 });
 					});
 					endGame(true);
 				}
 			} else {
-				cardState.damagedCard = enemy;
+				cardState.damagedCard = target;
 				cardState.damage.text = '<small>miss</small>';
 			}
 		});
 	}
-	if (at === 'player' && card.typeId === 11) {
-		const player = cardState.cards.find((c) => c.typeId === 1);
-		if (!player) return;
-		updateCard(cardId, {
+	if (target.typeId === 1 && card.typeId === 11) {
+		updateCard(card.id, {
 			group: 'none',
 			stiffness: 0.03,
 			moveTo: { x: 0, y: 5, z: 0 },
 			rotateTo: { x: -1.57, y: 0, z: 0 },
 			settled: false
 		});
-		closeGapInHand(cardId);
+		closeGapInHand(card.id);
 		timeline.addKeyframe(0.3, () => {
-			updateCard(cardId, {
+			updateCard(card.id, {
 				moveTo: { x: 6, y: 0, z: 3.7 },
 				rotateTo: { x: -1.57, y: 0, z: 0 },
 				settled: false,
 				group: 'discard',
 				stiffness: 0.08
 			});
-			updateCard(player.id, { health: player.health + 1 });
-			cardState.damagedCard = player;
+			updateCard(target.id, { health: target.health + 1 });
+			cardState.damagedCard = target;
 			cardState.damage.text = '+1';
 		});
 	}

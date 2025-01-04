@@ -55,8 +55,9 @@
 	batched.addInstance(0);
 	batched.addGeometry(gltf.nodes.Enemy.geometry);
 	batched.addInstance(1);
+	batched.addInstance(1);
 	batched.addGeometry(gltf.nodes.Turtle.geometry);
-	for (let i = 0; i < 8; i++) {
+	for (let i = 0; i < 7; i++) {
 		batched.addInstance(2);
 	}
 	batched.addGeometry(gltf.nodes.Potion.geometry);
@@ -97,9 +98,10 @@
 				batched.setVisibleAt(i, false);
 			}
 
-			let turtleCount = 2;
+			let turtleCount = 3;
 			let potionCount = 10;
 			let stateCount = 20;
+			let enemyCount = 1;
 			let numbersCount = 0;
 			let heartCount = 30;
 			let bordersCount = 40;
@@ -117,15 +119,19 @@
 				dummy.updateMatrix();
 				dummyColor.setRGB(cardState.cards[i].redAmount, 0, 0);
 				instancedBackgrounds.setMatrixAt(i, dummy.matrix);
-				backgroundsFloat.set([cardState.cards[i].typeId === 2 ? 1 : 0], i);
+				backgroundsFloat.set(
+					[cardState.cards[i].typeId >= 2 && cardState.cards[i].typeId <= 9 ? 1 : 0],
+					i
+				);
 				if (cardState.cards[i].typeId === 1) {
 					batched.setMatrixAt(0, dummy.matrix);
 					batched.setVisibleAt(0, true);
 					batched.setColorAt(0, dummyColor);
-				} else if (cardState.cards[i].typeId === 2) {
-					batched.setMatrixAt(1, dummy.matrix);
-					batched.setVisibleAt(1, true);
-					batched.setColorAt(1, dummyColor);
+				} else if (cardState.cards[i].typeId >= 2 && cardState.cards[i].typeId <= 9) {
+					batched.setMatrixAt(enemyCount, dummy.matrix);
+					batched.setVisibleAt(enemyCount, true);
+					batched.setColorAt(enemyCount, dummyColor);
+					enemyCount++;
 				} else if (cardState.cards[i].typeId === 10) {
 					batched.setMatrixAt(turtleCount, dummy.matrix);
 					batched.setVisibleAt(turtleCount, true);
