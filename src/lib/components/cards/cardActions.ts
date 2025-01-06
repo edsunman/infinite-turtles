@@ -1,6 +1,6 @@
 import { cardState, gameState, timeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
-import { endGame, usedAction } from '$lib/gameplay';
+import { endGame, useAction } from '$lib/gameplay';
 import type { Card } from '$lib/types';
 import { data } from '$lib/data';
 
@@ -12,7 +12,7 @@ export const dealHand = (count = 3) => {
 		turtles.push(addTurtle);
 		if (addTurtle) addedTurtle = true;
 	}
-	// if there are no turtles placed we should get at least one turtle
+	// if there are no turtles placed we should deal at least one turtle
 	if (!addedTurtle && cardState.slots[0] === '' && cardState.slots[3] === '') {
 		turtles[2] = true;
 	}
@@ -205,7 +205,7 @@ export const throwCard = (card: Card, target: Card) => {
 			cardState.damage.text = '+1';
 		});
 	}
-	timeline.addKeyframe(0.5, () => usedAction());
+	timeline.addKeyframe(0.5, () => useAction());
 };
 
 export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' | 'rune') => {
@@ -259,7 +259,7 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 	);
 	cardState.slots[selectedSlot] = cardId;
 	closeGapInHand(cardId);
-	timeline.addKeyframe(0.5, () => usedAction());
+	timeline.addKeyframe(0.5, () => useAction());
 };
 
 export const damageCard = (strength: number, target: Card) => {
