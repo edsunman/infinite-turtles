@@ -24,6 +24,9 @@ export class Timeline {
 			played: false
 		});
 	}
+	addDelay(amount: number) {
+		this.#clock -= amount;
+	}
 	update(delta: number) {
 		this.#clock += delta;
 		if (this.#keyframes.length < 1) return;

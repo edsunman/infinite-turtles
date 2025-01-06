@@ -10,6 +10,20 @@ import {
 import { data } from './data';
 import type { Card } from './types';
 
+// @ts-expect-error: lol
+window.hello = () => {
+	timeline.addKeyframe(0, () => {
+		timeline.addDelay(2);
+		console.log('no delay');
+		timeline.addKeyframe(1, () => {
+			console.log('no delay 2');
+		});
+	});
+	timeline.addKeyframe(0, () => {
+		console.log('no delay 3');
+	});
+};
+
 export const startGame = (phase = 1) => {
 	gameState.menuState = 'none';
 	cardState.damage.text = '';
@@ -38,7 +52,7 @@ export const startGame = (phase = 1) => {
 		}
 		for (let i = 0; i < 3; i++) {
 			cardState.addCard({
-				typeId: 12,
+				typeId: 13,
 				group: 'deck',
 				position: { x: -6, y: 0, z: 3.7 },
 				health: 2,
@@ -174,8 +188,12 @@ export const endTurn = () => {
 	timeline.addKeyframe(2.5 + delay, () => {
 		if (gameState.state === 'menu') return;
 		gameState.state = 'playerTurn';
-		gameState.actionsRemaining = 2;
 		gameState.locked = false;
+
+		const inspectRune = cardState.cards.find((card) => {
+			return card.typeId === 13 && card.group === 'placed';
+		});
+		gameState.actionsRemaining = inspectRune ? 3 : 2;
 	});
 };
 
