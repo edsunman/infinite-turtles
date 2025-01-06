@@ -4,6 +4,7 @@ import {
 	updateCard,
 	discardTurtle,
 	dealHand,
+	damageCard,
 	refillDeckFromDiscardPile
 } from './components/cards/cardActions';
 import { data } from './data';
@@ -14,6 +15,7 @@ export const startGame = (phase = 1) => {
 	cardState.damage.text = '';
 	gameState.actionsRemaining = 2;
 	cardState.slots = ['', '', '', '', '', ''];
+
 	if (phase === 1) {
 		const playerId = cardState.addCard({
 			typeId: 1,
@@ -44,6 +46,7 @@ export const startGame = (phase = 1) => {
 			});
 		}
 	}
+
 	const delay = phase === 1 ? 3 : 0;
 	const enemyCount = data.phases[phase.toString()].enemies.length;
 	let i = 0;
@@ -61,10 +64,12 @@ export const startGame = (phase = 1) => {
 			updateCard(enemyId, { moveTo: { x: x, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
 		});
 	}
+
 	timeline.addKeyframe(2 + delay, () => {
 		gameState.state = 'dealing';
 		dealHand();
 	});
+
 	timeline.addKeyframe(3 + delay, () => {
 		gameState.state = 'playerTurn';
 		gameState.locked = false;
@@ -138,17 +143,16 @@ export const endTurn = () => {
 			findClosestEnemy(leftTurtle, enemies);
 			const enemy = findClosestEnemy(leftTurtle, enemies);
 			if (enemy) attack(leftTurtle.id, enemy.id);
-			//attack(leftTurtle.id, enemies[0].id);
 		});
 		delay += 1;
 	}
+
 	if (rightTurtle && !willTurtleDie(rightTurtle.id)) {
 		timeline.addKeyframe(1 + delay, () => {
 			if (gameState.state === 'menu') return;
 			findClosestEnemy(rightTurtle, enemies);
 			const enemy = findClosestEnemy(rightTurtle, enemies);
 			if (enemy) attack(rightTurtle.id, enemy.id);
-			//attack(rightTurtle.id, enemies[0].id);
 		});
 		delay += 1;
 	}
@@ -163,6 +167,7 @@ export const endTurn = () => {
 			}
 		});
 	});
+
 	timeline.addKeyframe(2.5 + delay, () => {
 		if (gameState.state === 'menu') return;
 		gameState.state = 'playerTurn';
@@ -194,13 +199,16 @@ const attack = (cardId: string, targetId: string) => {
 	if (!card || !target) {
 		return;
 	}
+
 	updateCard(cardId, {
 		moveTo: { x: target.position.x, y: 0.5, z: target.position.z },
 		settled: false,
 		stiffness: 0.15
 	});
+
 	timeline.addKeyframe(0.08, () => {
 		updateCard(cardId, { moveTo: card.position, settled: false, stiffness: 0.15 });
+
 		// inflict damage
 		if (target.typeId === 10) {
 			const targetSlotNumber = cardState.slots.findIndex((s) => s === target.id);
@@ -218,12 +226,14 @@ const attack = (cardId: string, targetId: string) => {
 			}
 		}
 		damageCard(card, target);
+
 		if (target.health <= 1 && target.typeId === 10) {
 			timeline.addKeyframe(0.5, () => {
 				// kill turtle
 				discardTurtle(target.id);
 			});
 		}
+
 		if (target.health <= card.strength && target.typeId === 1) {
 			timeline.addKeyframe(1, () => {
 				// kill player
@@ -231,6 +241,7 @@ const attack = (cardId: string, targetId: string) => {
 			});
 			endGame(false);
 		}
+
 		if (target.health <= 1 && target.typeId === 2) {
 			timeline.addKeyframe(1, () => {
 				// kill enemy
@@ -239,14 +250,6 @@ const attack = (cardId: string, targetId: string) => {
 			endGame(true);
 		}
 	});
-};
-
-const damageCard = (card: Card, target: Card) => {
-	let damagedHealth = target.health - card.strength;
-	if (damagedHealth < 0) damagedHealth = 0;
-	updateCard(target.id, { health: damagedHealth, redAmount: target.typeId <= 10 ? 1 : 0 });
-	cardState.damagedCard = target;
-	cardState.damage.text = '-' + card.strength;
 };
 
 const willTurtleDie = (turtleId: string) => {

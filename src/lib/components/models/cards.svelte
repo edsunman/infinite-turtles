@@ -71,7 +71,6 @@ Command: npx @threlte/gltf@3.0.0-next.11 D:\Node\turtles\static\models\cards.glb
     <T.Mesh
       geometry={gltf.nodes.Turtle.geometry}
       material={gltf.nodes.Turtle.material}
-      scale={[1, 1.12, 1]}
     />
     <T.Mesh
       geometry={gltf.nodes.Rune.geometry}

@@ -37,7 +37,7 @@
 	const backgroundsBufferAttribute = new InstancedBufferAttribute(backgroundsFloat, 1);
 	instancedBackgrounds.geometry.setAttribute('custom', backgroundsBufferAttribute);
 
-	const instancedNumbers = new InstancedMesh(new PlaneGeometry(0.17, 0.17), undefined, 100);
+	const instancedNumbers = new InstancedMesh(new PlaneGeometry(0.16, 0.16), undefined, 100);
 	instancedNumbers.instanceMatrix.setUsage(DynamicDrawUsage);
 	const numbersFloat = new Float32Array(100);
 	const numbersBufferAttribute = new InstancedBufferAttribute(numbersFloat, 1);
@@ -154,8 +154,8 @@
 				batched.setMatrixAt(heartCount, dummy.matrix);
 				batched.setVisibleAt(heartCount, true);
 				heartCount++;
-				dummy.translateX(0.305);
-				dummy.translateY(0.58);
+				dummy.translateX(0.32);
+				dummy.translateY(0.585);
 				dummy.translateZ(0.03);
 				dummy.updateMatrix();
 				instancedNumbers.setMatrixAt(numbersCount, dummy.matrix);

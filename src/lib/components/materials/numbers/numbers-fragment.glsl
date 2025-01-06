@@ -37,6 +37,7 @@ void main() {
     vec2 coords = vec2((mapUv.x / 4.0) + myValues[int(vCustom + 0.1)].x, (mapUv.y / 4.0) + myValues[int(vCustom + 0.1)].y);
 
     gl_FragColor = vec4(0.0, 0.0, 0.0, texture2D(map, coords).r);
+//    / gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
 
     //#include <tonemapping_fragment>
     //#include <colorspace_fragment> 

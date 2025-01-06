@@ -239,6 +239,14 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 	timeline.addKeyframe(0.5, () => actionUsed());
 };
 
+export const damageCard = (card: Card, target: Card) => {
+	let damagedHealth = target.health - card.strength;
+	if (damagedHealth < 0) damagedHealth = 0;
+	updateCard(target.id, { health: damagedHealth, redAmount: target.typeId <= 10 ? 1 : 0 });
+	cardState.damagedCard = target;
+	cardState.damage.text = '-' + card.strength;
+};
+
 export const positionHand = () => {
 	const handLength = cardState.cards.filter((card) => card.group === 'hand').length;
 	let hoverHeight = 0;
