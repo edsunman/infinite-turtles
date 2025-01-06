@@ -1,16 +1,27 @@
 import { cardState, gameState, timeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
-import { endGame, actionUsed } from '$lib/gameplay';
+import { endGame, usedAction } from '$lib/gameplay';
 import type { Card } from '$lib/types';
 import { data } from '$lib/data';
 
-export const dealHand = () => {
-	timeline.addKeyframe(0, () => dealCard());
-	timeline.addKeyframe(0.3, () => dealCard());
-	timeline.addKeyframe(0.6, () => dealCard());
+export const dealHand = (count = 3) => {
+	const turtles: boolean[] = [];
+	let addedTurtle = false;
+	for (let i = 0; i < count; i++) {
+		const addTurtle = Boolean(randomNumber(0, 1));
+		turtles.push(addTurtle);
+		if (addTurtle) addedTurtle = true;
+	}
+	// if there are no turtles placed we should get at least one turtle
+	if (!addedTurtle && cardState.slots[0] === '' && cardState.slots[3] === '') {
+		turtles[2] = true;
+	}
+	for (let i = 0; i < count; i++) {
+		timeline.addKeyframe(0 + i * 0.3, () => dealCard(turtles[i]));
+	}
 };
 
-const dealCard = () => {
+const dealCard = (dealTurtle: boolean) => {
 	const deckCount = cardState.cards.filter((c) => c.group === 'deck').length;
 	if (deckCount < 1) {
 		refillDeckFromDiscardPile();
@@ -18,9 +29,8 @@ const dealCard = () => {
 	const handLength = cardState.cards.filter((card) => {
 		return card.group === 'hand';
 	}).length;
-	// TODO: if there are no turtles placed we should get at least one turtle
-	const dealTurtle = randomNumber(0, 1);
-	if (dealTurtle === 0) {
+
+	if (dealTurtle) {
 		cardState.addCard({
 			health: data.cardTypes['10'].health,
 			typeId: 10,
@@ -77,7 +87,7 @@ const discardCardFromHand = () => {
 	positionHand();
 };
 
-export const discardTurtle = (turtleId: string) => {
+export const discardTurtleCard = (turtleId: string) => {
 	const slotOffset = turtleId === cardState.slots[0] ? 0 : 3;
 	updateCard(turtleId, {
 		moveTo: { x: turtleId === cardState.slots[0] ? -7 : 7, y: 5, z: -2 },
@@ -85,7 +95,11 @@ export const discardTurtle = (turtleId: string) => {
 		rotateTo: { x: -1.57, y: 0, z: 4 },
 		stiffness: 0.08
 	});
-	if (cardState.slots[1 + slotOffset] !== '') {
+	const attachedRuneCards = [
+		cardState.cards.find((card) => card.id === cardState.slots[1 + slotOffset]),
+		cardState.cards.find((card) => card.id === cardState.slots[2 + slotOffset])
+	];
+	if (attachedRuneCards[0]) {
 		timeline.addKeyframe(0.1, () => {
 			updateCard(cardState.slots[1 + slotOffset], {
 				moveTo: { x: 6, y: 0, z: 3.7 },
@@ -97,7 +111,7 @@ export const discardTurtle = (turtleId: string) => {
 			cardState.slots[1 + slotOffset] = '';
 		});
 	}
-	if (cardState.slots[2 + slotOffset] !== '') {
+	if (attachedRuneCards[1]) {
 		timeline.addKeyframe(0.2, () => {
 			updateCard(cardState.slots[2 + slotOffset], {
 				moveTo: { x: 6, y: 0, z: 3.7 },
@@ -109,10 +123,19 @@ export const discardTurtle = (turtleId: string) => {
 			cardState.slots[2 + slotOffset] = '';
 		});
 	}
+
 	timeline.addKeyframe(0.5, () => {
 		updateCard(turtleId, { health: -1 });
 		cardState.slots[0 + slotOffset] = '';
 	});
+
+	let hostCardWasAttached = false;
+	attachedRuneCards.forEach((card) => {
+		if (card && card.typeId === 14) {
+			hostCardWasAttached = true;
+		}
+	});
+	return hostCardWasAttached;
 };
 
 export const updateCard = (cardId: string, args: Partial<Card>) => {
@@ -182,7 +205,7 @@ export const throwCard = (card: Card, target: Card) => {
 			cardState.damage.text = '+1';
 		});
 	}
-	timeline.addKeyframe(0.5, () => actionUsed());
+	timeline.addKeyframe(0.5, () => usedAction());
 };
 
 export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' | 'rune') => {
@@ -236,15 +259,15 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 	);
 	cardState.slots[selectedSlot] = cardId;
 	closeGapInHand(cardId);
-	timeline.addKeyframe(0.5, () => actionUsed());
+	timeline.addKeyframe(0.5, () => usedAction());
 };
 
-export const damageCard = (card: Card, target: Card) => {
-	let damagedHealth = target.health - card.strength;
+export const damageCard = (strength: number, target: Card) => {
+	let damagedHealth = target.health - strength;
 	if (damagedHealth < 0) damagedHealth = 0;
 	updateCard(target.id, { health: damagedHealth, redAmount: target.typeId <= 10 ? 1 : 0 });
 	cardState.damagedCard = target;
-	cardState.damage.text = '-' + card.strength;
+	cardState.damage.text = '-' + strength;
 };
 
 export const positionHand = () => {

@@ -141,7 +141,7 @@
 					batched.setMatrixAt(potionCount, dummy.matrix);
 					batched.setVisibleAt(potionCount, true);
 					potionCount++;
-				} else if (cardState.cards[i].typeId === 12) {
+				} else if (cardState.cards[i].typeId >= 12) {
 					batched.setMatrixAt(stateCount, dummy.matrix);
 					batched.setVisibleAt(stateCount, true);
 					stateCount++;

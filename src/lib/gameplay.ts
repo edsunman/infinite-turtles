@@ -2,7 +2,7 @@ import { cardState, gameState, timeline } from '$lib/state.svelte';
 import {
 	discardHand,
 	updateCard,
-	discardTurtle,
+	discardTurtleCard,
 	dealHand,
 	damageCard,
 	refillDeckFromDiscardPile
@@ -79,24 +79,24 @@ export const startGame = (phase = 1) => {
 export const endGame = (victory: boolean) => {
 	gameState.state = 'menu';
 	if (victory) {
-		timeline.addKeyframe(2, () => {
+		timeline.addKeyframe(1, () => {
 			if (cardState.slots[0] !== '') {
-				discardTurtle(cardState.slots[0]);
+				discardTurtleCard(cardState.slots[0]);
 			}
 			if (cardState.slots[3] !== '') {
-				discardTurtle(cardState.slots[3]);
+				discardTurtleCard(cardState.slots[3]);
 			}
 			discardHand();
 			gameState.menuState = 'newCardMenu';
 		});
-		timeline.addKeyframe(4, () => {
+		timeline.addKeyframe(3, () => {
 			refillDeckFromDiscardPile();
 		});
 	} else {
-		timeline.addKeyframe(2, () => {
+		timeline.addKeyframe(1, () => {
 			gameState.menuState = 'gameOverMenu';
 		});
-		timeline.addKeyframe(4, () => {
+		timeline.addKeyframe(3, () => {
 			gameState.portalSize = 0;
 			cardState.cards = [];
 		});
@@ -124,7 +124,7 @@ export const endTurn = () => {
 			} else {
 				attack(enemy.id, player.id);
 			}
-			timeline.addKeyframe(0.75, () => {
+			timeline.addKeyframe(1.3, () => {
 				if (gameState.state === 'menu') return;
 				if (rightTurtle && cardState.cards.find((card) => card.id === cardState.slots[3])) {
 					attack(enemy.id, rightTurtle.id);
@@ -133,7 +133,7 @@ export const endTurn = () => {
 				}
 			});
 		});
-		delay += 2;
+		delay += 2.55;
 	}
 
 	// turtles attack
@@ -160,7 +160,10 @@ export const endTurn = () => {
 	timeline.addKeyframe(1.5 + delay, () => {
 		if (gameState.state === 'menu') return;
 		gameState.state = 'dealing';
-		dealHand();
+		const inspectRune = cardState.cards.find((card) => {
+			return card.typeId === 13 && card.group === 'placed';
+		});
+		dealHand(inspectRune ? 4 : 3);
 		cardState.cards.forEach((card) => {
 			if (card.typeId === 10 && card.group === 'none') {
 				card.health = -1;
@@ -220,17 +223,28 @@ const attack = (cardId: string, targetId: string) => {
 			for (const r of runeCards) {
 				// state rune absorb damage
 				if (r && r.typeId === 12 && r.health > 0) {
-					damageCard(card, r);
+					damageCard(card.strength, r);
 					return;
 				}
 			}
 		}
-		damageCard(card, target);
+		damageCard(card.strength, target);
 
 		if (target.health <= 1 && target.typeId === 10) {
 			timeline.addKeyframe(0.5, () => {
 				// kill turtle
-				discardTurtle(target.id);
+				const hostCard = discardTurtleCard(target.id);
+				if (hostCard) {
+					const enemies = cardState.cards.filter((card) => card.typeId >= 2 && card.typeId < 10);
+					const enemy = findClosestEnemy(target, enemies);
+					if (enemy) damageCard(data.cardTypes['14'].strength, enemy);
+					if (enemy && enemy.health <= data.cardTypes['14'].strength) {
+						timeline.addKeyframe(0.5, () => {
+							// kill enemy
+							killEnemy(enemy);
+						});
+					}
+				}
 			});
 		}
 
@@ -238,18 +252,25 @@ const attack = (cardId: string, targetId: string) => {
 			timeline.addKeyframe(1, () => {
 				// kill player
 				updateCard(target.id, { health: -1 });
+				endGame(false);
 			});
-			endGame(false);
 		}
 
-		if (target.health <= 1 && target.typeId === 2) {
+		if (target.health <= 1 && target.typeId >= 2 && target.typeId < 10) {
 			timeline.addKeyframe(1, () => {
 				// kill enemy
-				updateCard(target.id, { health: -1 });
+				killEnemy(target);
 			});
-			endGame(true);
 		}
 	});
+};
+
+const killEnemy = (enemy: Card) => {
+	updateCard(enemy.id, { health: -1 });
+	const enemies = cardState.cards.filter(
+		(card) => card.typeId >= 2 && card.typeId < 10 && card.health >= 1
+	);
+	if (enemies.length < 1) endGame(true);
 };
 
 const willTurtleDie = (turtleId: string) => {
@@ -267,7 +288,7 @@ const willTurtleDie = (turtleId: string) => {
 	return true;
 };
 
-export const actionUsed = () => {
+export const usedAction = () => {
 	gameState.actionsRemaining--;
 	if (gameState.actionsRemaining == 0) {
 		endTurn();
