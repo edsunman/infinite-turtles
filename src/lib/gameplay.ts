@@ -88,7 +88,7 @@ export const endGame = (victory: boolean) => {
 				discardTurtleCard(cardState.slots[3]);
 			}
 			discardHand();
-			gameState.menuState = 'newCardMenu';
+			gameState.menuState = 'nextPhaseMenu';
 		});
 		timeline.addKeyframe(3, () => {
 			refillDeckFromDiscardPile();
@@ -97,7 +97,7 @@ export const endGame = (victory: boolean) => {
 		timeline.addKeyframe(1, () => {
 			gameState.menuState = 'gameOverMenu';
 		});
-		timeline.addKeyframe(3, () => {
+		timeline.addKeyframe(1.5, () => {
 			gameState.portalSize = 0;
 			cardState.cards = [];
 		});

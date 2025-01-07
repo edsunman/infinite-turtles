@@ -8,7 +8,7 @@
 	import DamageNumbers from './ui/DamageNumbers.svelte';
 	import MainMenu from './ui/MainMenu.svelte';
 	import SettingsMenu from './ui/SettingsMenu.svelte';
-	import NewCardMenu from './ui/NewCardMenu.svelte';
+	import NextPhaseMenu from './ui/NextPhaseMenu.svelte';
 	import GameOverMenu from './ui/GameOverMenu.svelte';
 </script>
 
@@ -24,8 +24,8 @@
 	<SettingsMenu />
 {/if}
 
-{#if gameState.menuState === 'newCardMenu'}
-	<NewCardMenu />
+{#if gameState.menuState === 'nextPhaseMenu'}
+	<NextPhaseMenu />
 {/if}
 
 {#if gameState.menuState === 'gameOverMenu'}

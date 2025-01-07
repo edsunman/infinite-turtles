@@ -9,7 +9,7 @@ type Data = {
 
 export const data: Data = {
 	phases: {
-		'1': { enemies: [{ type: 2 }, { type: 3 }] },
+		'1': { enemies: [{ type: 2 }] },
 		'2': {
 			enemies: [{ type: 2 }, { type: 3 }]
 		}

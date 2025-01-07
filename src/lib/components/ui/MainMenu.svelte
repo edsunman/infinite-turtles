@@ -28,13 +28,18 @@
 
 	button {
 		color: white;
-		font-size: 40px;
-		margin-top: 20px;
-		opacity: 0.8;
-		transition: all 150ms;
+		font-size: 35px;
+		background-color: #c1a68a;
+		padding: 6px 15px;
+		border-radius: 10px;
+		margin-top: 25px;
 	}
 
 	button:hover {
-		opacity: 1;
+		background-color: #cbae92;
+	}
+
+	button:active {
+		background-color: #d6bba1;
 	}
 </style>

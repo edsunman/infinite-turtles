@@ -8,8 +8,18 @@
 
 	let deck: Card[] = $state([]);
 	let discard: Card[] = $state([]);
-	let deckHover = $state(false);
+	let deckHover = $state(true);
 	let discardHover = $state(false);
+
+	let sortedDeck = $derived.by(() => {
+		return deck
+			.reduce<{ card: Card; count: number }[]>((acc, card) => {
+				acc[card.typeId] ??= { card, count: 0 };
+				acc[card.typeId]['count'] += 1;
+				return acc;
+			}, [])
+			.filter((n) => n);
+	});
 
 	$effect(() => {
 		gameState.state;
@@ -25,7 +35,7 @@
 	id="deckButton"
 	role="tooltip"
 	onmouseenter={() => (deckHover = true)}
-	onmouseleave={() => (deckHover = false)}
+	onmouseleave={() => (deckHover = true)}
 	transition:fade={{ delay: 500 }}
 >
 	Deck: {deck.length}
@@ -33,14 +43,20 @@
 
 {#if deckHover && gameState.state === 'playerTurn'}
 	<div class="ui" id="deck">
-		{#each deck as card}
-			<p>{data.cardTypes[card.typeId.toString()].name}</p>
+		<p>Cards in deck:</p>
+		{#each sortedDeck as group}
+			<div style="background-image:url(/images/state-rune.svg)">
+				<p>
+					{data.cardTypes[group.card.typeId.toString()].name}
+					{group.count > 1 ? `(x${group.count})` : ''}
+				</p>
+			</div>
 		{/each}
 	</div>
 {/if}
 
 <div class="ui" id="actions" transition:fade={{ delay: 500 }}>
-	Actions: {gameState.actionsRemaining}
+	<p>actions: {gameState.actionsRemaining}</p>
 </div>
 
 <div
@@ -65,34 +81,66 @@
 <button class="ui" id="endTurn" onclick={endTurn} transition:fade={{ delay: 500 }}>end turn</button>
 
 <style>
+	p {
+		margin: 0;
+	}
+
 	.ui {
 		position: absolute;
-		background-color: white;
 	}
+
 	#deckButton {
 		bottom: 20px;
 		left: 20px;
 	}
+
 	#deck {
 		bottom: 100px;
 		left: 20px;
+		background-color: white;
+		padding: 15px 20px;
+		border-radius: 10px;
 	}
+
+	#deck div {
+		background-repeat: no-repeat;
+		padding: 15px 0px 15px 65px;
+		margin: 10px 0;
+	}
+
 	#actions {
 		bottom: 20px;
 		left: 100px;
+		color: white;
+		font-size: 25px;
 	}
+
 	#discardButton {
 		bottom: 20px;
 		right: 20px;
 	}
+
 	#discard {
 		bottom: 100px;
 		right: 20px;
 	}
+
 	#endTurn {
-		background-color: white;
-		position: absolute;
+		color: white;
+		font-size: 25px;
+		background-color: #c1a68a;
+		padding: 6px 15px;
+		border-radius: 10px;
+		margin-top: 25px;
 		bottom: 20px;
-		right: 100px;
+		right: 150px;
+	}
+
+	#endTurn:hover {
+		background-color: #cbae92;
+	}
+
+	#endTurn:active {
+		background-color: #d6bba1;
 	}
 </style>
