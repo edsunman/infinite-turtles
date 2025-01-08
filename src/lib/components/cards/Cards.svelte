@@ -76,11 +76,11 @@
 	for (let i = 0; i < 5; i++) {
 		batched.addInstance(6);
 	}
-	batched.addGeometry(gltf.nodes.RuneEffect.geometry);
+	batched.addGeometry(gltf.nodes.RuneHost.geometry);
 	for (let i = 0; i < 5; i++) {
 		batched.addInstance(7);
 	}
-	batched.addGeometry(gltf.nodes.RuneHost.geometry);
+	batched.addGeometry(gltf.nodes.RuneEffect.geometry);
 	for (let i = 0; i < 5; i++) {
 		batched.addInstance(8);
 	}
@@ -180,15 +180,15 @@
 					backgroundsFloat.set([3], i);
 					inspectCount++;
 				} else if (cardState.cards[i].typeId === 14) {
-					batched.setMatrixAt(effectCount, dummy.matrix);
-					batched.setVisibleAt(effectCount, true);
-					backgroundsFloat.set([3], i);
-					effectCount++;
-				} else if (cardState.cards[i].typeId === 15) {
 					batched.setMatrixAt(hostCount, dummy.matrix);
 					batched.setVisibleAt(hostCount, true);
 					backgroundsFloat.set([3], i);
 					hostCount++;
+				} else if (cardState.cards[i].typeId === 15) {
+					batched.setMatrixAt(effectCount, dummy.matrix);
+					batched.setVisibleAt(effectCount, true);
+					backgroundsFloat.set([3], i);
+					effectCount++;
 				}
 				batched.setMatrixAt(bordersCount, dummy.matrix);
 				batched.setVisibleAt(bordersCount, true);

@@ -108,6 +108,8 @@ export const endGame = (victory: boolean) => {
 		});
 		timeline.addKeyframe(1.5, () => {
 			gameState.portalSize = 0;
+		});
+		timeline.addKeyframe(2.5, () => {
 			cardState.cards = [];
 		});
 	}

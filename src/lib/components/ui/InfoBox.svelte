@@ -25,10 +25,11 @@
 
 <style>
 	#infoBox {
+		z-index: 2;
 		position: absolute;
 		border-radius: 10px;
 		padding: 8px 10px 10px 10px;
-		background: #151515;
+		background: #222222;
 		color: white;
 		pointer-events: none;
 		width: 150px;

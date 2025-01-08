@@ -8,7 +8,7 @@ export const dealHand = (count = 3) => {
 	const turtles: boolean[] = [];
 	let addedTurtle = false;
 	for (let i = 0; i < count; i++) {
-		const addTurtle = Boolean(randomNumber(0, 1));
+		const addTurtle = randomNumber(0, 2) > 1 ? true : false;
 		turtles.push(addTurtle);
 		if (addTurtle) addedTurtle = true;
 	}
