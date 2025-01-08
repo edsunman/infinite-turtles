@@ -31,8 +31,12 @@ Command: npx @threlte/gltf@3.0.0-next.11 D:\Node\turtles\static\models\cards.glb
       Player: THREE.Mesh
       Potion: THREE.Mesh
       Turtle: THREE.Mesh
-      Rune: THREE.Mesh
+      RuneState: THREE.Mesh
       Heart: THREE.Mesh
+      EnemyScorp: THREE.Mesh
+      RuneEffect: THREE.Mesh
+      RuneInspect: THREE.Mesh
+      RuneHost: THREE.Mesh
     }
     materials: {}
   }
@@ -73,12 +77,28 @@ Command: npx @threlte/gltf@3.0.0-next.11 D:\Node\turtles\static\models\cards.glb
       material={gltf.nodes.Turtle.material}
     />
     <T.Mesh
-      geometry={gltf.nodes.Rune.geometry}
-      material={gltf.nodes.Rune.material}
+      geometry={gltf.nodes.RuneState.geometry}
+      material={gltf.nodes.RuneState.material}
     />
     <T.Mesh
       geometry={gltf.nodes.Heart.geometry}
       material={gltf.nodes.Heart.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.EnemyScorp.geometry}
+      material={gltf.nodes.EnemyScorp.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.RuneEffect.geometry}
+      material={gltf.nodes.RuneEffect.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.RuneInspect.geometry}
+      material={gltf.nodes.RuneInspect.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.RuneHost.geometry}
+      material={gltf.nodes.RuneHost.material}
     />
   {:catch err}
     {@render error?.({ error: err })}

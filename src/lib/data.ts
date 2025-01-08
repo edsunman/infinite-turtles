@@ -24,7 +24,7 @@ export const data: Data = {
 		'2': {
 			name: 'enemy',
 			description: '',
-			health: 2,
+			health: 8,
 			strength: 1
 		},
 		'3': {
@@ -57,14 +57,14 @@ export const data: Data = {
 			health: 0,
 			strength: 0
 		},
-		'14': {
+		'15': {
 			name: 'host rune',
 			description:
 				'<span style="color:var(--purple);font-size:33px">-3</span> damage to nearest enemy when turtle dies',
 			health: 0,
 			strength: 3
 		},
-		'15': {
+		'14': {
 			name: 'effect rune',
 			description:
 				'gives turtle <span style="color:var(--green);font-size:33px">+2</span> strength',

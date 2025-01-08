@@ -56,26 +56,44 @@
 	batched.addGeometry(gltf.nodes.Enemy.geometry);
 	batched.addInstance(1);
 	batched.addInstance(1);
+	batched.addGeometry(gltf.nodes.EnemyScorp.geometry);
+	batched.addInstance(2);
+	batched.addInstance(2);
 	batched.addGeometry(gltf.nodes.Turtle.geometry);
-	for (let i = 0; i < 7; i++) {
-		batched.addInstance(2);
-	}
-	batched.addGeometry(gltf.nodes.Potion.geometry);
 	for (let i = 0; i < 10; i++) {
 		batched.addInstance(3);
 	}
-	batched.addGeometry(gltf.nodes.Rune.geometry);
-	for (let i = 0; i < 10; i++) {
+	batched.addGeometry(gltf.nodes.Potion.geometry);
+	for (let i = 0; i < 5; i++) {
 		batched.addInstance(4);
 	}
-	batched.addGeometry(gltf.nodes.Heart.geometry);
-	for (let i = 0; i < 10; i++) {
+
+	batched.addGeometry(gltf.nodes.RuneState.geometry);
+	for (let i = 0; i < 5; i++) {
 		batched.addInstance(5);
 	}
-	batched.addGeometry(gltf.nodes.Border.geometry);
-	for (let i = 0; i < 50; i++) {
+	batched.addGeometry(gltf.nodes.RuneInspect.geometry);
+	for (let i = 0; i < 5; i++) {
 		batched.addInstance(6);
 	}
+	batched.addGeometry(gltf.nodes.RuneEffect.geometry);
+	for (let i = 0; i < 5; i++) {
+		batched.addInstance(7);
+	}
+	batched.addGeometry(gltf.nodes.RuneHost.geometry);
+	for (let i = 0; i < 5; i++) {
+		batched.addInstance(8);
+	}
+
+	batched.addGeometry(gltf.nodes.Heart.geometry);
+	for (let i = 0; i < 10; i++) {
+		batched.addInstance(9);
+	}
+	batched.addGeometry(gltf.nodes.Border.geometry);
+	for (let i = 0; i < 40; i++) {
+		batched.addInstance(10);
+	}
+
 	for (let i = 0; i < 90; i++) {
 		batched.setColorAt(i, dummyColor);
 	}
@@ -98,13 +116,17 @@
 				batched.setVisibleAt(i, false);
 			}
 
-			let turtleCount = 3;
-			let potionCount = 10;
-			let stateCount = 20;
 			let enemyCount = 1;
+			let enemyScorpCount = 3;
+			let turtleCount = 5;
+			let potionCount = 15;
+			let stateCount = 20;
+			let inspectCount = 25;
+			let effectCount = 30;
+			let hostCount = 35;
+			let heartCount = 40;
+			let bordersCount = 50;
 			let numbersCount = 0;
-			let heartCount = 30;
-			let bordersCount = 40;
 			for (let i = 0; i < cardsCount; i++) {
 				dummy.position.set(
 					cardState.cards[i].position.x,
@@ -120,18 +142,23 @@
 				dummyColor.setRGB(cardState.cards[i].redAmount, 0, 0);
 				instancedBackgrounds.setMatrixAt(i, dummy.matrix);
 				backgroundsFloat.set(
-					[cardState.cards[i].typeId >= 2 && cardState.cards[i].typeId <= 9 ? 1 : 0],
+					[cardState.cards[i].typeId >= 2 && cardState.cards[i].typeId <= 9 ? 1 : 2],
 					i
 				);
 				if (cardState.cards[i].typeId === 1) {
 					batched.setMatrixAt(0, dummy.matrix);
 					batched.setVisibleAt(0, true);
 					batched.setColorAt(0, dummyColor);
-				} else if (cardState.cards[i].typeId >= 2 && cardState.cards[i].typeId <= 9) {
+				} else if (cardState.cards[i].typeId === 2) {
 					batched.setMatrixAt(enemyCount, dummy.matrix);
 					batched.setVisibleAt(enemyCount, true);
 					batched.setColorAt(enemyCount, dummyColor);
 					enemyCount++;
+				} else if (cardState.cards[i].typeId === 3) {
+					batched.setMatrixAt(enemyScorpCount, dummy.matrix);
+					batched.setVisibleAt(enemyScorpCount, true);
+					batched.setColorAt(enemyScorpCount, dummyColor);
+					enemyScorpCount++;
 				} else if (cardState.cards[i].typeId === 10) {
 					batched.setMatrixAt(turtleCount, dummy.matrix);
 					batched.setVisibleAt(turtleCount, true);
@@ -140,11 +167,28 @@
 				} else if (cardState.cards[i].typeId === 11) {
 					batched.setMatrixAt(potionCount, dummy.matrix);
 					batched.setVisibleAt(potionCount, true);
+					backgroundsFloat.set([0], i);
 					potionCount++;
-				} else if (cardState.cards[i].typeId >= 12) {
+				} else if (cardState.cards[i].typeId === 12) {
 					batched.setMatrixAt(stateCount, dummy.matrix);
 					batched.setVisibleAt(stateCount, true);
+					backgroundsFloat.set([3], i);
 					stateCount++;
+				} else if (cardState.cards[i].typeId === 13) {
+					batched.setMatrixAt(inspectCount, dummy.matrix);
+					batched.setVisibleAt(inspectCount, true);
+					backgroundsFloat.set([3], i);
+					inspectCount++;
+				} else if (cardState.cards[i].typeId === 14) {
+					batched.setMatrixAt(effectCount, dummy.matrix);
+					batched.setVisibleAt(effectCount, true);
+					backgroundsFloat.set([3], i);
+					effectCount++;
+				} else if (cardState.cards[i].typeId === 15) {
+					batched.setMatrixAt(hostCount, dummy.matrix);
+					batched.setVisibleAt(hostCount, true);
+					backgroundsFloat.set([3], i);
+					hostCount++;
 				}
 				batched.setMatrixAt(bordersCount, dummy.matrix);
 				batched.setVisibleAt(bordersCount, true);

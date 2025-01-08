@@ -9,7 +9,9 @@
 	const textures = useLoader(TextureLoader).load(
 		{
 			texture1: 'images/background.png',
-			texture2: 'images/background-purple.png'
+			texture2: 'images/background-purple.png',
+			texture3: 'images/background-turtle.png',
+			texture4: 'images/background-rune.png'
 		},
 		{
 			transform: (texture) => {
@@ -31,7 +33,7 @@
 	$effect(() => {
 		textures.then((t) => {
 			if (!material) return;
-			material.uniforms.textures.value = [t.texture1, t.texture2];
+			material.uniforms.textures.value = [t.texture1, t.texture2, t.texture3, t.texture4];
 		});
 	});
 

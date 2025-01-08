@@ -40,7 +40,16 @@ export const startGame = (phase = 1) => {
 		}
 		for (let i = 0; i < 3; i++) {
 			cardState.addCard({
-				typeId: 14,
+				typeId: 12,
+				group: 'deck',
+				position: { x: -6, y: 0, z: 3.7 },
+				health: 2,
+				startingHealth: 2
+			});
+		}
+		for (let i = 0; i < 3; i++) {
+			cardState.addCard({
+				typeId: 13,
 				group: 'deck',
 				position: { x: -6, y: 0, z: 3.7 },
 				health: 2,

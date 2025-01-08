@@ -1,4 +1,4 @@
-uniform sampler2D textures[2];
+uniform sampler2D textures[4];
 uniform float offset;
 varying vec2 vUv;
 varying vec3 vViewPosition;
@@ -44,6 +44,14 @@ void main() {
 
     if(vCustom > 0.5) {
         tex = texture2D(textures[1], mapUv);
+    }
+
+    if(vCustom > 1.5) {
+        tex = texture2D(textures[2], mapUv);
+    }
+
+    if(vCustom > 2.5) {
+        tex = texture2D(textures[3], mapUv);
     }
 
     gl_FragColor = fromLinear(tex);
