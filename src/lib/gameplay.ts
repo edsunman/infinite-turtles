@@ -47,15 +47,29 @@ export const startGame = (phase = 1) => {
 				startingHealth: 2
 			});
 		}
-		for (let i = 0; i < 3; i++) {
-			cardState.addCard({
-				typeId: 13,
-				group: 'deck',
-				position: { x: -6, y: 0, z: 3.7 },
-				health: 2,
-				startingHealth: 2
-			});
-		}
+
+		cardState.addCard({
+			typeId: 13,
+			group: 'deck',
+			position: { x: -6, y: 0, z: 3.7 },
+			health: 2,
+			startingHealth: 2
+		});
+
+		cardState.addCard({
+			typeId: 14,
+			group: 'deck',
+			position: { x: -6, y: 0, z: 3.7 },
+			health: 2,
+			startingHealth: 2
+		});
+		cardState.addCard({
+			typeId: 15,
+			group: 'deck',
+			position: { x: -6, y: 0, z: 3.7 },
+			health: 2,
+			startingHealth: 2
+		});
 	}
 
 	const enemyCount = data.phases[phase.toString()].enemies.length;
@@ -156,7 +170,7 @@ export const endTurn = () => {
 		const leftTurtle = cardState.cards.find((card) => card.id === cardState.slots[0]);
 		if (gameState.state === 'menu' || !leftTurtle) return;
 		timeline.addDelay(1);
-		findClosestEnemy(leftTurtle, enemies);
+		//findClosestEnemy(leftTurtle, enemies);
 		const enemy = findClosestEnemy(leftTurtle, enemies);
 		if (enemy) attack(leftTurtle.id, enemy.id);
 	});
@@ -165,7 +179,8 @@ export const endTurn = () => {
 		const rightTurtle = cardState.cards.find((card) => card.id === cardState.slots[3]);
 		if (gameState.state === 'menu' || !rightTurtle) return;
 		timeline.addDelay(1);
-		findClosestEnemy(rightTurtle, enemies);
+		const enemies = cardState.cards.filter((card) => card.typeId >= 2 && card.typeId < 10);
+		//findClosestEnemy(rightTurtle, enemies);
 		const enemy = findClosestEnemy(rightTurtle, enemies);
 		if (enemy) attack(rightTurtle.id, enemy.id);
 	});
@@ -174,11 +189,12 @@ export const endTurn = () => {
 	timeline.addKeyframe(1.5, () => {
 		if (gameState.state === 'menu') return;
 		gameState.state = 'dealing';
-		const inspectRune = cardState.cards.find((card) => {
-			return card.typeId === 13 && card.group === 'placed';
-		});
-		dealHand(inspectRune ? 4 : 3);
-		gameState.actionsRemaining = inspectRune ? 3 : 2;
+		const inspectRunes = cardState.cards.filter(
+			(card) => card.typeId === 13 && card.group === 'placed'
+		);
+		dealHand(3 + inspectRunes.length);
+		gameState.actionsRemaining = 2 + inspectRunes.length;
+		gameState.actions = 2 + inspectRunes.length;
 		cardState.cards.forEach((card) => {
 			if (card.typeId === 10 && card.group === 'none') {
 				card.health = -1;
@@ -226,7 +242,7 @@ const attack = (cardId: string, targetId: string) => {
 	timeline.addKeyframe(0.08, () => {
 		updateCard(cardId, { moveTo: card.position, settled: false, stiffness: 0.15 });
 
-		// inflict damage
+		// state rune card
 		if (target.typeId === 10) {
 			const targetSlotNumber = cardState.slots.findIndex((s) => s === target.id);
 			const runeCards = cardState.cards.filter(
@@ -242,7 +258,23 @@ const attack = (cardId: string, targetId: string) => {
 				}
 			}
 		}
-		damageCard(card.strength, target);
+
+		let strength = card.strength;
+
+		// effect rune card
+		if (card.typeId === 10) {
+			const turtleSlotNumber = cardState.slots.findIndex((s) => s === card.id);
+			const runeCards = cardState.cards.filter(
+				(c) =>
+					c.id === cardState.slots[1 + turtleSlotNumber] ||
+					c.id === cardState.slots[2 + turtleSlotNumber]
+			);
+			for (const r of runeCards) {
+				if (r.typeId === 15) strength += 2;
+			}
+		}
+
+		damageCard(strength, target);
 
 		if (target.health <= 1 && target.typeId === 10) {
 			timeline.addKeyframe(0.5, () => {
@@ -271,7 +303,7 @@ const attack = (cardId: string, targetId: string) => {
 			});
 		}
 
-		if (target.health <= 1 && target.typeId >= 2 && target.typeId < 10) {
+		if (target.health <= strength && target.typeId >= 2 && target.typeId < 10) {
 			timeline.addKeyframe(1, () => {
 				// kill enemy
 				killEnemy(target);
@@ -280,7 +312,7 @@ const attack = (cardId: string, targetId: string) => {
 	});
 };
 
-const killEnemy = (enemy: Card) => {
+export const killEnemy = (enemy: Card) => {
 	updateCard(enemy.id, { health: -1 });
 	const enemies = cardState.cards.filter(
 		(card) => card.typeId >= 2 && card.typeId < 10 && card.health >= 1

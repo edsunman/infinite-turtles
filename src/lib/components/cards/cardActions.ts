@@ -1,6 +1,6 @@
 import { cardState, gameState, timeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
-import { endGame, useAction } from '$lib/gameplay';
+import { killEnemy, useAction } from '$lib/gameplay';
 import type { Card } from '$lib/types';
 import { data } from '$lib/data';
 
@@ -12,7 +12,7 @@ export const dealHand = (count = 3) => {
 		turtles.push(addTurtle);
 		if (addTurtle) addedTurtle = true;
 	}
-	// if there are no turtles placed we should deal at least one turtle
+	// if there are no turtles placed deal at least one turtle
 	if (!addedTurtle && cardState.slots[0] === '' && cardState.slots[3] === '') {
 		turtles[2] = true;
 	}
@@ -60,7 +60,10 @@ export const refillDeckFromDiscardPile = () => {
 		if (card.group !== 'discard') return;
 		card.position = { x: -6, y: 0, z: 3.7 };
 		card.group = 'deck';
-		if (card.typeId === 12) card.health = card.startingHealth;
+		if (card.typeId === 12) {
+			card.health = card.startingHealth;
+			console.log('moved to deck');
+		}
 	});
 };
 
@@ -170,12 +173,11 @@ export const throwCard = (card: Card, target: Card) => {
 				updateCard(target.id, { health: target.health - 1, redAmount: 1 });
 				cardState.damagedCard = target;
 				cardState.damage.text = '-1';
-				if (target.health <= 1 && target.typeId === 2) {
+				if (target.health <= 1 && target.typeId >= 2 && target.typeId <= 9) {
 					timeline.addKeyframe(1, () => {
 						// kill enemy
-						updateCard(target.id, { health: -1 });
+						killEnemy(target);
 					});
-					endGame(true);
 				}
 			} else {
 				cardState.damagedCard = target;
@@ -244,6 +246,7 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 		group: 'placed',
 		stiffness: 0.03,
 		moveTo: { x: 0, y: 5, z: 0 },
+		//moveTo: { x: 0, y: 8, z: 3 },
 		rotateTo: { x: -1.57, y: 0, z: 0 },
 		settled: false
 	});
@@ -257,9 +260,21 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 			settled: false
 		})
 	);
+
 	cardState.slots[selectedSlot] = cardId;
 	closeGapInHand(cardId);
-	timeline.addKeyframe(0.5, () => useAction());
+	timeline.addKeyframe(0.5, () => {
+		useAction();
+		const card = cardState.cards.find((card) => card.id === cardId);
+		if (card && (card.typeId === 13 || card.typeId === 15)) {
+			const turtleId = cardState.slots[on === 'left' ? 0 : 3];
+			const turtle = cardState.cards.find((card) => card.id === turtleId);
+			if (!turtle) return;
+			updateCard(turtle.id, { health: turtle.health + 1 });
+			cardState.damagedCard = turtle;
+			cardState.damage.text = '+1';
+		}
+	});
 };
 
 export const damageCard = (strength: number, target: Card) => {

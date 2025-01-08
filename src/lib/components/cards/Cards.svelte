@@ -122,8 +122,8 @@
 			let potionCount = 15;
 			let stateCount = 20;
 			let inspectCount = 25;
-			let effectCount = 30;
-			let hostCount = 35;
+			let hostCount = 30;
+			let effectCount = 35;
 			let heartCount = 40;
 			let bordersCount = 50;
 			let numbersCount = 0;

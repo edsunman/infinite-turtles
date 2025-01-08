@@ -68,7 +68,7 @@
 {/if}
 
 <div class="ui" id="actions" transition:fade={{ delay: 500 }}>
-	<p>actions: {gameState.actionsRemaining}</p>
+	<p>actions: {gameState.actionsRemaining}/{gameState.actions}</p>
 </div>
 
 <div
@@ -82,7 +82,7 @@
 	<p>{discard.length}</p>
 </div>
 
-{#if discardHover && gameState.state === 'playerTurn'}
+{#if discardHover && gameState.state === 'playerTurn' && sortedDiscard.length > 0}
 	<div class="ui cardList" id="discard">
 		<p>Discard pile:</p>
 		{#each sortedDiscard as group}
@@ -148,7 +148,7 @@
 	}
 
 	#actions {
-		bottom: 20px;
+		bottom: 25px;
 		left: 140px;
 		color: white;
 		font-size: 25px;
@@ -174,7 +174,7 @@
 		color: white;
 		font-size: 25px;
 		background-color: #c1a68a;
-		padding: 6px 15px;
+		padding: 5px 15px;
 		border-radius: 10px;
 		margin-top: 25px;
 		bottom: 20px;

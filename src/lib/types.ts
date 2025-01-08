@@ -9,6 +9,7 @@ export type GameState = {
 	hoverPosition: { x: number; y: number };
 	phase: number;
 	portalSize: number;
+	actions: number;
 };
 
 export type CardGroup = 'none' | 'deck' | 'hand' | 'discard' | 'placed';

@@ -24,7 +24,7 @@ export const data: Data = {
 		'2': {
 			name: 'enemy',
 			description: '',
-			health: 8,
+			health: 1,
 			strength: 1
 		},
 		'3': {
