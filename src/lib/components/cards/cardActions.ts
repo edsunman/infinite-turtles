@@ -202,6 +202,7 @@ export const throwCard = (card: Card, target: Card) => {
 				group: 'discard',
 				stiffness: 0.08
 			});
+			if (target.health >= 12) return;
 			updateCard(target.id, { health: target.health + 1 });
 			cardState.damagedCard = target;
 			cardState.damage.text = '+1';

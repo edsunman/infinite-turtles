@@ -32,11 +32,12 @@
 	});
 
 	$effect(() => {
-		gameState.state;
-		untrack(() => {
-			deck = cardState.cards.filter((c) => c.group === 'deck');
-			discard = cardState.cards.filter((c) => c.group === 'discard');
-		});
+		if (gameState.state === 'playerTurn' || gameState.state === 'enemyTurn') {
+			untrack(() => {
+				deck = cardState.cards.filter((c) => c.group === 'deck');
+				discard = cardState.cards.filter((c) => c.group === 'discard');
+			});
+		}
 	});
 </script>
 

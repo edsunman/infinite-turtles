@@ -48,7 +48,7 @@ export const startGame = (phase = 1) => {
 			});
 		}
 
-		cardState.addCard({
+		/* 		cardState.addCard({
 			typeId: 13,
 			group: 'deck',
 			position: { x: -6, y: 0, z: 3.7 },
@@ -69,7 +69,7 @@ export const startGame = (phase = 1) => {
 			position: { x: -6, y: 0, z: 3.7 },
 			health: 2,
 			startingHealth: 2
-		});
+		}); */
 	}
 
 	const enemyCount = data.phases[phase.toString()].enemies.length;
@@ -103,6 +103,11 @@ export const startGame = (phase = 1) => {
 export const endGame = (victory: boolean) => {
 	gameState.state = 'menu';
 	if (victory) {
+		if (gameState.phase === 4) {
+			gameState.phase = 5;
+			showGameOver();
+			return;
+		}
 		timeline.addKeyframe(1, () => {
 			if (cardState.slots[0] !== '') {
 				discardTurtleCard(cardState.slots[0]);
@@ -114,19 +119,32 @@ export const endGame = (victory: boolean) => {
 			gameState.menuState = 'nextPhaseMenu';
 		});
 		timeline.addKeyframe(3, () => {
+			data.phases[gameState.phase.toString()].reward.forEach((card) => {
+				cardState.addCard({
+					typeId: card.type,
+					group: 'deck',
+					position: { x: -6, y: 0, z: 3.7 },
+					strength: data.cardTypes[card.type].strength
+				});
+				console.log('added ' + card.type);
+			});
 			refillDeckFromDiscardPile();
 		});
 	} else {
-		timeline.addKeyframe(1, () => {
-			gameState.menuState = 'gameOverMenu';
-		});
-		timeline.addKeyframe(1.5, () => {
-			gameState.portalSize = 0;
-		});
-		timeline.addKeyframe(2.5, () => {
-			cardState.cards = [];
-		});
+		showGameOver();
 	}
+};
+
+const showGameOver = () => {
+	timeline.addKeyframe(1, () => {
+		gameState.menuState = 'gameOverMenu';
+	});
+	timeline.addKeyframe(1.5, () => {
+		gameState.portalSize = 0;
+	});
+	timeline.addKeyframe(2.5, () => {
+		cardState.cards = [];
+	});
 };
 
 export const endTurn = () => {
@@ -169,8 +187,7 @@ export const endTurn = () => {
 	timeline.addKeyframe(1, () => {
 		const leftTurtle = cardState.cards.find((card) => card.id === cardState.slots[0]);
 		if (gameState.state === 'menu' || !leftTurtle) return;
-		timeline.addDelay(1);
-		//findClosestEnemy(leftTurtle, enemies);
+		timeline.addDelay(1.3);
 		const enemy = findClosestEnemy(leftTurtle, enemies);
 		if (enemy) attack(leftTurtle.id, enemy.id);
 	});
@@ -178,9 +195,8 @@ export const endTurn = () => {
 	timeline.addKeyframe(1, () => {
 		const rightTurtle = cardState.cards.find((card) => card.id === cardState.slots[3]);
 		if (gameState.state === 'menu' || !rightTurtle) return;
-		timeline.addDelay(1);
+		timeline.addDelay(1.3);
 		const enemies = cardState.cards.filter((card) => card.typeId >= 2 && card.typeId < 10);
-		//findClosestEnemy(rightTurtle, enemies);
 		const enemy = findClosestEnemy(rightTurtle, enemies);
 		if (enemy) attack(rightTurtle.id, enemy.id);
 	});
@@ -223,7 +239,9 @@ const findClosestEnemy = (turtle: Card, enemies: Card[]) => {
 };
 
 export const nextPhase = () => {
-	startGame(2);
+	gameState.phase++;
+	startGame(gameState.phase);
+	console.log('starting phase ' + gameState.phase);
 };
 
 const attack = (cardId: string, targetId: string) => {

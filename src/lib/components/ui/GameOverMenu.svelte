@@ -11,6 +11,7 @@
 		hide = true;
 		setTimeout(() => {
 			gameState.menuState = 'mainMenu';
+			gameState.phase = 1;
 		}, 1000);
 	};
 
@@ -25,7 +26,11 @@
 </script>
 
 <div id="gameOverMenu" class="{show ? 'show' : ''} {hide ? 'hide' : ''}">
-	<h1>defeat!</h1>
+	{#if gameState.phase === 5}
+		<h1>victory!</h1>
+	{:else}
+		<h1>defeat!</h1>
+	{/if}
 	{#if showButton}
 		<button in:fade onclick={quitToMainMenu}>back to main menu</button>
 	{/if}

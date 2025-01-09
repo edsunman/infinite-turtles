@@ -1,8 +1,11 @@
 <script lang="ts">
+	import { data } from '$lib/data';
 	import { nextPhase } from '$lib/gameplay';
+	import { gameState } from '$lib/state.svelte';
 	import { onMount } from 'svelte';
 
 	let show = $state(false);
+	let newCard = $derived(data.cardTypes[data.phases[gameState.phase.toString()].reward[0].type]);
 
 	const close = () => {
 		show = false;
@@ -21,7 +24,9 @@
 <div id="nextPhaseMenu" class={show ? 'show' : ''}>
 	<h3>new card</h3>
 	<button onclick={close}>next phase</button>
-	<!-- 	<div class="grid"></div> -->
+	<div class="card">
+		{newCard.name}
+	</div>
 </div>
 
 <style>

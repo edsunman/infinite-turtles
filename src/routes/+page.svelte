@@ -38,7 +38,9 @@
 	}
 	:global(:root) {
 		--green: #4eff98;
-		--purple: #a56eff;
+		--purple: #ff4592;
+		--blue: #4dddff;
+		--red: #ff4545;
 	}
 
 	div {
