@@ -156,6 +156,8 @@ export const endTurn = () => {
 	gameState.state = 'discarding';
 	discardHand();
 
+	// TODO: turtle health must be hardcoded to 1 because something when strange after turtle with effect card was hit
+
 	// enemy attacks
 	for (const enemy of enemies) {
 		timeline.addKeyframe(1, () => {

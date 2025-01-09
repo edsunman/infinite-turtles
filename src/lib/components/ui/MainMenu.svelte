@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { startGame } from '$lib/gameplay';
+	import { gameState } from '$lib/state.svelte';
 	import { fade } from 'svelte/transition';
 </script>
 
-<div id="mainMenu" transition:fade={{ duration: 300 }}>
+<div id="mainMenu" in:fade={{ duration: 300, delay: 300 }} out:fade={{ duration: 300 }}>
 	<h1>infinite turtles</h1>
 	<div><button onclick={() => startGame()}>start game</button></div>
-	<div><button>rules</button></div>
-	<div><button>settings</button></div>
+	<div><button onclick={() => (gameState.menuState = 'rules')}>rules</button></div>
 </div>
 
 <style>

@@ -19,6 +19,7 @@
 		p,
 		h1,
 		h3,
+		h4,
 		button {
 			font-family: 'Sour Gummy', serif;
 			font-optical-sizing: auto;

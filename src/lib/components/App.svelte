@@ -7,9 +7,10 @@
 	import Deck from './ui/Deck.svelte';
 	import DamageNumbers from './ui/DamageNumbers.svelte';
 	import MainMenu from './ui/MainMenu.svelte';
-	import SettingsMenu from './ui/SettingsMenu.svelte';
+	/* 	import SettingsMenu from './ui/SettingsMenu.svelte'; */
 	import NextPhaseMenu from './ui/NextPhaseMenu.svelte';
 	import GameOverMenu from './ui/GameOverMenu.svelte';
+	import Rules from './ui/Rules.svelte';
 </script>
 
 <Canvas>
@@ -20,9 +21,9 @@
 	<MainMenu />
 {/if}
 
-{#if gameState.menuState === 'settingsMenu'}
+<!-- {#if gameState.menuState === 'settingsMenu'}
 	<SettingsMenu />
-{/if}
+{/if} -->
 
 {#if gameState.menuState === 'nextPhaseMenu'}
 	<NextPhaseMenu />
@@ -31,6 +32,9 @@
 {#if gameState.menuState === 'gameOverMenu'}
 	<GameOverMenu />
 {/if}
+{#if gameState.menuState === 'rules'}
+	<Rules />
+{/if}
 
 {#if gameState.state !== 'menu'}
 	<InfoBox />
@@ -38,7 +42,7 @@
 	<DamageNumbers />
 {/if}
 
-<svelte:window
+<!-- <svelte:window
 	onkeydown={(e: KeyboardEvent) => {
 		if (e.key === 'Escape') {
 			if (gameState.menuState === 'settingsMenu') {
@@ -52,4 +56,4 @@
 			}
 		}
 	}}
-/>
+/> -->

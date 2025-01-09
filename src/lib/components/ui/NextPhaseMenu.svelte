@@ -5,7 +5,8 @@
 	import { onMount } from 'svelte';
 
 	let show = $state(false);
-	let newCard = $derived(data.cardTypes[data.phases[gameState.phase.toString()].reward[0].type]);
+	let rewardId = $derived(data.phases[gameState.phase.toString()].reward[0].type);
+	let newCard = $derived(data.cardTypes[rewardId]);
 
 	const close = () => {
 		show = false;
@@ -23,21 +24,34 @@
 
 <div id="nextPhaseMenu" class={show ? 'show' : ''}>
 	<h3>new card</h3>
-	<button onclick={close}>next phase</button>
-	<div class="card">
-		{newCard.name}
+	<div class="image" style="background-image:url(/images/{rewardId}.svg)"></div>
+	<div class="text">
+		<h4>{newCard.name}</h4>
+		<p>
+			{@html newCard.detail}
+		</p>
 	</div>
+	<button onclick={close}>next phase</button>
 </div>
 
 <style>
 	h3 {
 		color: #6d5c53;
 		font-size: 50px;
-		font-weight: 500;
 		margin: 0;
 		justify-self: center;
 		align-self: center;
 		grid-column: 2;
+	}
+
+	h4 {
+		color: #6d5c53;
+		font-size: 30px;
+		margin: 25px 0;
+	}
+
+	p {
+		color: #6d5c53;
 	}
 
 	button {
@@ -58,6 +72,27 @@
 
 	button:active {
 		background-color: #bba084;
+	}
+
+	.text {
+		color: white;
+		grid-column: 2;
+		grid-row: 2;
+		text-align: left;
+		width: 55%;
+		justify-self: end;
+		align-content: center;
+		font-size: 20px;
+	}
+
+	.image {
+		grid-column: 2;
+		grid-row: 2;
+		width: 45%;
+		justify-self: start;
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: auto 200px;
 	}
 
 	#nextPhaseMenu {
