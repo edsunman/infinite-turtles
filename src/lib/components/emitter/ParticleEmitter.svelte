@@ -22,7 +22,7 @@
 	<Particles
 		bind:start
 		rotation.x={-1.57}
-		emitterPosition={{ x: 0, y: 0.5, z: 0 }}
+		emitterPosition={{ x: 0, y: 0.5, z: -0.5 }}
 		emitterScale={{ x: 0.25, y: 0.4, z: 1 }}
 		count={150}
 		life={2}
