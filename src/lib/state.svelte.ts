@@ -11,7 +11,8 @@ export const gameState = $state<GameState>({
 	portalSize: 0,
 	phase: 1,
 	actions: 2,
-	loaded: false
+	loaded: false,
+	cameraPosition: { x: 0, y: 22 }
 });
 
 class CardState {

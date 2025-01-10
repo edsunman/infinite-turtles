@@ -300,6 +300,15 @@ const attack = (cardId: string, targetId: string) => {
 
 		damageCard(strength, target);
 
+		if (target.typeId === 1) {
+			gameState.cameraPosition.x = Math.random() * 2.5 - 1.5;
+			gameState.cameraPosition.y = 8;
+			timeline.addKeyframe(0.1, () => {
+				gameState.cameraPosition.x = 0;
+				gameState.cameraPosition.y = 9.3;
+			});
+		}
+
 		if (target.health <= 1 && target.typeId === 10) {
 			timeline.addKeyframe(0.5, () => {
 				// kill turtle

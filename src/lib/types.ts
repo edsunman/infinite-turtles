@@ -11,6 +11,7 @@ export type GameState = {
 	portalSize: number;
 	actions: number;
 	loaded: boolean;
+	cameraPosition: { x: number; y: number };
 };
 
 export type CardGroup = 'none' | 'deck' | 'hand' | 'discard' | 'placed';

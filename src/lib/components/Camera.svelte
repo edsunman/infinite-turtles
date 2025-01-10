@@ -1,13 +1,18 @@
 <script lang="ts">
 	import { cardState, gameState } from '$lib/state.svelte';
-	import { T, useThrelte } from '@threlte/core';
+	import { T, useTask, useThrelte } from '@threlte/core';
 	import { OrbitControls } from '@threlte/extras';
 	import { Vector3 } from 'three';
+	import { spring } from '$lib/helpers/animation';
 
 	let devCamera = $state(false);
+	let cameraRef = $state() as undefined;
 
 	const { camera, size } = useThrelte();
 	const vect = new Vector3();
+	const lookAtVect = new Vector3(0, 0, -0.5);
+	let cameraPos = $state({ x: 0, y: 22 });
+	const cameraSpring = spring({ x: 0, y: 22 }, 0.15, 0.3);
 
 	const scenePosToScreenPos = (x: number, y: number, z: number) => {
 		vect.set(x, y, z);
@@ -32,12 +37,22 @@
 		cardState.damage.y = d.y - 50 + (Math.random() - 0.5) * 50;
 		cardState.damage.key = Math.random().toString(16).slice(2);
 	});
+
+	$effect(() => {
+		cameraSpring.set({ x: gameState.cameraPosition.x, y: gameState.cameraPosition.y });
+	});
+
+	useTask((delta) => {
+		// @ts-ignore
+		if (cameraRef) cameraRef.lookAt(lookAtVect);
+		cameraPos = cameraSpring.update(delta);
+	});
 </script>
 
 <T.PerspectiveCamera
+	bind:ref={cameraRef}
 	name="main camera"
-	position={[0, 22, 9.3]}
-	rotation={[-1.15, 0, 0]}
+	position={[cameraPos.x, 22, cameraPos.y]}
 	fov={15}
 	makeDefault={!devCamera}
 />
