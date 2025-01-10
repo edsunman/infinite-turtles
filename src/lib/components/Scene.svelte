@@ -45,7 +45,7 @@
 	<Hitboxes {gltf} />
 {/await}
 
-<T.AmbientLight intensity={3.5} />
+<T.AmbientLight intensity={10} />
 
 <Camera />
 

@@ -53,7 +53,7 @@
 	);
 	batched.addGeometry(gltf.nodes.Player.geometry);
 	batched.addInstance(0);
-	batched.addGeometry(gltf.nodes.Enemy.geometry);
+	batched.addGeometry(gltf.nodes.EnemySkull.geometry);
 	batched.addInstance(1);
 	batched.addInstance(1);
 	batched.addGeometry(gltf.nodes.EnemyScorp.geometry);
@@ -89,12 +89,16 @@
 	for (let i = 0; i < 10; i++) {
 		batched.addInstance(9);
 	}
-	batched.addGeometry(gltf.nodes.Border.geometry);
-	for (let i = 0; i < 40; i++) {
+	batched.addGeometry(gltf.nodes.HeartStone.geometry);
+	for (let i = 0; i < 10; i++) {
 		batched.addInstance(10);
 	}
+	batched.addGeometry(gltf.nodes.Border.geometry);
+	for (let i = 0; i < 40; i++) {
+		batched.addInstance(11);
+	}
 
-	for (let i = 0; i < 90; i++) {
+	for (let i = 0; i < 100; i++) {
 		batched.setColorAt(i, dummyColor);
 	}
 
@@ -112,7 +116,7 @@
 			});
 			cardsCount = cardState.cards.length;
 
-			for (let i = 0; i < 90; i++) {
+			for (let i = 0; i < 100; i++) {
 				batched.setVisibleAt(i, false);
 			}
 
@@ -125,7 +129,8 @@
 			let hostCount = 30;
 			let effectCount = 35;
 			let heartCount = 40;
-			let bordersCount = 50;
+			let heartStoneCount = 50;
+			let bordersCount = 60;
 			let numbersCount = 0;
 			for (let i = 0; i < cardsCount; i++) {
 				dummy.position.set(
@@ -195,9 +200,16 @@
 				bordersCount++;
 				if (cardState.cards[i].typeId > 10 && cardState.cards[i].typeId !== 12) continue;
 				// no runes or potions
-				batched.setMatrixAt(heartCount, dummy.matrix);
-				batched.setVisibleAt(heartCount, true);
-				heartCount++;
+				if (cardState.cards[i].typeId !== 12) {
+					batched.setMatrixAt(heartCount, dummy.matrix);
+					batched.setVisibleAt(heartCount, true);
+					heartCount++;
+				} else {
+					batched.setMatrixAt(heartStoneCount, dummy.matrix);
+					batched.setVisibleAt(heartStoneCount, true);
+					heartStoneCount++;
+				}
+
 				dummy.translateX(0.32);
 				dummy.translateY(0.585);
 				dummy.translateZ(0.03);

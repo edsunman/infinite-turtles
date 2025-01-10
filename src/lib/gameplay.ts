@@ -126,7 +126,6 @@ export const endGame = (victory: boolean) => {
 					position: { x: -6, y: 0, z: 3.7 },
 					strength: data.cardTypes[card.type].strength
 				});
-				console.log('added ' + card.type);
 			});
 			refillDeckFromDiscardPile();
 		});
@@ -243,7 +242,6 @@ const findClosestEnemy = (turtle: Card, enemies: Card[]) => {
 export const nextPhase = () => {
 	gameState.phase++;
 	startGame(gameState.phase);
-	console.log('starting phase ' + gameState.phase);
 };
 
 const attack = (cardId: string, targetId: string) => {

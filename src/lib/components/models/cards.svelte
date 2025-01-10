@@ -37,6 +37,9 @@ Command: npx @threlte/gltf@3.0.0-next.11 D:\Node\turtles\static\models\cards.glb
       RuneEffect: THREE.Mesh
       RuneInspect: THREE.Mesh
       RuneHost: THREE.Mesh
+      EnemySkull: THREE.Mesh
+      Dashed: THREE.Mesh
+      HeartStone: THREE.Mesh
     }
     materials: {}
   }
@@ -99,6 +102,18 @@ Command: npx @threlte/gltf@3.0.0-next.11 D:\Node\turtles\static\models\cards.glb
     <T.Mesh
       geometry={gltf.nodes.RuneHost.geometry}
       material={gltf.nodes.RuneHost.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.EnemySkull.geometry}
+      material={gltf.nodes.EnemySkull.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.Dashed.geometry}
+      material={gltf.nodes.Dashed.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.HeartStone.geometry}
+      material={gltf.nodes.HeartStone.material}
     />
   {:catch err}
     {@render error?.({ error: err })}
