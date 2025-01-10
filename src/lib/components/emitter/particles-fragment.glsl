@@ -96,7 +96,7 @@ void main() {
     }
 
     // make sure particle is not visible before it is born or after it has died
-    if(vNormalLife < 0.0 || vNormalLife > 0.9999) {
+    if(vNormalLife < 0.01 || vNormalLife > 0.9999) {
         finalMix.a = 0.0;
     }
 
