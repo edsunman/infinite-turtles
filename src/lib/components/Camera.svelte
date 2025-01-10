@@ -11,8 +11,8 @@
 	const { camera, size } = useThrelte();
 	const vect = new Vector3();
 	const lookAtVect = new Vector3(0, 0, -0.5);
-	let cameraPos = $state({ x: 0, y: 22 });
-	const cameraSpring = spring({ x: 0, y: 22 }, 0.15, 0.3);
+	let cameraPos = $state({ x: 0, y: 9.3 });
+	const cameraSpring = spring({ x: 0, y: 9.3 }, 0.15, 0.3);
 
 	const scenePosToScreenPos = (x: number, y: number, z: number) => {
 		vect.set(x, y, z);

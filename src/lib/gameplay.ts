@@ -8,6 +8,7 @@ import {
 	refillDeckFromDiscardPile
 } from './components/cards/cardActions';
 import { data } from './data';
+import { randomNumber } from './helpers/utils';
 import type { Card } from './types';
 
 export const startGame = (phase = 1) => {
@@ -346,7 +347,15 @@ const attack = (cardId: string, targetId: string) => {
 };
 
 export const killEnemy = (enemy: Card) => {
-	updateCard(enemy.id, { health: -1 });
+	updateCard(enemy.id, {
+		moveTo: { x: randomNumber(-6, 6), y: 1, z: -6 },
+		rotateTo: { x: -1, y: 0, z: -3 },
+		settled: false,
+		stiffness: 0.08
+	});
+	timeline.addKeyframe(0.5, () => {
+		updateCard(enemy.id, { health: -1 });
+	});
 	const enemies = cardState.cards.filter(
 		(card) => card.typeId >= 2 && card.typeId < 10 && card.health >= 1
 	);

@@ -38,7 +38,7 @@ export const data: Data = {
 			name: 'blob',
 			description: '',
 			detail: '',
-			health: 4,
+			health: 3,
 			strength: 1
 		},
 		'3': {

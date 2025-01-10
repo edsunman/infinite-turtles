@@ -7,6 +7,7 @@
 	import Cards from './cards/Cards.svelte';
 	import Hitboxes from './cards/Hitboxes.svelte';
 	import Camera from './Camera.svelte';
+	import ParticleEmitter from './emitter/ParticleEmitter.svelte';
 
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
@@ -40,7 +41,7 @@
 	);
 </script>
 
-<Peformance />
+<!-- <Peformance /> -->
 
 {#await gltf then gltf}
 	<Cards {gltf} />
@@ -50,6 +51,8 @@
 <T.AmbientLight intensity={10} />
 
 <Camera />
+
+<ParticleEmitter />
 
 <svelte:window
 	onkeydown={(e: KeyboardEvent) => {
