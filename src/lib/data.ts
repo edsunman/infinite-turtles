@@ -59,7 +59,7 @@ export const data: Data = {
 			name: 'skull',
 			description: '',
 			detail: '',
-			health: 7,
+			health: 6,
 			strength: 2
 		},
 		'10': {

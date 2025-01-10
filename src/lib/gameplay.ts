@@ -310,7 +310,7 @@ const attack = (cardId: string, targetId: string) => {
 			});
 		}
 
-		if (target.health <= 1 && target.typeId === 10) {
+		if (target.health <= card.strength && target.typeId === 10) {
 			timeline.addKeyframe(0.5, () => {
 				// kill turtle
 				const hostCard = discardTurtleCard(target.id);
