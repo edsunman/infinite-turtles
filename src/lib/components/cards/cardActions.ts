@@ -62,7 +62,6 @@ export const refillDeckFromDiscardPile = () => {
 		card.group = 'deck';
 		if (card.typeId === 12) {
 			card.health = card.startingHealth;
-			console.log('moved to deck');
 		}
 	});
 };

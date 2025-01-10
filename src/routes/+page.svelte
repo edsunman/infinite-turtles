@@ -11,6 +11,7 @@
 	:global(body) {
 		margin: 0;
 		cursor: image-set('/cursor/cursor.png' 1x, '/cursor/cursor-x2.png' 2x), default;
+		background-color: #ad8f73;
 	}
 	:global(body.hovering, button) {
 		cursor: image-set('/cursor/cursorHover.png' 1x, '/cursor/cursorHover-x2.png' 2x), pointer;
@@ -47,6 +48,6 @@
 	div {
 		width: 100vw;
 		height: 100vh;
-		background: rgb(0, 0, 0);
+		background: #ad8f73;
 	}
 </style>

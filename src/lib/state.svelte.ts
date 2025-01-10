@@ -10,7 +10,8 @@ export const gameState = $state<GameState>({
 	hoverPosition: { x: 0, y: 0 },
 	portalSize: 0,
 	phase: 1,
-	actions: 2
+	actions: 2,
+	loaded: false
 });
 
 class CardState {

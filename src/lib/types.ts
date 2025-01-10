@@ -10,6 +10,7 @@ export type GameState = {
 	phase: number;
 	portalSize: number;
 	actions: number;
+	loaded: boolean;
 };
 
 export type CardGroup = 'none' | 'deck' | 'hand' | 'discard' | 'placed';

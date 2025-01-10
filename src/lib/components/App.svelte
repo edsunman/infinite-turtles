@@ -11,6 +11,7 @@
 	import NextPhaseMenu from './ui/NextPhaseMenu.svelte';
 	import GameOverMenu from './ui/GameOverMenu.svelte';
 	import Rules from './ui/Rules.svelte';
+	import { fade } from 'svelte/transition';
 </script>
 
 <Canvas>
@@ -42,6 +43,10 @@
 	<DamageNumbers />
 {/if}
 
+{#if !gameState.loaded}
+	<div id="loadingScreen" out:fade={{ duration: 200, delay: 200 }}></div>
+{/if}
+
 <!-- <svelte:window
 	onkeydown={(e: KeyboardEvent) => {
 		if (e.key === 'Escape') {
@@ -57,3 +62,14 @@
 		}
 	}}
 /> -->
+
+<style>
+	#loadingScreen {
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background-color: #b59c82;
+	}
+</style>

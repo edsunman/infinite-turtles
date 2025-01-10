@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { T, useTask, useThrelte, useStage } from '@threlte/core';
-	import { useGltf, useDraco } from '@threlte/extras';
-	import { cardState, gameState, timeline } from '$lib/state.svelte';
-
-	import { onDestroy } from 'svelte';
+	import { useGltf, useDraco, useProgress } from '@threlte/extras';
+	import { gameState, timeline } from '$lib/state.svelte';
 
 	import Peformance from './misc/Peformance.svelte';
 	import Cards from './cards/Cards.svelte';
@@ -13,10 +11,16 @@
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
 
-	/* 	onDestroy(() => {
-		cardState.cards = [];
-		cardState.slots = ['', '', '', '', '', ''];
-	}); */
+	const { progress } = useProgress();
+	$effect(() => {
+		if ($progress === 1) {
+			gameState.loaded = true;
+		} else {
+			gameState.loaded = false;
+		}
+	});
+
+	$inspect(gameState.loaded);
 
 	const { mainStage, renderStage } = useThrelte();
 	let speed = 1;
