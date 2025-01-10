@@ -8,20 +8,21 @@
 <div id="container">
 	<div id="rulesMenu" in:fade={{ duration: 300, delay: 300 }} out:fade={{ duration: 300 }}>
 		{#if page === 1}
-			<div class="image" style="background-image:url(/images/12.svg)"></div>
+			<!-- 	<div class="image" style="background-image:url(/images/12.svg)"></div> -->
 			<div class="text">
 				<p>
-					A portal to another dimention has opened and all sorts of terryfting creatures are pouring
+					A portal to another dimension has opened and all sorts of terrifying creatures are pouring
 					out.
 				</p>
 				<p>
-					All you have to fight them are an infinate bag of turtles and a mysterious bag of runes.
+					All you have to fight them are an infinite amount of turtles and a mysterious bag of
+					runes.
 				</p>
 				<p>Equip your turtles with runes to defeat the monsters and close the portal!</p>
 			</div>
 			<button onclick={() => (page = 2)}>next</button>
 		{:else if page === 2}
-			<div class="image" style="background-image:url(/images/deck.svg)"></div>
+			<!-- 	<div class="image" style="background-image:url(/images/deck.svg)"></div> -->
 			<div class="text">
 				<h4>Your deck</h4>
 				<p>You start the game with a deck of cards, 3 potion cards and 3 state rune cards.</p>
@@ -33,7 +34,7 @@
 			</div>
 			<button onclick={() => (page = 3)}>next</button>
 		{:else if page === 3}
-			<div class="image" style="background-image:url(/images/12.svg)"></div>
+			<!-- 	<div class="image" style="background-image:url(/images/12.svg)"></div> -->
 			<div class="text">
 				<h4>Turtles</h4>
 				<p>Begin by placing turtles. You can place a maximum of two turtles at once.</p>
@@ -46,7 +47,7 @@
 			</div>
 			<button onclick={() => (page = 4)}>next</button>
 		{:else if page === 4}
-			<div class="image" style="background-image:url(/images/12.svg)"></div>
+			<!-- <div class="image" style="background-image:url(/images/12.svg)"></div> -->
 			<div class="text">
 				<h4>Runes</h4>
 				<p>
@@ -59,7 +60,7 @@
 
 			<button onclick={() => (page = 5)}>next</button>
 		{:else if page === 5}
-			<div class="image" style="background-image:url(/images/12.svg)"></div>
+			<!-- <div class="image" style="background-image:url(/images/12.svg)"></div> -->
 			<div class="text">
 				<h4>Winning the game</h4>
 				<p>
@@ -117,12 +118,12 @@
 		grid-column: 2;
 		grid-row: 1;
 		text-align: left;
-		width: 55%;
+		/* width: 55%; */
 		justify-self: end;
 		align-content: center;
 		font-size: 20px;
 	}
-
+	/* 
 	.image {
 		grid-column: 2;
 		grid-row: 1;
@@ -131,7 +132,7 @@
 		background-repeat: no-repeat;
 		background-position: center;
 		background-size: 150px;
-	}
+	} */
 
 	#container {
 		position: absolute;
@@ -145,7 +146,7 @@
 	}
 
 	#rulesMenu {
-		grid-template-columns: auto 800px auto;
+		grid-template-columns: auto 600px auto;
 		grid-template-rows: 400px 100px;
 		display: grid;
 		margin: 0 auto;
