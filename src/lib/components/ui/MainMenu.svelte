@@ -61,12 +61,6 @@
 	}
 
 	#mainMenu {
-		/* top: 150px;
-		position: absolute;
-		margin: 0 auto;
-		left: 0;
-		right: 0;
-		text-align: center; */
 		grid-template-columns: auto 800px auto;
 		grid-template-rows: 200px 300px;
 		display: grid;

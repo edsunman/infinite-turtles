@@ -22,16 +22,18 @@
 	});
 </script>
 
-<div id="nextPhaseMenu" class={show ? 'show' : ''}>
-	<h3>new card</h3>
-	<div class="image" style="background-image:url(/images/{rewardId}.svg)"></div>
-	<div class="text">
-		<h4>{newCard.name}</h4>
-		<p>
-			{@html newCard.detail}
-		</p>
+<div id="container">
+	<div id="nextPhaseMenu" class={show ? 'show' : ''}>
+		<h3>new card</h3>
+		<div class="image" style="background-image:url(/images/{rewardId}.svg)"></div>
+		<div class="text">
+			<h4>{newCard.name}</h4>
+			<p>
+				{@html newCard.detail}
+			</p>
+		</div>
+		<button onclick={close}>next phase</button>
 	</div>
-	<button onclick={close}>next phase</button>
 </div>
 
 <style>
@@ -96,14 +98,18 @@
 	}
 
 	#nextPhaseMenu {
+		grid-template-columns: auto 800px auto;
+		grid-template-rows: 200px 300px;
+		margin: 0 auto;
+		width: 100%;
 		grid-template-columns: auto 600px auto;
 		grid-template-rows: 100px 300px 100px;
 		display: grid;
 		position: absolute;
-		top: 200px;
+		/* top: 200px;
 		margin: 0 auto;
 		left: 0;
-		right: 0;
+		right: 0; */
 		text-align: center;
 		background-color: #c9b8a6;
 		z-index: 101;
@@ -114,5 +120,16 @@
 	#nextPhaseMenu.show {
 		clip-path: rect(0% 100% 100% 0%);
 		transition: 0.8s cubic-bezier(0.84, 0.005, 0.125, 1);
+	}
+
+	#container {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
 	}
 </style>
