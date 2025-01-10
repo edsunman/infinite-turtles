@@ -15,10 +15,10 @@ type Data = {
 
 export const data: Data = {
 	phases: {
-		'1': { enemies: [{ type: 2 }], reward: [{ type: 13 }] },
-		'2': { enemies: [{ type: 3 }], reward: [{ type: 14 }] },
+		'1': { enemies: [{ type: 3 }], reward: [{ type: 13 }] },
+		'2': { enemies: [{ type: 4 }], reward: [{ type: 14 }] },
 		'3': {
-			enemies: [{ type: 3 }, { type: 4 }],
+			enemies: [{ type: 2 }, { type: 4 }],
 			reward: [{ type: 15 }]
 		},
 		'4': {
@@ -38,28 +38,28 @@ export const data: Data = {
 			name: 'blob',
 			description: '',
 			detail: '',
-			health: 2, //health: 8,
+			health: 4,
 			strength: 1
 		},
 		'3': {
-			name: 'spikey',
+			name: 'baby blob',
 			description: '',
 			detail: '',
-			health: 2, //health: 12,
+			health: 3,
 			strength: 1
 		},
 		'4': {
-			name: 'baby blob',
+			name: 'spiky',
 			description: '',
-			health: 2,
+			health: 10,
 			detail: '',
 			strength: 1
 		},
 		'5': {
-			name: 'worm',
+			name: 'skull',
 			description: '',
 			detail: '',
-			health: 2, //health: 16,
+			health: 7,
 			strength: 2
 		},
 		'10': {
@@ -78,8 +78,7 @@ export const data: Data = {
 		},
 		'12': {
 			name: 'state rune',
-			description:
-				'shelids turtle from <span style="color:var(--green);font-size:30px">+2</span> attack',
+			description: 'shelids turtle from attack',
 			detail: '',
 			health: 0,
 			strength: 0

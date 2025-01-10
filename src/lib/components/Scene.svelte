@@ -20,8 +20,6 @@
 		}
 	});
 
-	$inspect(gameState.loaded);
-
 	const { mainStage, renderStage } = useThrelte();
 	let speed = 1;
 

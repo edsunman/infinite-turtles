@@ -53,49 +53,51 @@
 	);
 	batched.addGeometry(gltf.nodes.Player.geometry);
 	batched.addInstance(0);
-	batched.addGeometry(gltf.nodes.EnemySkull.geometry);
+	batched.addGeometry(gltf.nodes.Enemy.geometry);
 	batched.addInstance(1);
-	batched.addInstance(1);
+	batched.addGeometry(gltf.nodes.EnemyBaby.geometry);
+	batched.addInstance(2);
 	batched.addGeometry(gltf.nodes.EnemyScorp.geometry);
-	batched.addInstance(2);
-	batched.addInstance(2);
+	batched.addInstance(3);
+	batched.addGeometry(gltf.nodes.EnemySkull.geometry);
+	batched.addInstance(4);
 	batched.addGeometry(gltf.nodes.Turtle.geometry);
 	for (let i = 0; i < 10; i++) {
-		batched.addInstance(3);
+		batched.addInstance(5);
 	}
 	batched.addGeometry(gltf.nodes.Potion.geometry);
 	for (let i = 0; i < 5; i++) {
-		batched.addInstance(4);
+		batched.addInstance(6);
 	}
 
 	batched.addGeometry(gltf.nodes.RuneState.geometry);
 	for (let i = 0; i < 5; i++) {
-		batched.addInstance(5);
+		batched.addInstance(7);
 	}
 	batched.addGeometry(gltf.nodes.RuneInspect.geometry);
 	for (let i = 0; i < 5; i++) {
-		batched.addInstance(6);
+		batched.addInstance(8);
 	}
 	batched.addGeometry(gltf.nodes.RuneHost.geometry);
 	for (let i = 0; i < 5; i++) {
-		batched.addInstance(7);
+		batched.addInstance(9);
 	}
 	batched.addGeometry(gltf.nodes.RuneEffect.geometry);
 	for (let i = 0; i < 5; i++) {
-		batched.addInstance(8);
+		batched.addInstance(10);
 	}
 
 	batched.addGeometry(gltf.nodes.Heart.geometry);
 	for (let i = 0; i < 10; i++) {
-		batched.addInstance(9);
+		batched.addInstance(11);
 	}
 	batched.addGeometry(gltf.nodes.HeartStone.geometry);
 	for (let i = 0; i < 10; i++) {
-		batched.addInstance(10);
+		batched.addInstance(12);
 	}
 	batched.addGeometry(gltf.nodes.Border.geometry);
 	for (let i = 0; i < 40; i++) {
-		batched.addInstance(11);
+		batched.addInstance(13);
 	}
 
 	for (let i = 0; i < 100; i++) {
@@ -120,8 +122,6 @@
 				batched.setVisibleAt(i, false);
 			}
 
-			let enemyCount = 1;
-			let enemyScorpCount = 3;
 			let turtleCount = 5;
 			let potionCount = 15;
 			let stateCount = 20;
@@ -150,20 +150,10 @@
 					[cardState.cards[i].typeId >= 2 && cardState.cards[i].typeId <= 9 ? 1 : 2],
 					i
 				);
-				if (cardState.cards[i].typeId === 1) {
-					batched.setMatrixAt(0, dummy.matrix);
-					batched.setVisibleAt(0, true);
-					batched.setColorAt(0, dummyColor);
-				} else if (cardState.cards[i].typeId === 2) {
-					batched.setMatrixAt(enemyCount, dummy.matrix);
-					batched.setVisibleAt(enemyCount, true);
-					batched.setColorAt(enemyCount, dummyColor);
-					enemyCount++;
-				} else if (cardState.cards[i].typeId === 3) {
-					batched.setMatrixAt(enemyScorpCount, dummy.matrix);
-					batched.setVisibleAt(enemyScorpCount, true);
-					batched.setColorAt(enemyScorpCount, dummyColor);
-					enemyScorpCount++;
+				if (cardState.cards[i].typeId < 10) {
+					batched.setMatrixAt(cardState.cards[i].typeId - 1, dummy.matrix);
+					batched.setVisibleAt(cardState.cards[i].typeId - 1, true);
+					batched.setColorAt(cardState.cards[i].typeId - 1, dummyColor);
 				} else if (cardState.cards[i].typeId === 10) {
 					batched.setMatrixAt(turtleCount, dummy.matrix);
 					batched.setVisibleAt(turtleCount, true);

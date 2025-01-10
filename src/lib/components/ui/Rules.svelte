@@ -63,8 +63,8 @@
 			<div class="text">
 				<h4>Winning the game</h4>
 				<p>
-					When you have defeated an enemy or pair of enemies all teh cards are returned to your deck
-					and you will gain +2 health.
+					When you have defeated an enemy or pair of enemies all the cards are returned to your
+					deck.
 				</p>
 				<p>
 					You will receive a new rune card as a reward and the game begins again with a new enemy.

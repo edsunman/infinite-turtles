@@ -40,6 +40,7 @@ Command: npx @threlte/gltf@3.0.0-next.11 D:\Node\turtles\static\models\cards.glb
       EnemySkull: THREE.Mesh
       Dashed: THREE.Mesh
       HeartStone: THREE.Mesh
+      EnemyBaby: THREE.Mesh
     }
     materials: {}
   }
@@ -114,6 +115,10 @@ Command: npx @threlte/gltf@3.0.0-next.11 D:\Node\turtles\static\models\cards.glb
     <T.Mesh
       geometry={gltf.nodes.HeartStone.geometry}
       material={gltf.nodes.HeartStone.material}
+    />
+    <T.Mesh
+      geometry={gltf.nodes.EnemyBaby.geometry}
+      material={gltf.nodes.EnemyBaby.material}
     />
   {:catch err}
     {@render error?.({ error: err })}
