@@ -1,4 +1,4 @@
-import { Vector3, Quaternion, Matrix4 } from 'three';
+import { Vector3, Matrix4 } from 'three';
 
 /**
  * Convenience wrapper around Math.random().
@@ -8,6 +8,11 @@ import { Vector3, Quaternion, Matrix4 } from 'three';
 export function randomNumber(min = 0, max = 1) {
 	return Math.random() * (max - min) + min;
 }
+
+export const applyRandomAmount = (startingAmount: number, randomAmount: number) => {
+	if (randomAmount === 0) return startingAmount;
+	return randomNumber(startingAmount - randomAmount / 2, startingAmount + randomAmount / 2);
+};
 
 const parseGradientString = (gradientString: string) => {
 	// todo : correctly order array
@@ -75,7 +80,10 @@ export const createGradientObject = (gradientString: string | number, valueCount
 	}
 };
 
-export const randomDirectionSpread = (direction: Vector3, angleDegrees: number) => {
+const dummyMatrix = new Matrix4();
+const upVector = new Vector3(0, 1, 0);
+const vector = new Vector3();
+export const setRandomDirectionSpread = (direction: Vector3, angleDegrees: number) => {
 	const π = Math.PI;
 	const π2 = 2 * π;
 	const coneAngle = (angleDegrees * Math.PI) / 180;
@@ -84,18 +92,17 @@ export const randomDirectionSpread = (direction: Vector3, angleDegrees: number) 
 	const r = Math.sqrt(1 - z * z);
 	const x = r * Math.cos(θ);
 	const y = r * Math.sin(θ);
-	const m = new Matrix4().lookAt(direction, new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-	const q = new Quaternion().setFromRotationMatrix(m);
-	return new Vector3(x, y, z).applyQuaternion(q);
+	const m = dummyMatrix.lookAt(direction, vector, upVector);
+	direction.set(x, y, z).applyMatrix4(m);
 };
 
 export const randomPointInsideCube = (
-	position: { x: number; y: number; z: number },
-	scale: { x: number; y: number; z: number }
+	position: [number, number, number],
+	scale: [number, number, number]
 ) => {
 	return {
-		x: position.x + scale.x * (Math.random() * 1 - 0.5),
-		y: position.y + scale.y * (Math.random() * 1 - 0.5),
-		z: position.z + scale.z * (Math.random() * 1 - 0.5)
+		x: position[0] + scale[0] * (Math.random() * 1 - 0.5),
+		y: position[1] + scale[1] * (Math.random() * 1 - 0.5),
+		z: position[2] + scale[2] * (Math.random() * 1 - 0.5)
 	};
 };

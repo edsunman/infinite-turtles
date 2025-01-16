@@ -1,16 +1,16 @@
-import type { Events, Props, Slots } from '@threlte/core';
-import { SvelteComponent, Snippet } from 'svelte';
+import type { Props } from '@threlte/core';
+import type { Snippet } from 'svelte';
 import type { Points, Texture } from 'three';
 
 type XYZ = { x: number; y: number; z: number };
 
 export type ParticlesProps = Props<Points> & {
 	/** Position of the emitter. You can update while the emitter is running. */
-	emitterPosition?: XYZ;
+	emitterPosition?: [number, number, number];
 	/** Scale of the emitter. You can update while the emitter is running. */
-	emitterScale?: XYZ;
+	emitterScale?: [number, number, number];
 	/** Rotation of the emitter. You can update while the emitter is running. */
-	emitterRotation?: XYZ;
+	emitterRotation?: [number, number, number];
 	/** The number of particles. */
 	count?: number;
 	/** The life of each particle in seconds. */
@@ -68,15 +68,4 @@ export type ParticlesProps = Props<Points> & {
 	stop?: () => void;
 	emitterStateChanged?: (e: string) => void;
 	customGeometry?: Snippet;
-	ref?: Points;
 };
-
-export type ParticlesEvents = Events<Points>;
-
-export type ParticlesSlots = Slots<Points>;
-
-export default class Particles extends SvelteComponent<
-	ParticleProps,
-	ParticleEvents,
-	ParticleSlots
-> {}

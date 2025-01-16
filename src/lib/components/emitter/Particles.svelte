@@ -4,31 +4,26 @@
 		BufferGeometry,
 		Float32BufferAttribute,
 		Vector3,
-		ShaderMaterial,
 		NormalBlending,
 		AdditiveBlending,
-		Mesh,
-		Points
+		Mesh
 	} from 'three';
+	import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 	import {
 		randomPointInsideCube,
-		randomDirectionSpread,
+		setRandomDirectionSpread,
 		createGradientObject,
-		randomNumber
+		randomNumber,
+		applyRandomAmount
 	} from './util';
 	import fragmentShader from './particles-fragment.glsl?raw';
 	import vertexShader from './particles-vertex.glsl?raw';
-	import type { ParticlesEvents, ParticlesProps, ParticlesSlots } from './Particles.svelte';
-	import { MeshSurfaceSampler } from 'three/examples/jsm/Addons.js';
-
-	type $$Events = ParticlesEvents;
-	type $$Slots = ParticlesSlots;
-	type Particle = { life: number };
+	import type { ParticlesProps } from './types';
 
 	let {
-		emitterPosition = { x: 0, y: 0, z: 0 },
-		emitterScale = { x: 0, y: 0, z: 0 },
-		emitterRotation = { x: 0, y: 0, z: 0 },
+		emitterPosition = [0, 0, 0],
+		emitterScale = [0, 0, 0],
+		emitterRotation = [0, 0, 0],
 		count = 5,
 		life = 2,
 		explosiveness = 0,
@@ -59,12 +54,10 @@
 		stop = $bindable(),
 		emitterStateChanged = (e: string): void => {},
 		customGeometry,
-		ref = $bindable(),
-		...props
+		ref = $bindable()
 	}: ParticlesProps = $props();
 
-	let directionVector = new Vector3(direction.x, direction.y, direction.z);
-	let emitterLife = 10;
+	let emitterLife = 0;
 	let emitterState = '';
 	let newPosition: { x: number; y: number; z: number };
 	let paused = false;
@@ -77,29 +70,22 @@
 
 	const { renderer } = useThrelte();
 	const pixelRatio = renderer.getPixelRatio();
-	const positionAttribute = new Float32BufferAttribute(count * 3, 3);
-	const lifeAttribute = new Float32BufferAttribute(count, 1);
-	const sizeAttribute = new Float32BufferAttribute(count, 1);
-	const colorAttribute = new Float32BufferAttribute(count, 1);
-	const lightnessAttribute = new Float32BufferAttribute(count, 1);
-	const rotationAttribute = new Float32BufferAttribute(count, 1);
-	const velocitiesAttribute = new Float32BufferAttribute(count * 3, 3);
-	const randomAttribute = new Float32BufferAttribute(count, 1);
 	const parsedColorGradient = createGradientObject(color, 16);
 	const parsedSizeGradient = createGradientObject(size, 4);
 	const geometry = new BufferGeometry();
-	const particles: Particle[] = [];
+	const particles: number[] = [];
 	const samplerVector = new Vector3();
+	const directionVector = new Vector3(direction.x, direction.y, direction.z);
+	const dummyVector = new Vector3();
 
 	start = () => {
+		if (emitterState !== 'finished') return;
 		paused = false;
 		emitterLife = 0;
 	};
 
 	stop = () => {
-		if (oneShot || emitterState !== 'running') {
-			return;
-		}
+		if (oneShot || emitterState !== 'running') return;
 		paused = true;
 		pausedTime = emitterLife;
 	};
@@ -111,38 +97,32 @@
 	if (map) map.flipY = false;
 	if (alphaMap) alphaMap.flipY = false;
 
-	for (let i = 0; i < count; i++) {
-		// direction and velocity
-		const pDirection = new Vector3().copy(directionVector.normalize());
-		if (spread > 0) pDirection.copy(randomDirectionSpread(pDirection, spread / 2));
-		const pVelocity =
-			velocityRandom > 0
-				? randomNumber(velocity - velocityRandom / 2, velocity + velocityRandom / 2)
-				: velocity;
-		pDirection.multiplyScalar(pVelocity);
-		velocitiesAttribute.setXYZ(i, pDirection.x, pDirection.y, pDirection.z);
+	const positionAttribute = new Float32BufferAttribute(count * 3, 3);
+	const lifeAttribute = new Float32BufferAttribute(count, 1);
+	const sizeAttribute = new Float32BufferAttribute(count, 1);
+	const colorAttribute = new Float32BufferAttribute(count, 1);
+	const lightnessAttribute = new Float32BufferAttribute(count, 1);
+	const rotationAttribute = new Float32BufferAttribute(count, 1);
+	const velocitiesAttribute = new Float32BufferAttribute(count * 3, 3);
+	const randomAttribute = new Float32BufferAttribute(count, 1);
 
-		// size, color, lightness
-		let pSize = sizeRandom > 0 ? randomNumber(-sizeRandom / 2, sizeRandom / 2) : 0;
-		sizeAttribute.setX(i, pSize < 0 ? 0 : pSize);
+	for (let i = 0; i < count; i++) {
+		dummyVector.copy(directionVector.normalize());
+		if (spread > 0) setRandomDirectionSpread(dummyVector, spread / 2);
+		dummyVector.multiplyScalar(applyRandomAmount(velocity, velocityRandom));
+		velocitiesAttribute.setXYZ(i, dummyVector.x, dummyVector.y, dummyVector.z);
+
+		sizeAttribute.setX(i, applyRandomAmount(0, sizeRandom));
 		colorAttribute.setX(i, colorRandom > 0 ? randomNumber(-colorRandom / 2, colorRandom / 2) : 0);
-		lightnessAttribute.setX(
-			i,
-			lightnessRandom > 0 ? randomNumber(-lightnessRandom / 2, lightnessRandom / 2) : 0
-		);
-		rotationAttribute.setX(
-			i,
-			rotationRandom > 0
-				? randomNumber(textureRotation - rotationRandom / 2, textureRotation + rotationRandom / 2)
-				: textureRotation
-		);
+		lightnessAttribute.setX(i, applyRandomAmount(0, lightnessRandom));
+		rotationAttribute.setX(i, applyRandomAmount(textureRotation, rotationRandom));
 		randomAttribute.setX(i, Math.random());
 
-		// life
 		const pLife = -(life / count) * i * (1 - explosiveness);
-		particles.push({ life: pLife });
+		particles.push(pLife);
 		lifeAttribute.setX(i, pLife);
 	}
+
 	geometry.setAttribute('position', positionAttribute);
 	geometry.setAttribute('life', lifeAttribute);
 	geometry.setAttribute('sizeRandom', sizeAttribute);
@@ -153,8 +133,8 @@
 	geometry.setAttribute('randomSeed', randomAttribute);
 
 	const distributePreBirthParticles = () => {
-		particles.forEach((particle: Particle, i: number) => {
-			particle.life = -(life / count) * i * (1 - explosiveness);
+		particles.forEach((particle, index, array) => {
+			array[index] = -(life / count) * index * (1 - explosiveness);
 		});
 	};
 
@@ -165,11 +145,11 @@
 			emitterMesh.updateMatrix();
 			samplerVector.applyMatrix4(emitterMesh.matrix);
 			positionAttribute.setXYZ(index, samplerVector.x, samplerVector.y, samplerVector.z);
-		} else if (emitterScale.x > 0 || emitterScale.y > 0 || emitterScale.z > 0) {
+		} else if (emitterScale[0] > 0 || emitterScale[1] > 0 || emitterScale[2] > 0) {
 			newPosition = randomPointInsideCube(emitterPosition, emitterScale);
 			positionAttribute.setXYZ(index, newPosition.x, newPosition.y, newPosition.z);
 		} else {
-			positionAttribute.setXYZ(index, emitterPosition.x, emitterPosition.y, emitterPosition.z);
+			positionAttribute.setXYZ(index, emitterPosition[0], emitterPosition[1], emitterPosition[2]);
 		}
 	};
 
@@ -177,11 +157,11 @@
 		if (!geometry.boundingSphere) geometry.computeBoundingSphere();
 		if (!geometry.boundingSphere) return;
 		geometry.boundingSphere.radius = boundingSphereRadius;
-		geometry.boundingSphere.center.set(emitterPosition.x, emitterPosition.y, emitterPosition.z);
+		geometry.boundingSphere.center.set(emitterPosition[0], emitterPosition[1], emitterPosition[2]);
 	};
 
 	$effect(() => {
-		emitterPosition.x, emitterPosition.x, emitterPosition.z;
+		emitterPosition[0], emitterPosition[1], emitterPosition[2];
 		computeBounding();
 	});
 
@@ -227,27 +207,26 @@
 			stateChanged();
 			if (emitterState === 'finished') distributePreBirthParticles();
 		}
-
 		if (emitterState === 'starting') {
 			// move unborn particles to emitter position
-			particles.forEach((particle: Particle, index: number) => {
-				if (particle.life <= 0) {
+			particles.forEach((particle, index, array) => {
+				if (particle <= 0) {
 					positionNewParticle(index);
 				}
 			});
 		}
 		if (emitterState !== 'finished') {
 			// update particles
-			particles.forEach((particle: Particle, index: number) => {
-				particle.life += delta;
-				if (particle.life > life) {
+			particles.forEach((particle, index, array) => {
+				array[index] += delta;
+				if (array[index] > life) {
 					// particle died
 					if (emitterState === 'running' && !paused) {
-						particle.life = 0;
+						array[index] = 0;
 						positionNewParticle(index);
 					}
 				}
-				lifeAttribute.setX(index, particle.life);
+				lifeAttribute.setX(index, array[index]);
 			});
 			lifeAttribute.needsUpdate = true;
 			positionAttribute.needsUpdate = true;
@@ -255,8 +234,7 @@
 	});
 </script>
 
-<!-- TODO: mad type error -->
-<T.Points {geometry} name="particles" {...props}>
+<T.Points {geometry} name="particles">
 	<T.ShaderMaterial
 		blending={additiveBlend ? AdditiveBlending : NormalBlending}
 		{vertexShader}
@@ -323,9 +301,9 @@
 
 <T.Mesh
 	bind:ref={emitterMesh}
-	scale={[emitterScale.x, emitterScale.y, emitterScale.z]}
-	position={[emitterPosition.x, emitterPosition.y, emitterPosition.z]}
-	rotation={[emitterRotation.x, emitterRotation.y, emitterRotation.z]}
+	scale={emitterScale}
+	position={emitterPosition}
+	rotation={emitterRotation}
 	name="emitterDebugMesh"
 >
 	{#if customGeometry}

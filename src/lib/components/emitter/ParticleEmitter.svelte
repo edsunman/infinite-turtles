@@ -21,15 +21,15 @@
 {#await texture then alphaMap}
 	<Particles
 		bind:start
-		rotation.x={-1.57}
-		emitterPosition={{ x: 0, y: 0.5, z: -0.5 }}
-		emitterScale={{ x: 0.25, y: 0.4, z: 1 }}
+		emitterPosition={[0, 0, -0.5]}
+		emitterScale={[0.25, 0.4, 1]}
+		emitterRotation={[1.57, 0, 0]}
 		count={100}
 		life={2}
 		explosiveness={0.7}
 		spread={35}
 		gravity={{ x: 0, y: 0, z: 0 }}
-		direction={{ x: 0, y: 0, z: 1 }}
+		direction={{ x: 0, y: 1, z: 0 }}
 		wind={{ x: 0, y: 0, z: 0 }}
 		driftAmount={0.4}
 		driftSpeed={1}
