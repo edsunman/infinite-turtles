@@ -1,5 +1,6 @@
 import { cardState, gameState, timeline } from '$lib/state.svelte';
 import {
+	addCard,
 	discardHand,
 	updateCard,
 	discardTurtleCard,
@@ -18,7 +19,7 @@ export const startGame = (phase = 1) => {
 	cardState.slots = ['', '', '', '', '', ''];
 
 	if (phase === 1) {
-		const playerId = cardState.addCard({
+		const playerId = addCard({
 			typeId: 1,
 			health: data.cardTypes['1'].health,
 			startingHealth: data.cardTypes['1'].health,
@@ -33,14 +34,14 @@ export const startGame = (phase = 1) => {
 
 		// Starting Deck
 		for (let i = 0; i < 3; i++) {
-			cardState.addCard({
+			addCard({
 				typeId: 11,
 				group: 'deck',
 				position: { x: -6, y: 0, z: 3.7 }
 			});
 		}
 		for (let i = 0; i < 2; i++) {
-			cardState.addCard({
+			addCard({
 				typeId: 12,
 				group: 'deck',
 				position: { x: -6, y: 0, z: 3.7 },
@@ -48,7 +49,7 @@ export const startGame = (phase = 1) => {
 				startingHealth: 1
 			});
 		}
-		cardState.addCard({
+		addCard({
 			typeId: 12,
 			group: 'deck',
 			position: { x: -6, y: 0, z: 3.7 },
@@ -84,7 +85,7 @@ export const startGame = (phase = 1) => {
 	for (const enemy of data.phases[phase.toString()].enemies) {
 		const x = enemyCount === 1 ? 0 : i === 0 ? -0.7 : 0.7;
 		i++;
-		const enemyId = cardState.addCard({
+		const enemyId = addCard({
 			typeId: enemy.type,
 			health: data.cardTypes[enemy.type.toString()].health,
 			startingHealth: data.cardTypes[enemy.type.toString()].health,
@@ -127,7 +128,7 @@ export const endGame = (victory: boolean) => {
 		});
 		timeline.addKeyframe(3, () => {
 			data.phases[gameState.phase.toString()].reward.forEach((card) => {
-				cardState.addCard({
+				addCard({
 					typeId: card.type,
 					group: 'deck',
 					position: { x: -6, y: 0, z: 3.7 },

@@ -57,7 +57,7 @@
 		ref = $bindable()
 	}: ParticlesProps = $props();
 
-	let emitterLife = 0;
+	let emitterLife = 10;
 	let emitterState = '';
 	let newPosition: { x: number; y: number; z: number };
 	let paused = false;

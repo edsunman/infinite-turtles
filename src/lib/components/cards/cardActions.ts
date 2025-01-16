@@ -4,6 +4,40 @@ import { killEnemy, useAction } from '$lib/gameplay';
 import type { Card } from '$lib/types';
 import { data } from '$lib/data';
 
+export const addCard = (args: Partial<Card>) => {
+	const newId = Math.random().toString(16).slice(2);
+	const defaults: Card = {
+		id: newId,
+		health: 1,
+		strength: 1,
+		startingHealth: 1,
+		typeId: 10,
+		moveTo: { x: 0, y: 0, z: 0 },
+		position: { x: 0, y: 0, z: 0 },
+		moveVelocity: { x: 0, y: 0, z: 0 },
+		rotateTo: { x: -1.57, y: 0, z: 0 },
+		rotation: { x: -1.57, y: 0, z: 0 },
+		rotateVelocity: { x: 0, y: 0, z: 0 },
+		stiffness: 0.3,
+		settled: true,
+		group: 'none',
+		order: 0,
+		redAmount: 0
+	};
+	const newCard = { ...defaults, ...args };
+	//this.cards = [...this.cards, newCard];
+	cardState.cards.push(newCard);
+	return newId;
+};
+
+export const updateCard = (cardId: string, args: Partial<Card>) => {
+	const oldCard = cardState.cards.find((card) => card.id === cardId);
+	const cardIndex = cardState.cards.findIndex((card) => card.id === cardId);
+	if (!oldCard) return;
+	const newCard = { ...oldCard, ...args };
+	cardState.cards[cardIndex] = newCard;
+};
+
 export const dealHand = (count = 3) => {
 	const turtles: boolean[] = [];
 	let addedTurtle = false;
@@ -31,7 +65,7 @@ const dealCard = (dealTurtle: boolean) => {
 	}).length;
 
 	if (dealTurtle) {
-		cardState.addCard({
+		addCard({
 			health: data.cardTypes['10'].health,
 			typeId: 10,
 			group: 'hand',
@@ -138,14 +172,6 @@ export const discardTurtleCard = (turtleId: string) => {
 		}
 	});
 	return hostCardWasAttached;
-};
-
-export const updateCard = (cardId: string, args: Partial<Card>) => {
-	const oldCard = cardState.cards.find((card) => card.id === cardId);
-	const cardIndex = cardState.cards.findIndex((card) => card.id === cardId);
-	if (!oldCard) return;
-	const newCard = { ...oldCard, ...args };
-	cardState.cards[cardIndex] = newCard;
 };
 
 export const throwCard = (card: Card, target: Card) => {
