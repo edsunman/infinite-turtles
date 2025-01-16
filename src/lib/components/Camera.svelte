@@ -3,7 +3,7 @@
 	import { T, useTask, useThrelte } from '@threlte/core';
 	import { OrbitControls } from '@threlte/extras';
 	import { Vector3 } from 'three';
-	import { spring } from '$lib/helpers/animation';
+	import { Spring } from '$lib/helpers/animation';
 
 	let devCamera = $state(false);
 	let cameraRef = $state() as undefined;
@@ -12,7 +12,7 @@
 	const vect = new Vector3();
 	const lookAtVect = new Vector3(0, 0, -0.5);
 	let cameraPos = $state({ x: 0, y: 9.3 });
-	const cameraSpring = spring({ x: 0, y: 9.3 }, 0.15, 0.3);
+	const cameraSpring = new Spring({ x: 0, y: 9.3 }, 0.15, 0.3);
 
 	const scenePosToScreenPos = (x: number, y: number, z: number) => {
 		vect.set(x, y, z);

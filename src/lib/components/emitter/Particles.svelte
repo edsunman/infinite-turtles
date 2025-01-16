@@ -10,7 +10,6 @@
 		Mesh,
 		Points
 	} from 'three';
-	import { MeshSurfaceSampler } from 'three/examples/jsm/math/MeshSurfaceSampler.js';
 	import {
 		randomPointInsideCube,
 		randomDirectionSpread,
@@ -20,6 +19,7 @@
 	import fragmentShader from './particles-fragment.glsl?raw';
 	import vertexShader from './particles-vertex.glsl?raw';
 	import type { ParticlesEvents, ParticlesProps, ParticlesSlots } from './Particles.svelte';
+	import { MeshSurfaceSampler } from 'three/examples/jsm/Addons.js';
 
 	type $$Events = ParticlesEvents;
 	type $$Slots = ParticlesSlots;
@@ -92,25 +92,12 @@
 	const samplerVector = new Vector3();
 
 	start = () => {
-		/* if (emitterState !== 'finished') {
-			console.warn(
-				'particles: start() was called but the emitter is ' + emitterState + ', not finished.'
-			);
-			return;
-		} */
 		paused = false;
 		emitterLife = 0;
 	};
 
 	stop = () => {
-		if (oneShot) {
-			console.warn('particles: stop() has no effect when oneShot is set to true.');
-			return;
-		}
-		if (emitterState !== 'running') {
-			console.warn(
-				'particles: stop() was called but the emitter is ' + emitterState + ', not running.'
-			);
+		if (oneShot || emitterState !== 'running') {
 			return;
 		}
 		paused = true;

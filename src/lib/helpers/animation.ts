@@ -5,8 +5,8 @@
  * let timeline = new Timeline();
  *
  * // schedule a function to be run in two seconds time
- * timeline.addKeyframe(2, ()=>{
- * 	console.log('Two second delay');
+ * timeline.addKeyframe(2, () => {
+ * 	console.log('Hello in two seconds time');
  * });
  *
  * useTask((delta) => {
@@ -41,42 +41,39 @@ export class Timeline {
 }
 
 /**
- * Returns a function that can be used to execute a child function every given number of seconds.
+ * A class that can be used to call a function every given number of seconds.
  * @param interval - The interval in seconds.
- * @param [randomMax]- The interval will be random, using this value as the upper bound and the interval param as the lower bound.
+ * @param action - The function
  * @example
- * const everyFiveSeconds = interval(5)
+ * const interval = new Interval(2, () => {
+ * 	// called every two seconds
+ * })
  *
  * useTask((delta) => {
- *      everyFiveSeconds(delta, () => {
- *          // called every five seconds
- *      })
+ *      interval.update(delta)
  * }
  */
-export const interval = (interval: number, randomMax?: number) => {
-	let clock = 0;
-	let intervalCounter =
-		randomMax && randomMax > interval
-			? Math.random() * (randomMax - interval) + interval
-			: interval;
-	let seconds = 0;
-	return function (delta: number, fn: () => void) {
-		clock += delta;
-		if (clock > intervalCounter) {
-			seconds = 0;
-			intervalCounter +=
-				randomMax && randomMax > interval
-					? Math.random() * (randomMax - interval) + interval
-					: interval;
-			fn();
+
+export class Interval {
+	#seconds = 0;
+	interval = 0;
+	action = () => {};
+	constructor(interval: number, action: () => void) {
+		this.action = action;
+		this.interval = interval;
+	}
+	update(delta: number) {
+		if (this.#seconds > this.interval) {
+			this.#seconds = 0;
+			this.action();
 		}
-		seconds += delta;
-		return seconds;
-	};
-};
+		this.#seconds += delta;
+		return this.#seconds;
+	}
+}
 
 /**
- * Similar behvour to Svelte's spring funtion but can be linked to Threlte's useTask.
+ * Similar behvour to Svelte's spring class but can be linked to Threlte's useTask.
  * An example of stiffness and damping values in action here: https://svelte.dev/examples/spring
  * @param [currentValue=0] - The starting value.
  * @param [stiffness=0.15] - Optional custom stiffness value
@@ -85,85 +82,93 @@ export const interval = (interval: number, randomMax?: number) => {
  * @example
  *
  * // create spring
- * let sprungValue = 0
- * let newSpring = spring(sprungValue, 0.15, 0.8)
+ * let sprungValue = $state(0)
+ * let spring = new Spring(sprungValue, 0.15, 0.8)
  *
  * // set new value to spring towards
- * newSpring.set(10)
+ * spring.set(10)
  *
  * useTask((delta) => {
  * 	// update value every frame
- * 		sprungValue = newSpring.update(delta);
+ * 		sprungValue = spring.update(delta)
  * }
  */
-export const spring = <T extends Record<string, number> | number>(
-	currentValue: T,
-	stiffness = 0.15,
-	damping = 0.8,
-	precision = 0.001
-) => {
-	let endValue = currentValue;
-	let velocity = 0;
-	let settled = false;
-	const velocityArray: number[] = [];
-	const settledArray: boolean[] = [];
-	if (typeof currentValue === 'object' && currentValue) {
-		Object.entries(currentValue).forEach(() => {
-			velocityArray.push(0);
-			settledArray.push(false);
+export class Spring<T extends Record<string, number> | number> {
+	#currentValue;
+	#endValue;
+	#velocity;
+	#stiffness;
+	#damping;
+	#precision;
+	#settled;
+	#velocityArray: number[];
+	#settledArray: boolean[];
+	constructor(startingValue: T, stiffness = 0.15, damping = 0.8, precision = 0.001) {
+		this.#currentValue = startingValue;
+		this.#endValue = startingValue;
+		this.#velocity = 0;
+		this.#stiffness = stiffness;
+		this.#damping = damping;
+		this.#precision = precision;
+		this.#settled = false;
+		this.#velocityArray = [];
+		this.#settledArray = [];
+		if (typeof startingValue === 'object' && startingValue) {
+			Object.entries(startingValue).forEach(() => {
+				this.#velocityArray.push(0);
+				this.#settledArray.push(false);
+			});
+		}
+	}
+	set(value: T) {
+		this.#endValue = value;
+		this.#settled = false;
+		this.#settledArray.forEach((part, index, array) => {
+			array[index] = false;
 		});
 	}
-
-	const set = (value: T) => {
-		endValue = value;
-		settled = false;
-		settledArray.forEach(function (part, index, theArray) {
-			theArray[index] = false;
-		});
-	};
-	const update = (delta: number) => {
-		if (typeof currentValue === 'number' && typeof endValue === 'number') {
-			if (settled) return currentValue;
+	update(delta: number) {
+		if (typeof this.#currentValue === 'number' && typeof this.#endValue === 'number') {
+			if (this.#settled) return this.#currentValue;
 			const { cv, s, v } = springTick(
-				stiffness,
-				damping,
-				currentValue,
-				endValue,
+				this.#stiffness,
+				this.#damping,
+				this.#currentValue,
+				this.#endValue,
 				delta,
-				velocity,
-				precision
+				this.#velocity,
+				this.#precision
 			);
-			settled = s;
-			velocity = v;
-			currentValue = cv as T & number;
-		} else if (typeof currentValue === 'object') {
+			this.#settled = s;
+			this.#velocity = v;
+			this.#currentValue = cv as T & number;
+		} else if (typeof this.#currentValue === 'object') {
 			let s = true;
-			settledArray.forEach((settled) => {
+			this.#settledArray.forEach((settled) => {
 				if (!settled) s = false;
 			});
-			if (s) return currentValue;
+			if (s) return this.#currentValue;
 			let i = 0;
-			Object.entries(currentValue).forEach(([key, value]) => {
-				if (typeof endValue === 'number' || typeof currentValue === 'number') return;
+			Object.entries(this.#currentValue).forEach(([key, value]) => {
+				if (typeof this.#endValue === 'number' || typeof this.#currentValue === 'number') return;
 				const { cv, s, v } = springTick(
-					stiffness,
-					damping,
+					this.#stiffness,
+					this.#damping,
 					value,
-					endValue[key],
+					this.#endValue[key],
 					delta,
-					velocityArray[i],
-					precision
+					this.#velocityArray[i],
+					this.#precision
 				);
-				settledArray[i] = s;
-				velocityArray[i] = v;
-				currentValue[key] = cv;
+				this.#settledArray[i] = s;
+				this.#velocityArray[i] = v;
+				this.#currentValue[key] = cv;
 				i++;
 			});
 		}
-		return currentValue;
-	};
-	return { set, update };
-};
+		return this.#currentValue;
+	}
+}
 
 const springTick = (
 	stiffness: number,
