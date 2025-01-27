@@ -16,7 +16,7 @@
 		Object3D
 	} from 'three';
 	import SplatMaterial from '../materials/splat/SplatMaterial.svelte';
-	import { Tween } from '$lib/helpers/animation';
+	import { Tween, Spring } from '$lib/helpers/animation';
 	import { cubicInOut } from 'svelte/easing';
 	import type { Card } from '$lib/types';
 
@@ -37,7 +37,9 @@
 	let portalTween = new Tween(0 as number, 3, cubicInOut);
 	let cardOutlinePosition = $state({ x: 10, z: 10 });
 	let leftDashOpacity = $state(0);
+	let leftDashSpring = new Spring(0 as number, 0.3);
 	let rightDashOpacity = $state(0);
+	let rightDashSpring = new Spring(0 as number, 0.3);
 
 	const findIntersectedCard = (intersections: Intersection[]) => {
 		let card: Card | null = null;
@@ -66,8 +68,7 @@
 						cardState.slots[0] === ''
 					) {
 						document.body.classList.add('hovering');
-						//	cardDashedPosition = { x: -2, z: -1 };
-						rightDashOpacity = 1;
+						rightDashSpring.set(1);
 					} else if (
 						e.point.z > -1.7 &&
 						e.point.z < -0.3 &&
@@ -76,12 +77,11 @@
 						cardState.slots[3] === ''
 					) {
 						document.body.classList.add('hovering');
-						leftDashOpacity = 1;
-						//cardDashedPosition = { x: 2, z: -1 };
+						leftDashSpring.set(1);
 					} else {
 						pointerMovedOffCard = true;
-						leftDashOpacity = 0.4;
-						rightDashOpacity = 0.4;
+						leftDashSpring.set(0.4);
+						rightDashSpring.set(0.4);
 					}
 				}
 				if (pointerMovedOffCard) {
@@ -124,8 +124,8 @@
 		if (gameState.state !== 'playerTurn' || gameState.locked) return;
 		document.body.classList.remove('hovering');
 		cardOutlinePosition = { x: 10, z: 10 };
-		leftDashOpacity = 0;
-		rightDashOpacity = 0;
+		leftDashSpring.set(0);
+		rightDashSpring.set(0);
 		let card = findIntersectedCard(e.intersections);
 		if (!card) {
 			// clicked ground
@@ -146,8 +146,8 @@
 			cardState.hoverCard = null;
 			positionHand();
 			if (card.typeId === 10) {
-				leftDashOpacity = 0.4;
-				rightDashOpacity = 0.4;
+				leftDashSpring.set(0.4);
+				rightDashSpring.set(0.4);
 			}
 			return;
 		} else if (cardState.selectedCard) {
@@ -161,8 +161,8 @@
 			if (card.typeId >= 2 && card.typeId <= 9 && cardState.selectedCard.typeId === 10)
 				//  clicked enemy with turtle
 				throwCard(cardState.selectedCard, card);
-			leftDashOpacity = 0;
-			rightDashOpacity = 0;
+			leftDashSpring.set(0);
+			rightDashSpring.set(0);
 			if (card.typeId === 1 && cardState.selectedCard.typeId === 11)
 				//  clicked player with potion
 				throwCard(cardState.selectedCard, card);
@@ -191,6 +191,8 @@
 		(delta) => {
 			time += delta;
 			portalSize = portalTween.update(delta);
+			leftDashOpacity = leftDashSpring.update(delta);
+			rightDashOpacity = rightDashSpring.update(delta);
 			if (gameState.state !== 'playerTurn') return;
 			cardState.cards.forEach((card, i) => {
 				dummy.position.set(card.position.x, card.position.y, card.position.z);
