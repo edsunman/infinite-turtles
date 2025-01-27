@@ -115,11 +115,13 @@
 			lastDeltaPeak.toFixed(1) +
 			'</span>';
 	});
+
 	$effect(() => {
 		threlteNumbersDiv.innerHTML =
 			ms.toFixed(1) + '<span style="color:rgba(187, 188, 196, 0.7)"> : ' + lastPeak.toFixed(1);
 		+'</span>';
 	});
+
 	$effect(() => {
 		gpuNumbersDiv.innerHTML =
 			gpu.toFixed(1) + '<span style="color:rgba(187, 188, 196, 0.7)"> : ' + lastGpuPeak.toFixed(1);

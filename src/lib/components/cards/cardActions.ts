@@ -1,4 +1,4 @@
-import { cardState, gameState, timeline } from '$lib/state.svelte';
+import { cardState, gameState, sfxPlayer, timeline } from '$lib/state.svelte';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
 import { killEnemy, useAction } from '$lib/gameplay';
 import type { Card } from '$lib/types';
@@ -85,7 +85,7 @@ const dealCard = (dealTurtle: boolean) => {
 		});
 	}
 	cardState.selectedCard = null;
-
+	sfxPlayer.play('deal', { randomPitch: true });
 	positionHand();
 };
 
@@ -93,6 +93,7 @@ export const refillDeckFromDiscardPile = () => {
 	cardState.cards.forEach((card) => {
 		if (card.group !== 'discard') return;
 		card.position = { x: -6, y: 0, z: 3.7 };
+		card.moveTo = { x: -6, y: 0, z: 3.7 };
 		card.group = 'deck';
 		if (card.typeId === 12) {
 			card.health = card.startingHealth;
@@ -121,6 +122,7 @@ const discardCardFromHand = () => {
 	});
 	closeGapInHand();
 	positionHand();
+	sfxPlayer.play('discard');
 };
 
 export const discardTurtleCard = (turtleId: string) => {
@@ -231,6 +233,7 @@ export const throwCard = (card: Card, target: Card) => {
 			updateCard(target.id, { health: target.health + 1 });
 			cardState.damagedCard = target;
 			cardState.damage.text = '+1';
+			sfxPlayer.play('potion');
 		});
 	}
 	timeline.addKeyframe(0.5, () => useAction());

@@ -56,28 +56,6 @@ export const startGame = (phase = 1) => {
 			health: 2,
 			startingHealth: 2
 		});
-		/* 		cardState.addCard({
-			typeId: 13,
-			group: 'deck',
-			position: { x: -6, y: 0, z: 3.7 },
-			health: 2,
-			startingHealth: 2
-		});
-
-		cardState.addCard({
-			typeId: 14,
-			group: 'deck',
-			position: { x: -6, y: 0, z: 3.7 },
-			health: 2,
-			startingHealth: 2
-		});
-		cardState.addCard({
-			typeId: 15,
-			group: 'deck',
-			position: { x: -6, y: 0, z: 3.7 },
-			health: 2,
-			startingHealth: 2
-		}); */
 	}
 
 	const enemyCount = data.phases[phase.toString()].enemies.length;
@@ -162,8 +140,6 @@ export const endTurn = () => {
 
 	gameState.state = 'discarding';
 	discardHand();
-
-	// TODO: turtle health must be hardcoded to 1 because something when strange after turtle with effect card was hit
 
 	// enemy attacks
 	for (const enemy of enemies) {

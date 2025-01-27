@@ -42,11 +42,14 @@
 		cameraSpring.set({ x: gameState.cameraPosition.x, y: gameState.cameraPosition.y });
 	});
 
-	useTask((delta) => {
-		// @ts-ignore
-		if (cameraRef) cameraRef.lookAt(lookAtVect);
-		cameraPos = cameraSpring.update(delta);
-	});
+	useTask(
+		(delta) => {
+			// @ts-ignore
+			if (cameraRef) cameraRef.lookAt(lookAtVect);
+			cameraPos = cameraSpring.update(delta);
+		},
+		{ stage: 'gameplay-stage' }
+	);
 </script>
 
 <T.PerspectiveCamera

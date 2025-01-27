@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dev } from '$app/environment';
 	import { T, useTask, useThrelte, useStage } from '@threlte/core';
 	import { useGltf, useDraco, useProgress } from '@threlte/extras';
 	import { gameState, timeline } from '$lib/state.svelte';
@@ -8,6 +9,7 @@
 	import Hitboxes from './cards/Hitboxes.svelte';
 	import Camera from './Camera.svelte';
 	import ParticleEmitter from './emitter/ParticleEmitter.svelte';
+	import Audio from './Audio.svelte';
 
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
@@ -41,7 +43,9 @@
 	);
 </script>
 
-<!-- <Peformance /> -->
+{#if dev}
+	<Peformance />
+{/if}
 
 {#await gltf then gltf}
 	<Cards {gltf} />
@@ -51,6 +55,8 @@
 <T.AmbientLight intensity={10} />
 
 <Camera />
+
+<Audio />
 
 <ParticleEmitter />
 
