@@ -7,7 +7,7 @@
 		type ThrelteGltf
 	} from '@threlte/extras';
 	import { cardState, gameState } from '$lib/state.svelte';
-	import { positionHand, placeCard, throwCard } from './cardActions';
+	import { positionHand, placeCard, throwCard } from '$lib/game/gameActions';
 	import {
 		InstancedMesh,
 		MeshStandardMaterial,
@@ -34,8 +34,7 @@
 	let pointerMovedOffCard = false;
 	let time = $state(0);
 	let portalSize = $state(0);
-	// svelte-ignore state_referenced_locally
-	let portalTween = new Tween(portalSize, 3, cubicInOut);
+	let portalTween = new Tween(0 as number, 3, cubicInOut);
 	let cardOutlinePosition = $state({ x: 10, z: 10 });
 	let leftDashOpacity = $state(0);
 	let rightDashOpacity = $state(0);

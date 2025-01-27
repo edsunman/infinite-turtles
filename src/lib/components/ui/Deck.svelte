@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { cardState, gameState } from '$lib/state.svelte';
 	import { data } from '$lib/data';
-	import { endTurn } from '$lib/gameplay';
+	import { endTurn } from '$lib/game/gameActions';
 	import type { Card } from '$lib/types';
 	import { untrack } from 'svelte';
 	import { fade } from 'svelte/transition';

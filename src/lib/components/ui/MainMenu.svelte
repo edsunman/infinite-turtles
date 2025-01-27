@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { startGame } from '$lib/gameplay';
+	import { startGame } from '$lib/game/gameActions';
 	import { gameState } from '$lib/state.svelte';
 	import { fade } from 'svelte/transition';
 </script>

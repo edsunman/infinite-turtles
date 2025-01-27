@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { data } from '$lib/data';
-	import { nextPhase } from '$lib/gameplay';
+	import { startNextPhase } from '$lib/game/gameActions';
 	import { gameState } from '$lib/state.svelte';
 	import { onMount } from 'svelte';
 
@@ -11,7 +11,7 @@
 	const close = () => {
 		show = false;
 		setTimeout(() => {
-			nextPhase();
+			startNextPhase();
 		}, 1000);
 	};
 
