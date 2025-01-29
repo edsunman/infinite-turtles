@@ -6,9 +6,13 @@
 	let sfx: ThreeAudio | undefined = $state();
 
 	sfxPlayer.sounds = [
-		{ name: 'potion', duration: 2 },
-		{ name: 'deal', duration: 1 },
-		{ name: 'discard', duration: 1 }
+		{ name: 'deal', duration: 0.5 },
+		{ name: 'select', duration: 0.5 },
+		{ name: 'discard', duration: 0.5 },
+		{ name: 'potion', duration: 1 },
+		{ name: 'attack', duration: 0.5 },
+		{ name: 'turtle-dead', duration: 0.5 },
+		{ name: 'enemy-dead', duration: 1.5 }
 	];
 
 	$effect(() => {

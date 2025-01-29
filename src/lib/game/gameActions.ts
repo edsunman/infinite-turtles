@@ -223,6 +223,7 @@ const attackCard = (cardId: string, targetId: string) => {
 				// state rune absorb damage
 				if (r && r.typeId === 12 && r.health > 0) {
 					damageCard(card.strength, r);
+					sfxPlayer.play('attack');
 					return;
 				}
 			}
@@ -241,6 +242,7 @@ const attackCard = (cardId: string, targetId: string) => {
 			}
 		}
 		damageCard(strength, target);
+		sfxPlayer.play('attack');
 		if (target.typeId === 1) {
 			gameState.cameraPosition.x = Math.random() * 2.5 - 1.5;
 			gameState.cameraPosition.y = 8;
@@ -250,8 +252,8 @@ const attackCard = (cardId: string, targetId: string) => {
 			});
 		}
 		if (target.health <= card.strength && target.typeId === 10) {
+			// turtle dead
 			timeline.addKeyframe(0.5, () => {
-				// kill turtle
 				const hostCard = discardTurtleCard(target.id);
 				if (hostCard) {
 					const enemies = cardState.cards.filter((card) => card.typeId >= 2 && card.typeId < 10);
@@ -265,18 +267,16 @@ const attackCard = (cardId: string, targetId: string) => {
 						});
 					}
 				}
+				sfxPlayer.play('turtle-dead');
 			});
-		}
-		if (target.health <= card.strength && target.typeId === 1) {
+		} else if (target.health <= card.strength && target.typeId === 1) {
+			// player dead
 			timeline.addKeyframe(1, () => {
-				// kill player
-				//updateCard(target.id, { health: -1 });
 				endGame(false);
 			});
-		}
-		if (target.health <= strength && target.typeId >= 2 && target.typeId < 10) {
+		} else if (target.health <= strength && target.typeId >= 2 && target.typeId < 10) {
+			// enemy dead
 			timeline.addKeyframe(1, () => {
-				// kill enemy
 				killEnemy(target);
 			});
 		}
@@ -296,6 +296,7 @@ const killEnemy = (enemy: Card) => {
 	const enemies = cardState.cards.filter(
 		(card) => card.typeId >= 2 && card.typeId < 10 && card.health >= 1
 	);
+	sfxPlayer.play('enemy-dead');
 	if (enemies.length < 1) endGame(true);
 };
 

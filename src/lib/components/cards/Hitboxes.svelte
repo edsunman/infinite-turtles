@@ -6,7 +6,7 @@
 		type IntersectionEvent,
 		type ThrelteGltf
 	} from '@threlte/extras';
-	import { cardState, gameState } from '$lib/state.svelte';
+	import { cardState, gameState, sfxPlayer } from '$lib/state.svelte';
 	import { positionHand, placeCard, throwCard } from '$lib/game/gameActions';
 	import {
 		InstancedMesh,
@@ -115,7 +115,10 @@
 				cardState.hoverCard = card;
 				positionHand();
 				pointerMovedOffCard = true;
-				if (card.group === 'hand') document.body.classList.add('hovering');
+				if (card.group === 'hand') {
+					document.body.classList.add('hovering');
+					sfxPlayer.play('select', { randomPitch: true });
+				}
 			}
 		}
 	};
@@ -143,6 +146,9 @@
 		} else if (card.group === 'hand') {
 			// clicked a card in hand
 			cardState.selectedCard = card;
+			if (!cardState.hoverCard) {
+				sfxPlayer.play('select');
+			}
 			cardState.hoverCard = null;
 			positionHand();
 			if (card.typeId === 10) {
