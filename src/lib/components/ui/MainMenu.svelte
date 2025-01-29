@@ -68,4 +68,25 @@
 		text-align: center;
 		width: 100%;
 	}
+
+	@media screen and (max-width: 800px), screen and (max-height: 600px) {
+		h1 {
+			font-size: 60px;
+			margin-bottom: 50px;
+		}
+
+		button {
+			width: 300px;
+			margin: 40px auto 0;
+			font-size: 30px;
+		}
+
+		#mainMenu {
+			display: block;
+		}
+
+		#buttons {
+			padding: 0px;
+		}
+	}
 </style>

@@ -106,10 +106,6 @@
 		grid-template-rows: 100px 300px 100px;
 		display: grid;
 		position: absolute;
-		/* top: 200px;
-		margin: 0 auto;
-		left: 0;
-		right: 0; */
 		text-align: center;
 		background-color: #c9b8a6;
 		z-index: 101;
@@ -131,5 +127,13 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
+	}
+
+	@media screen and (max-width: 800px) {
+		#nextPhaseMenu {
+			width: auto;
+			grid-template-columns: auto 100% auto;
+			padding: 0 25px;
+		}
 	}
 </style>

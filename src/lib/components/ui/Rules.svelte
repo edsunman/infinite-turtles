@@ -153,4 +153,17 @@
 		text-align: center;
 		width: 100%;
 	}
+
+	@media screen and (max-width: 800px) {
+		button {
+			margin-top: 30px;
+		}
+
+		#rulesMenu {
+			display: block;
+			width: auto;
+			padding: 0 20px;
+			text-align: right;
+		}
+	}
 </style>

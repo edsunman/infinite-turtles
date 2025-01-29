@@ -472,6 +472,7 @@ export const throwCard = (card: Card, target: Card) => {
 				updateCard(target.id, { health: target.health - 1, redAmount: 1 });
 				cardState.damagedCard = target;
 				cardState.damage.text = '-1';
+				sfxPlayer.play('attack');
 				if (target.health <= 1 && target.typeId >= 2 && target.typeId <= 9) {
 					timeline.addKeyframe(1, () => {
 						// kill enemy
@@ -481,6 +482,7 @@ export const throwCard = (card: Card, target: Card) => {
 			} else {
 				cardState.damagedCard = target;
 				cardState.damage.text = '<small>miss</small>';
+				sfxPlayer.play('turtle-dead');
 			}
 		});
 	}
