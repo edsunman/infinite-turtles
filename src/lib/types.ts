@@ -12,6 +12,7 @@ export type GameState = {
 	actions: number;
 	loaded: boolean;
 	cameraPosition: { x: number; y: number };
+	volume: number;
 };
 
 export type CardGroup = 'none' | 'deck' | 'hand' | 'discard' | 'placed';
@@ -31,7 +32,6 @@ export type Card = {
 	health: number;
 	startingHealth: number;
 	strength: number;
-
 	redAmount: number;
 	order: number;
 };

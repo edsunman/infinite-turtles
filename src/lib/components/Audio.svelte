@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sfxPlayer } from '$lib/state.svelte';
+	import { gameState, sfxPlayer } from '$lib/state.svelte';
 	import { Audio, AudioListener } from '@threlte/extras';
 	import type { Audio as ThreeAudio } from 'three';
 
@@ -17,6 +17,11 @@
 
 	$effect(() => {
 		sfxPlayer.threeAudio = sfx;
+	});
+
+	$effect(() => {
+		sfxPlayer.volume = gameState.volume;
+		console.log('set!');
 	});
 </script>
 

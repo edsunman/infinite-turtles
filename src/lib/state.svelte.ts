@@ -13,7 +13,8 @@ export const gameState = $state<GameState>({
 	phase: 1,
 	actions: 2,
 	loaded: false,
-	cameraPosition: { x: 0, y: 9.3 }
+	cameraPosition: { x: 0, y: 9.3 },
+	volume: 0
 });
 
 class CardState {
