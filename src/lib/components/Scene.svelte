@@ -10,11 +10,13 @@
 	import Camera from './Camera.svelte';
 	import ParticleEmitter from './emitter/ParticleEmitter.svelte';
 	import Audio from './Audio.svelte';
+	import MenuPane from './meshes/MenuPane.svelte';
 
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
 
 	const { progress } = useProgress();
+
 	$effect(() => {
 		if ($progress === 1) {
 			gameState.loaded = true;
@@ -23,8 +25,8 @@
 		}
 	});
 
-	const { mainStage, renderStage } = useThrelte();
 	let speed = 1;
+	const { mainStage, renderStage } = useThrelte();
 
 	useStage('gameplay-stage', {
 		after: mainStage,
@@ -59,6 +61,8 @@
 <Audio />
 
 <ParticleEmitter />
+
+<MenuPane />
 
 <svelte:window
 	onkeydown={(e: KeyboardEvent) => {

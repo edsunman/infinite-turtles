@@ -1,7 +1,15 @@
+import { cursorState } from '$lib/state.svelte';
 import type { Card } from '$lib/types';
 
 export const movingBehaviour = (card: Card, delta: number) => {
 	if (!card.settled) card = springCard(card, delta);
+	return card;
+};
+
+export const followCursorBehavior = (card: Card) => {
+	card.rotateTo.y = cursorState.x;
+	card.rotateTo.x = cursorState.y / 3 - 1.1;
+	card.settled = false;
 	return card;
 };
 

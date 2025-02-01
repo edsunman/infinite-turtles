@@ -21,7 +21,6 @@
 
 	$effect(() => {
 		sfxPlayer.volume = gameState.volume;
-		console.log('set!');
 	});
 </script>
 

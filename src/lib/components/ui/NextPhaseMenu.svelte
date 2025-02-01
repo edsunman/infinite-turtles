@@ -1,45 +1,41 @@
 <script lang="ts">
 	import { data } from '$lib/data';
 	import { startNextPhase } from '$lib/game/gameActions';
-	import { gameState } from '$lib/state.svelte';
-	import { onMount } from 'svelte';
+	import { gameState, cursorState } from '$lib/state.svelte';
+	import { fade } from 'svelte/transition';
 
-	let show = $state(false);
-	let rewardId = $derived(data.phases[gameState.phase.toString()].reward[0].type);
-	let newCard = $derived(data.cardTypes[rewardId]);
+	let newCard = $derived(data.cardTypes[data.phases[gameState.phase.toString()].reward[0].type]);
+	let width = $state(0);
+	let height = $state(0);
 
-	const close = () => {
-		show = false;
-		setTimeout(() => {
-			startNextPhase();
-		}, 1000);
+	const onpointermove = (e: any) => {
+		cursorState.x = e.clientX / width - 0.5;
+		cursorState.y = e.clientY / height - 0.5;
 	};
-
-	onMount(() => {
-		setTimeout(() => {
-			show = true;
-		}, 100);
-	});
 </script>
 
-<div id="container">
-	<div id="nextPhaseMenu" class={show ? 'show' : ''}>
-		<h3>new card</h3>
-		<div class="image" style="background-image:url(/images/{rewardId}.svg)"></div>
-		<div class="text">
-			<h4>{newCard.name}</h4>
-			<p>
-				{@html newCard.detail}
-			</p>
-		</div>
-		<button onclick={close}>next phase</button>
+<div
+	id="nextPhaseMenu"
+	in:fade={{ delay: 800 }}
+	out:fade={{ duration: 150 }}
+	{onpointermove}
+	bind:clientWidth={width}
+	bind:clientHeight={height}
+>
+	<h3>new card</h3>
+	<div class="text">
+		<h4>{newCard.name}</h4>
+		<p>
+			{@html newCard.detail}
+		</p>
 	</div>
+	<button onclick={startNextPhase}>continue</button>
 </div>
 
 <style>
 	h3 {
 		color: #6d5c53;
-		font-size: 50px;
+		font-size: 75px;
 		margin: 0;
 		justify-self: center;
 		align-self: center;
@@ -48,12 +44,14 @@
 
 	h4 {
 		color: #6d5c53;
-		font-size: 30px;
-		margin: 25px 0;
+		font-size: 40px;
+		margin: 0 0 30px 0;
 	}
 
 	p {
 		color: #6d5c53;
+		font-size: 25px;
+		margin-bottom: 0px;
 	}
 
 	button {
@@ -81,59 +79,43 @@
 		grid-column: 2;
 		grid-row: 2;
 		text-align: left;
-		width: 55%;
+		width: 45%;
 		justify-self: end;
 		align-content: center;
 		font-size: 20px;
 	}
 
-	.image {
-		grid-column: 2;
-		grid-row: 2;
-		width: 45%;
-		justify-self: start;
-		background-repeat: no-repeat;
-		background-position: center;
-		background-size: auto 200px;
-	}
-
 	#nextPhaseMenu {
-		grid-template-columns: auto 800px auto;
-		grid-template-rows: 200px 300px;
-		margin: 0 auto;
-		width: 100%;
-		grid-template-columns: auto 600px auto;
-		grid-template-rows: 100px 300px 100px;
-		display: grid;
-		position: absolute;
-		text-align: center;
-		background-color: #c9b8a6;
-		z-index: 101;
-		clip-path: rect(50% 100% 50% 0%);
-		transition: 0.6s cubic-bezier(0.89, 0, 0.545, 0.475);
-	}
-
-	#nextPhaseMenu.show {
-		clip-path: rect(0% 100% 100% 0%);
-		transition: 0.8s cubic-bezier(0.84, 0.005, 0.125, 1);
-	}
-
-	#container {
 		position: absolute;
 		left: 0;
 		top: 0;
 		width: 100%;
 		height: 100%;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
+		grid-template-columns: auto 800px auto;
+		grid-template-rows: 25% 50% 25%;
+		margin: 0 auto;
+		display: grid;
+		position: absolute;
+		text-align: center;
 	}
 
 	@media screen and (max-width: 800px) {
 		#nextPhaseMenu {
-			width: auto;
-			grid-template-columns: auto 100% auto;
-			padding: 0 25px;
+			grid-template-columns: 5% 90% 5%;
+		}
+	}
+
+	@media screen and (max-height: 700px) {
+		h3 {
+			font-size: 50px;
+		}
+
+		h4 {
+			font-size: 30px;
+		}
+
+		p {
+			font-size: 20px;
 		}
 	}
 </style>

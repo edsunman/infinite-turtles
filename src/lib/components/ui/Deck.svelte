@@ -11,25 +11,25 @@
 	let deckHover = $state(false);
 	let discardHover = $state(false);
 
-	let sortedDeck = $derived.by(() => {
-		return deck
+	let sortedDeck = $derived(
+		deck
 			.reduce<{ card: Card; count: number }[]>((acc, card) => {
 				acc[card.typeId] ??= { card, count: 0 };
 				acc[card.typeId]['count'] += 1;
 				return acc;
 			}, [])
-			.filter((n) => n);
-	});
+			.filter((n) => n)
+	);
 
-	let sortedDiscard = $derived.by(() => {
-		return discard
+	let sortedDiscard = $derived(
+		discard
 			.reduce<{ card: Card; count: number }[]>((acc, card) => {
 				acc[card.typeId] ??= { card, count: 0 };
 				acc[card.typeId]['count'] += 1;
 				return acc;
 			}, [])
-			.filter((n) => n);
-	});
+			.filter((n) => n)
+	);
 
 	$effect(() => {
 		if (gameState.state === 'playerTurn' || gameState.state === 'enemyTurn') {

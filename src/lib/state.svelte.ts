@@ -17,6 +17,8 @@ export const gameState = $state<GameState>({
 	volume: 0
 });
 
+export const cursorState = { x: 0, y: 0 };
+
 class CardState {
 	selectedCard = $state<Card | null>(null);
 	hoverCard = $state<Card | null>(null);

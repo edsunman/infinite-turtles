@@ -18,10 +18,11 @@ export const startGame = (phase = 1) => {
 			strength: data.cardTypes['1'].strength,
 			position: { x: 0, y: 2, z: 5 }
 		});
-		timeline.addKeyframe(1, () => {
-			timeline.addDelay(3);
-			updateCard(playerId, { moveTo: { x: 0, y: 0, z: -0.5 }, stiffness: 0.15, settled: false });
+
+		timeline.addKeyframe(0.6, () => {
+			timeline.addDelay(2);
 			gameState.portalSize = 0.93;
+			updateCard(playerId, { moveTo: { x: 0, y: 0, z: -0.5 }, stiffness: 0.15, settled: false });
 		});
 		// Starting Deck
 		for (let i = 0; i < 3; i++) {
@@ -64,7 +65,7 @@ export const startGame = (phase = 1) => {
 			updateCard(enemyId, { moveTo: { x: x, y: 0, z: -3.2 }, stiffness: 0.2, settled: false });
 		});
 	}
-	timeline.addKeyframe(2, () => {
+	timeline.addKeyframe(1.8, () => {
 		gameState.state = 'dealing';
 		dealHand();
 	});
@@ -90,14 +91,20 @@ const endGame = (victory: boolean) => {
 				discardTurtleCard(cardState.slots[3]);
 			}
 			discardHand();
-			gameState.menuState = 'nextPhaseMenu';
+			timeline.addKeyframe(0.5, () => {
+				gameState.menuState = 'nextPhaseMenu';
+			});
 		});
-		timeline.addKeyframe(3, () => {
+		timeline.addKeyframe(2, () => {
 			data.phases[gameState.phase.toString()].reward.forEach((card) => {
 				addCard({
 					typeId: card.type,
-					group: 'deck',
-					position: { x: -6, y: 0, z: 3.7 },
+					group: 'onShow',
+					position: { x: -0.8, y: 10, z: 0 },
+					moveTo: { x: -0.8, y: 10, z: 4 },
+					rotateTo: { x: -1.15, y: 0, z: 0 },
+					settled: false,
+					stiffness: 0.15,
 					strength: data.cardTypes[card.type].strength
 				});
 			});
@@ -194,6 +201,22 @@ export const endTurn = () => {
 };
 
 export const startNextPhase = () => {
+	const card = cardState.cards.find((card) => card.group === 'onShow');
+	if (card) {
+		updateCard(card.id, {
+			group: 'deck',
+			moveTo: { x: -0.6, y: 10, z: 7 },
+			stiffness: 0.1,
+			settled: false
+		});
+		timeline.addKeyframe(0.5, () => {
+			updateCard(card.id, {
+				position: { x: -6, y: 0, z: 3.7 },
+				rotation: { x: -1.57, y: 0, z: 0 },
+				settled: true
+			});
+		});
+	}
 	gameState.phase++;
 	startGame(gameState.phase);
 };

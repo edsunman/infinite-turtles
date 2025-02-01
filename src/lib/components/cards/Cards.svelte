@@ -2,7 +2,7 @@
 	import { T, useTask } from '@threlte/core';
 	import { type ThrelteGltf } from '@threlte/extras';
 	import { cardState } from '$lib/state.svelte';
-	import { movingBehaviour } from './cardBehaviour';
+	import { followCursorBehavior, movingBehaviour } from './cardBehaviour';
 
 	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
 	import NumbersMaterial from '../materials/numbers/NumbersMaterial.svelte';
@@ -108,6 +108,9 @@
 		'cards-task',
 		(delta) => {
 			cardState.cards.forEach((card, index, array) => {
+				if (card.group === 'onShow') {
+					card = followCursorBehavior(card);
+				}
 				card = movingBehaviour(card, delta);
 				if (card.health < 0) {
 					array.splice(index, 1);

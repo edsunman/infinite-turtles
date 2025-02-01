@@ -15,7 +15,7 @@ export type GameState = {
 	volume: number;
 };
 
-export type CardGroup = 'none' | 'deck' | 'hand' | 'discard' | 'placed';
+export type CardGroup = 'none' | 'deck' | 'hand' | 'discard' | 'placed' | 'onShow';
 
 export type Card = {
 	id: string;
