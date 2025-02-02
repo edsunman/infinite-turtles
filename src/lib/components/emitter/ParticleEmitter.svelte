@@ -24,7 +24,7 @@
 		emitterPosition={[0, 0, -0.5]}
 		emitterScale={[0.25, 0.4, 1]}
 		emitterRotation={[1.57, 0, 0]}
-		count={100}
+		count={65}
 		life={2}
 		explosiveness={0.7}
 		spread={35}

@@ -4,7 +4,7 @@
 	import fragmentShader from './parallax-fragment.glsl?raw';
 	import vertexShader from './parallax-vertex.glsl?raw';
 
-	let { offset = 1 } = $props();
+	let { offset = 0.5 } = $props();
 
 	const textures = useLoader(TextureLoader).load(
 		{

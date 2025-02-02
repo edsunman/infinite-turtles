@@ -4,6 +4,7 @@ import { addCard, updateCard } from '$lib/components/cards/cardActions';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
 import { data } from '$lib/data';
 import type { Card } from '$lib/types';
+import { browser, dev } from '$app/environment';
 
 export const startGame = (phase = 1) => {
 	gameState.menuState = 'none';
@@ -213,6 +214,7 @@ export const startNextPhase = () => {
 			updateCard(card.id, {
 				position: { x: -6, y: 0, z: 3.7 },
 				rotation: { x: -1.57, y: 0, z: 0 },
+				rotateTo: { x: -1.57, y: 0, z: 0 },
 				settled: true
 			});
 		});
@@ -643,3 +645,6 @@ const closeGapInHand = (cardId: string = '') => {
 		if (card.order > order) card.order--;
 	});
 };
+
+// @ts-expect-error dev only console function
+if (browser && dev) window.endGame = () => endGame(true);

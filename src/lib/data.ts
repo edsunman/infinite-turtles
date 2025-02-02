@@ -45,7 +45,7 @@ export const data: Data = {
 			name: 'baby blob',
 			description: '',
 			detail: '',
-			health: 1,
+			health: 3,
 			strength: 1
 		},
 		'4': {
