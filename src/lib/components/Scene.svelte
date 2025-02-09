@@ -24,7 +24,9 @@
 		mainBackground: '/images/background-main.png'
 	});
 
-	const { progress } = useProgress();
+	const { progress, item } = useProgress();
+
+	$inspect($item);
 
 	$effect(() => {
 		if ($progress === 1) {
@@ -70,7 +72,7 @@
 
 <Camera />
 
-<Audio />
+<!-- <Audio /> -->
 
 <ParticleEmitter />
 
