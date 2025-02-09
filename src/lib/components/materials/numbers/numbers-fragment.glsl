@@ -2,15 +2,6 @@ uniform sampler2D map;
 varying vec2 vUv;
 varying float vCustom;
 
-// Converts a color from linear light gamma to sRGB gamma
-vec4 fromLinear(vec4 linearRGB) {
-    bvec3 cutoff = lessThan(linearRGB.rgb, vec3(0.0031308));
-    vec3 higher = vec3(1.055) * pow(linearRGB.rgb, vec3(1.0 / 2.4)) - vec3(0.055);
-    vec3 lower = linearRGB.rgb * vec3(12.92);
-
-    return vec4(mix(higher, lower, cutoff), linearRGB.a);
-}
-
 vec2 myValues[16];
 
 void main() {
@@ -37,7 +28,6 @@ void main() {
     vec2 coords = vec2((mapUv.x / 4.0) + myValues[int(vCustom + 0.1)].x, (mapUv.y / 4.0) + myValues[int(vCustom + 0.1)].y);
 
     gl_FragColor = vec4(0.0, 0.0, 0.0, texture2D(map, coords).r);
-//    / gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
 
     //#include <tonemapping_fragment>
     //#include <colorspace_fragment> 

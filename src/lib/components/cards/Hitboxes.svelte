@@ -23,12 +23,14 @@
 	interactivity();
 
 	let {
-		gltf
+		gltf,
+		textures
 	}: {
 		gltf: ThrelteGltf<{
 			nodes: Record<string, any>;
 			materials: Record<string, any>;
 		}>;
+		textures: any;
 	} = $props();
 
 	let pointerMovedOffCard = false;
@@ -226,7 +228,7 @@
 	onpointerup={pointerUp}
 >
 	<T.PlaneGeometry />
-	<SplatMaterial noiseOffset={time / 6} {portalSize} />
+	<SplatMaterial noiseOffset={time / 6} {portalSize} {textures} />
 </T.Mesh>
 
 <T.Mesh

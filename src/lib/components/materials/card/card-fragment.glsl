@@ -1,6 +1,5 @@
 uniform sampler2D map;
 varying vec2 vUv;
-varying float vCustom;
 
 #include <color_pars_fragment>
 

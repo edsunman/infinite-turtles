@@ -4,7 +4,7 @@ import type { Card, GameState } from './types';
 
 export const gameState = $state<GameState>({
 	state: 'menu',
-	menuState: 'mainMenu',
+	menuState: 'none',
 	locked: false,
 	paused: false,
 	actionsRemaining: 2,

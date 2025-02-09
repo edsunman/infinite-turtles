@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
 	import { T, useTask, useThrelte, useStage } from '@threlte/core';
-	import { useGltf, useDraco, useProgress } from '@threlte/extras';
+	import { useGltf, useDraco, useProgress, useTexture } from '@threlte/extras';
 	import { gameState, timeline } from '$lib/state.svelte';
+	import { startGame } from '$lib/game/gameActions';
+	import { untrack } from 'svelte';
 
 	import Peformance from './misc/Peformance.svelte';
 	import Cards from './cards/Cards.svelte';
@@ -14,12 +16,20 @@
 
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
+	const textures = useTexture({
+		atlas: '/images/map.png',
+		numbers: '/images/numbers.png',
+		backgrounds: '/images/card-backgrounds.png',
+		circle: '/images/circle.png',
+		mainBackground: '/images/background-main.png'
+	});
 
 	const { progress } = useProgress();
 
 	$effect(() => {
 		if ($progress === 1) {
 			gameState.loaded = true;
+			untrack(() => startGame());
 		} else {
 			gameState.loaded = false;
 		}
@@ -50,8 +60,10 @@
 {/if}
 
 {#await gltf then gltf}
-	<Cards {gltf} />
-	<Hitboxes {gltf} />
+	{#await textures then textures}
+		<Cards {gltf} {textures} />
+		<Hitboxes {gltf} {textures} />
+	{/await}
 {/await}
 
 <T.AmbientLight intensity={10} />

@@ -1,9 +1,11 @@
-uniform sampler2D textures[4];
-uniform float offset;
+uniform sampler2D map;
 varying vec2 vUv;
 varying vec3 vViewPosition;
 varying vec3 vNormal;
 varying float vCustom;
+
+// prob best to hard code this for now
+float offset = 0.3;
 
 // Converts a color from linear light gamma to sRGB gamma
 vec4 fromLinear(vec4 linearRGB) {
@@ -16,7 +18,7 @@ vec4 fromLinear(vec4 linearRGB) {
 
 vec2 parallaxMap(in vec3 V) {
     // use bump map
-    //float initialHeight = texture2D(bumpMap, vUv).r;
+    // float initialHeight = texture2D(bumpMap, vUv).r;
     vec2 texCoordOffset = offset * V.xy; // * initialHeight
     return vUv - texCoordOffset;
 
@@ -37,22 +39,22 @@ vec2 perturbUv(vec3 surfPosition, vec3 surfNormal, vec3 viewPosition) {
     return parallaxMap(vProjVtex);
 }
 
+vec2 myValues[7];
+
 void main() {
 
     vec2 mapUv = perturbUv(-vViewPosition, normalize(vNormal), normalize(vViewPosition));
-    vec4 tex = texture2D(textures[0], mapUv);
 
-    if(vCustom > 0.5) {
-        tex = texture2D(textures[1], mapUv);
-    }
+    myValues[0] = vec2(0.0, 0.0);
+    myValues[1] = vec2(0.333, 0.0);
+    myValues[2] = vec2(0.666, 0.0);
+    myValues[3] = vec2(0.0, 0.333);
+    myValues[4] = vec2(0.333, 0.333);
+    myValues[5] = vec2(0.666, 0.333);
+    myValues[6] = vec2(0.0, 0.666);
 
-    if(vCustom > 1.5) {
-        tex = texture2D(textures[2], mapUv);
-    }
-
-    if(vCustom > 2.5) {
-        tex = texture2D(textures[3], mapUv);
-    }
+    vec2 coords = vec2((mapUv.x / 4.0 + 0.04) + myValues[int(vCustom + 0.1)].x, (mapUv.y / 4.0 + 0.04) + myValues[int(vCustom + 0.1)].y);
+    vec4 tex = texture2D(map, coords);
 
     gl_FragColor = fromLinear(tex);
 

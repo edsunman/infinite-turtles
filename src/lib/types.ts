@@ -1,3 +1,5 @@
+import type { Texture } from 'three';
+
 export type XYZ = { x: number; y: number; z: number };
 
 export type GameState = {
@@ -34,4 +36,12 @@ export type Card = {
 	strength: number;
 	redAmount: number;
 	order: number;
+};
+
+export type LoadedTextures = {
+	atlas: Texture;
+	numbers: Texture;
+	backgrounds: Texture;
+	circle: Texture;
+	mainBackground: Texture;
 };

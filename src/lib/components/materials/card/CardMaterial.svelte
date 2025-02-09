@@ -1,30 +1,17 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { useTexture } from '@threlte/extras';
-	import { RepeatWrapping, ShaderMaterial, Texture } from 'three';
+	import { ShaderMaterial, Texture } from 'three';
 	import fragmentShader from './card-fragment.glsl?raw';
 	import vertexShader from './card-vertex.glsl?raw';
 
-	let map = useTexture('/images/map.png');
+	let { texture }: { texture: Texture } = $props();
+
+	texture.flipY = false;
 
 	const material = new ShaderMaterial({
 		fragmentShader,
 		vertexShader,
-		uniforms: { map: { value: map } }
-	});
-
-	const mapLoaded = (map: Texture | undefined) => {
-		if (!map) return;
-		map.flipY = false;
-		map.wrapS = RepeatWrapping;
-		map.wrapT = RepeatWrapping;
-		map.anisotropy = 2;
-		//map.colorSpace = SRGBColorSpace;
-		material.uniforms.map.value = map;
-	};
-
-	$effect(() => {
-		mapLoaded($map);
+		uniforms: { map: { value: texture } }
 	});
 </script>
 

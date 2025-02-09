@@ -7,6 +7,7 @@ import type { Card } from '$lib/types';
 import { browser, dev } from '$app/environment';
 
 export const startGame = (phase = 1) => {
+	if (gameState.state !== 'menu') return;
 	gameState.menuState = 'none';
 	cardState.damage.text = '';
 	gameState.actionsRemaining = 2;

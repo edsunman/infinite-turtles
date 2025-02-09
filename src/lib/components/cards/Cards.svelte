@@ -3,11 +3,6 @@
 	import { type ThrelteGltf } from '@threlte/extras';
 	import { cardState } from '$lib/state.svelte';
 	import { followCursorBehavior, movingBehaviour } from './cardBehaviour';
-
-	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
-	import NumbersMaterial from '../materials/numbers/NumbersMaterial.svelte';
-	import CardMaterial from '../materials/card/CardMaterial.svelte';
-
 	import {
 		BatchedMesh,
 		Color,
@@ -17,14 +12,21 @@
 		Object3D,
 		PlaneGeometry
 	} from 'three';
+	import type { LoadedTextures } from '$lib/types';
+
+	import ParallaxMaterial from '../materials/paralax/ParallaxMaterial.svelte';
+	import NumbersMaterial from '../materials/numbers/NumbersMaterial.svelte';
+	import CardMaterial from '../materials/card/CardMaterial.svelte';
 
 	let {
-		gltf
+		gltf,
+		textures
 	}: {
 		gltf: ThrelteGltf<{
 			nodes: Record<string, any>;
 			materials: Record<string, any>;
 		}>;
+		textures: LoadedTextures;
 	} = $props();
 
 	let cardsCount = 0;
@@ -150,7 +152,7 @@
 				dummyColor.setRGB(cardState.cards[i].redAmount, 0, 0);
 				instancedBackgrounds.setMatrixAt(i, dummy.matrix);
 				backgroundsFloat.set(
-					[cardState.cards[i].typeId >= 2 && cardState.cards[i].typeId <= 9 ? 1 : 2],
+					[cardState.cards[i].typeId >= 2 && cardState.cards[i].typeId <= 9 ? 1 : 0],
 					i
 				);
 				if (cardState.cards[i].typeId < 10) {
@@ -165,12 +167,12 @@
 				} else if (cardState.cards[i].typeId === 11) {
 					batched.setMatrixAt(potionCount, dummy.matrix);
 					batched.setVisibleAt(potionCount, true);
-					backgroundsFloat.set([0], i);
+					backgroundsFloat.set([6], i);
 					potionCount++;
 				} else if (cardState.cards[i].typeId === 12) {
 					batched.setMatrixAt(stateCount, dummy.matrix);
 					batched.setVisibleAt(stateCount, true);
-					backgroundsFloat.set([3], i);
+					backgroundsFloat.set([2], i);
 					stateCount++;
 				} else if (cardState.cards[i].typeId === 13) {
 					batched.setMatrixAt(inspectCount, dummy.matrix);
@@ -180,12 +182,12 @@
 				} else if (cardState.cards[i].typeId === 14) {
 					batched.setMatrixAt(hostCount, dummy.matrix);
 					batched.setVisibleAt(hostCount, true);
-					backgroundsFloat.set([3], i);
+					backgroundsFloat.set([4], i);
 					hostCount++;
 				} else if (cardState.cards[i].typeId === 15) {
 					batched.setMatrixAt(effectCount, dummy.matrix);
 					batched.setVisibleAt(effectCount, true);
-					backgroundsFloat.set([3], i);
+					backgroundsFloat.set([5], i);
 					effectCount++;
 				}
 				batched.setMatrixAt(bordersCount, dummy.matrix);
@@ -224,13 +226,13 @@
 </script>
 
 <T is={instancedBackgrounds} frustumCulled={false}>
-	<ParallaxMaterial />
+	<ParallaxMaterial texture={textures.backgrounds} />
 </T>
 
 <T is={instancedNumbers} frustumCulled={false}>
-	<NumbersMaterial />
+	<NumbersMaterial texture={textures.numbers} />
 </T>
 
 <T is={batched} matrixAutoUpdate={false} frustumCulled={false}>
-	<CardMaterial />
+	<CardMaterial texture={textures.atlas} />
 </T>
