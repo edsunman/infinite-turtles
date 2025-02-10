@@ -24,9 +24,7 @@
 		mainBackground: '/images/background-main.png'
 	});
 
-	const { progress, item } = useProgress();
-
-	$inspect($item);
+	const { progress } = useProgress();
 
 	$effect(() => {
 		if ($progress === 1) {
