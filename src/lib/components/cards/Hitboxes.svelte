@@ -54,7 +54,25 @@
 		return card;
 	};
 
-	const pointerMoved = (e: any) => {
+	const isPointInTurtleArea = (x: number, z: number, turtle: number): boolean => {
+		if (gameState.mobile) turtle += 2;
+		const areas = [
+			[-1.8, -0.3, -1.5, -2.5],
+			[-1.8, -0.3, 2.5, 1.5],
+			[-1.8, -0.3, -0.6, -1.6],
+			[-1.8, -0.3, 1.6, 0.6]
+		];
+		if (
+			z > areas[turtle][0] &&
+			z < areas[turtle][1] &&
+			x < areas[turtle][2] &&
+			x > areas[turtle][3]
+		)
+			return true;
+		return false;
+	};
+
+	const pointerMoved = (e: IntersectionEvent<Event>) => {
 		if (gameState.state !== 'playerTurn' || gameState.locked) return;
 		let card = findIntersectedCard(e.intersections);
 		if (cardState.selectedCard) {
@@ -62,22 +80,10 @@
 				// pointer over ground with card selected
 				if (cardState.selectedCard && cardState.selectedCard.typeId === 10) {
 					// turtle card is selected
-					if (
-						e.point.z > -1.7 &&
-						e.point.z < -0.3 &&
-						e.point.x < -1.5 &&
-						e.point.x > -2.5 &&
-						cardState.slots[0] === ''
-					) {
+					if (isPointInTurtleArea(e.point.x, e.point.z, 0) && cardState.slots[0] === '') {
 						document.body.classList.add('hovering');
 						rightDashSpring.set(1);
-					} else if (
-						e.point.z > -1.7 &&
-						e.point.z < -0.3 &&
-						e.point.x > 1.5 &&
-						e.point.x < 2.5 &&
-						cardState.slots[3] === ''
-					) {
+					} else if (isPointInTurtleArea(e.point.x, e.point.z, 1)) {
 						document.body.classList.add('hovering');
 						leftDashSpring.set(1);
 					} else {
@@ -136,10 +142,11 @@
 			// clicked ground
 			if (cardState.selectedCard && cardState.selectedCard.typeId === 10) {
 				// turtle card is selected
-				if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x < -1.5 && e.point.x > -2.5)
+				if (isPointInTurtleArea(e.point.x, e.point.z, 0)) {
 					placeCard(cardState.selectedCard.id, 'left', 'turtle');
-				if (e.point.z > -1.7 && e.point.z < -0.3 && e.point.x > 1.5 && e.point.x < 2.5)
+				} else if (isPointInTurtleArea(e.point.x, e.point.z, 1)) {
 					placeCard(cardState.selectedCard.id, 'right', 'turtle');
+				}
 			}
 			cardState.selectedCard = null;
 			cardState.hoverCard = null;
@@ -241,12 +248,22 @@
 	<T.MeshToonMaterial />
 </T.Mesh>
 
-<T.Mesh position.x={2} position.z={-1} rotation.x={-1.57} scale={[1, 1, 1]}>
+<T.Mesh
+	position.x={gameState.mobile ? 1.1 : 2}
+	position.z={-1}
+	rotation.x={-1.57}
+	scale={[1, 1, 1]}
+>
 	<T is={gltf.nodes.Dashed.geometry} />
 	<T.MeshToonMaterial transparent opacity={leftDashOpacity} />
 </T.Mesh>
 
-<T.Mesh position.x={-2} position.z={-1} rotation.x={-1.57} scale={[1, 1, 1]}>
+<T.Mesh
+	position.x={gameState.mobile ? -1.1 : -2}
+	position.z={-1}
+	rotation.x={-1.57}
+	scale={[1, 1, 1]}
+>
 	<T is={gltf.nodes.Dashed.geometry} />
 	<T.MeshToonMaterial transparent opacity={rightDashOpacity} />
 </T.Mesh>

@@ -15,16 +15,6 @@
 </div>
 
 <style>
-	a {
-		position: absolute;
-		top: 0;
-		right: 0;
-		color: white;
-		text-decoration: none;
-		margin: 20px;
-		z-index: 10;
-	}
-
 	:global(body) {
 		margin: 0;
 		cursor: image-set('/cursor/cursor.png' 1x, '/cursor/cursor-x2.png' 2x), default;
@@ -66,5 +56,21 @@
 		width: 100vw;
 		height: 100vh;
 		background: #ad8f73;
+	}
+
+	a {
+		position: absolute;
+		top: 0;
+		right: 0;
+		color: white;
+		text-decoration: none;
+		margin: 20px;
+		z-index: 10;
+	}
+
+	@media screen and (max-width: 750px) {
+		a {
+			display: none;
+		}
 	}
 </style>

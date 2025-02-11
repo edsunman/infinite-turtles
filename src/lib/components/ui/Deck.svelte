@@ -69,7 +69,7 @@
 {/if}
 
 <div class="ui" id="actions" transition:fade={{ delay: 500 }}>
-	<p><span>actions:&nbsp;</span>{gameState.actionsRemaining}/{gameState.actions}</p>
+	<p>{gameState.actionsRemaining}/{gameState.actions}</p>
 </div>
 
 <div
@@ -152,7 +152,7 @@
 		bottom: 25px;
 		left: 140px;
 		color: white;
-		font-size: 25px;
+		font-size: 30px;
 	}
 
 	#discardButton {
@@ -177,7 +177,6 @@
 		background-color: #c1a68a;
 		padding: 5px 15px;
 		border-radius: 10px;
-		margin-top: 25px;
 		bottom: 20px;
 		right: 150px;
 	}
@@ -223,11 +222,32 @@
 
 		#actions {
 			left: 100px;
-			font-size: 30px;
+		}
+	}
+
+	@media screen and (max-width: 750px) {
+		#deckButton,
+		#discardButton {
+			top: 20px;
 		}
 
-		#actions span {
-			display: none;
+		#deck,
+		#discard {
+			top: 100px;
+			bottom: unset;
+		}
+
+		#actions {
+			top: 90px;
+			left: 20px;
+			bottom: unset;
+		}
+
+		#endTurn {
+			top: 95px;
+			right: 15px;
+			bottom: unset;
+			width: 55px;
 		}
 	}
 </style>

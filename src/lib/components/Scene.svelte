@@ -11,8 +11,9 @@
 	import Hitboxes from './cards/Hitboxes.svelte';
 	import Camera from './Camera.svelte';
 	import ParticleEmitter from './emitter/ParticleEmitter.svelte';
-	import Audio from './Audio.svelte';
+	//import Audio from './Audio.svelte';
 	import MenuPane from './meshes/MenuPane.svelte';
+	import { innerWidth } from 'svelte/reactivity/window';
 
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
@@ -33,6 +34,10 @@
 		} else {
 			gameState.loaded = false;
 		}
+	});
+
+	$effect(() => {
+		if (innerWidth.current) gameState.mobile = innerWidth.current < 751;
 	});
 
 	let speed = 1;

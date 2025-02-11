@@ -564,12 +564,22 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 		selectedSlot = 3;
 	}
 	const slotPositions = [
-		{ x: -2, y: 0, z: -1 },
-		{ x: -2.6, y: 0, z: 0.6 },
-		{ x: -1.4, y: 0, z: 0.6 },
-		{ x: 2, y: 0, z: -1 },
-		{ x: 1.4, y: 0, z: 0.6 },
-		{ x: 2.6, y: 0, z: 0.6 }
+		[
+			{ x: -2, y: 0, z: -1 },
+			{ x: -2.6, y: 0, z: 0.6 },
+			{ x: -1.4, y: 0, z: 0.6 },
+			{ x: 2, y: 0, z: -1 },
+			{ x: 1.4, y: 0, z: 0.6 },
+			{ x: 2.6, y: 0, z: 0.6 }
+		],
+		[
+			{ x: -1.1, y: 0, z: -1 },
+			{ x: -1.3, y: 0, z: 0.6 },
+			{ x: -0.7, y: 0.1, z: 1.2 },
+			{ x: 1.1, y: 0, z: -1 },
+			{ x: 1.3, y: 0, z: 0.6 },
+			{ x: 0.7, y: 0.1, z: 1.2 }
+		]
 	];
 	updateCard(cardId, {
 		group: 'placed',
@@ -583,7 +593,7 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 		updateCard(cardId, {
 			group: 'placed',
 			stiffness: 0.2,
-			moveTo: slotPositions[selectedSlot],
+			moveTo: slotPositions[gameState.mobile ? 1 : 0][selectedSlot],
 			rotateTo: { x: -1.57, y: 0, z: 0 },
 			settled: false
 		})
@@ -594,12 +604,14 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 		useAction();
 		const card = cardState.cards.find((card) => card.id === cardId);
 		if (card && (card.typeId === 13 || card.typeId === 15)) {
+			// effect and inspect rune buff
+			const buff = card.typeId === 13 ? 1 : 2;
 			const turtleId = cardState.slots[on === 'left' ? 0 : 3];
 			const turtle = cardState.cards.find((card) => card.id === turtleId);
 			if (!turtle) return;
-			updateCard(turtle.id, { health: turtle.health + 1 });
+			updateCard(turtle.id, { health: turtle.health + buff });
 			cardState.damagedCard = turtle;
-			cardState.damage.text = '+1';
+			cardState.damage.text = '+' + buff;
 		}
 	});
 };

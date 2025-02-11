@@ -41,6 +41,7 @@
 		color: white;
 		font-size: 150px;
 		font-weight: 500;
+		margin: 150px 0;
 	}
 
 	button {
@@ -80,5 +81,11 @@
 
 	#gameOverMenu.hide {
 		clip-path: rect(100% 100% 100% 0%);
+	}
+
+	@media screen and (max-width: 750px) {
+		h1 {
+			font-size: 70px;
+		}
 	}
 </style>

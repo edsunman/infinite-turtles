@@ -104,9 +104,9 @@ export const data: Data = {
 		'15': {
 			name: 'effect rune',
 			description:
-				'gives turtle <span style="color:var(--purple);font-size:30px">+2</span> strength<br />turtle gets <span style="color:var(--green);font-size:30px">+1</span> health',
+				'gives turtle <span style="color:var(--purple);font-size:30px">+2</span> strength<br />turtle gets <span style="color:var(--green);font-size:30px">+2</span> health',
 			detail:
-				'This rune card will increase the turtles strength by 2.<br /><br />When you place this rune your turtle will instanly gain +1 health.',
+				'This rune card will increase the turtles strength by 2.<br /><br />When you place this rune your turtle will instanly gain +2 health.',
 			health: 0,
 			strength: 0
 		}

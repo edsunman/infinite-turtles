@@ -14,7 +14,8 @@ export const gameState = $state<GameState>({
 	actions: 2,
 	loaded: false,
 	cameraPosition: { x: 0, y: 9.3 },
-	volume: 0
+	volume: 0,
+	mobile: false
 });
 
 export const cursorState = { x: 0, y: 0 };

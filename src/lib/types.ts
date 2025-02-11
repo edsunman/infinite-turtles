@@ -15,6 +15,7 @@ export type GameState = {
 	loaded: boolean;
 	cameraPosition: { x: number; y: number };
 	volume: number;
+	mobile: boolean;
 };
 
 export type CardGroup = 'none' | 'deck' | 'hand' | 'discard' | 'placed' | 'onShow';

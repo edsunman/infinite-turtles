@@ -105,7 +105,7 @@
 		}
 	}
 
-	@media screen and (max-height: 700px) {
+	@media screen and (max-height: 700px), screen and (max-width: 750px) {
 		h3 {
 			font-size: 50px;
 		}
@@ -116,6 +116,12 @@
 
 		p {
 			font-size: 20px;
+		}
+	}
+
+	@media screen and (max-width: 450px) {
+		.text {
+			width: 60%;
 		}
 	}
 </style>

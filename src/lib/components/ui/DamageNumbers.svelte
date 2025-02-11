@@ -36,4 +36,10 @@
 		padding: 0;
 		font-size: 50px;
 	}
+
+	@media screen and (max-width: 750px) {
+		p {
+			font-size: 35px;
+		}
+	}
 </style>
