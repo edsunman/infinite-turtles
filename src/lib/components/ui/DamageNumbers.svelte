@@ -17,7 +17,7 @@
 	};
 </script>
 
-{#key cardState.damage.key}
+{#key cardState.damagedCard}
 	<div style:left="{cardState.damage.x}px" style:top="{cardState.damage.y}px" in:fadeUpwards|global>
 		<p>{@html cardState.damage.text}</p>
 	</div>

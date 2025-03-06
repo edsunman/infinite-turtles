@@ -35,7 +35,6 @@
 		const d = scenePosToScreenPos(p.x, p.y, p.z);
 		cardState.damage.x = d.x - 50 + (Math.random() - 0.5) * 50;
 		cardState.damage.y = d.y - 50 + (Math.random() - 0.5) * 50;
-		cardState.damage.key = Math.random().toString(16).slice(2);
 	});
 
 	$effect(() => {
