@@ -116,6 +116,7 @@
 		padding: 15px 20px;
 		border-radius: 10px;
 		font-size: 18px;
+		z-index: 10;
 	}
 
 	.cardList div {
