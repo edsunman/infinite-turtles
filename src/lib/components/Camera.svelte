@@ -25,8 +25,12 @@
 	$effect(() => {
 		const p = cardState.hoverCard?.position;
 		if (!p) return;
+		if (gameState.mobile) {
+			gameState.hoverPosition = { x: size.current.width / 2, y: size.current.height / 2 };
+			return;
+		}
 		const offset = cardState.hoverCard?.group === 'hand' ? 1 : 0.5;
-		gameState.hoverPosition = scenePosToScreenPos(p.x + 0.6, p.y, p.z - offset);
+		gameState.hoverPosition = scenePosToScreenPos(p.x + 1.2, p.y, p.z - offset);
 	});
 
 	$effect(() => {

@@ -25,6 +25,7 @@ class CardState {
 	hoverCard = $state<Card | null>(null);
 	damagedCard = $state<Card | null>(null);
 	damage = $state({ x: 0, y: 0, text: '' });
+	tappedCardId = $state('');
 	slots: [string, string, string, string, string, string] = ['', '', '', '', '', ''];
 	cards: Card[] = [];
 }

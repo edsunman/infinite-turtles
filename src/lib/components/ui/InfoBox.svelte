@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { cardState, gameState } from '$lib/state.svelte';
-
 	import { data } from '$lib/data';
 	import { scale } from 'svelte/transition';
 	import { backOut } from 'svelte/easing';
+
+	let width = $state(0);
+	let height = $state(0);
 
 	const cardStrength = $derived.by(() => {
 		cardState.hoverCard;
@@ -36,10 +38,12 @@
 	{#key cardState.hoverCard}
 		<div
 			id="infoBox"
+			bind:clientWidth={width}
+			bind:clientHeight={height}
 			style:display={'block'}
-			style:left="{gameState.hoverPosition.x}px"
-			style:top="{gameState.hoverPosition.y}px"
-			in:scale|global={{ delay: 500, duration: 200, easing: backOut }}
+			style:left="{gameState.hoverPosition.x - width / 2}px"
+			style:top="{gameState.hoverPosition.y - height / 2 + 25}px"
+			in:scale|global={{ delay: gameState.mobile ? 100 : 500, duration: 200, easing: backOut }}
 		>
 			<h3 class={cardState.hoverCard.typeId === 13 ? 'small' : ''}>{card.name}</h3>
 

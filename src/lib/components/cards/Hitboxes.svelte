@@ -154,6 +154,17 @@
 			return;
 		} else if (card.group === 'hand') {
 			// clicked a card in hand
+			if (
+				cardState.selectedCard?.id === card.id &&
+				gameState.mobile &&
+				cardState.tappedCardId === ''
+			) {
+				// double tapped card
+				cardState.tappedCardId = card.id;
+				cardState.hoverCard = card;
+				return;
+			}
+			cardState.tappedCardId = '';
 			cardState.selectedCard = card;
 			if (!cardState.hoverCard) {
 				sfxPlayer.play('select');
