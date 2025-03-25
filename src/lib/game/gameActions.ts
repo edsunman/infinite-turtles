@@ -392,6 +392,8 @@ const refillDeckFromDiscardPile = () => {
 		if (card.group !== 'discard') return;
 		card.position = { x: -6, y: 0, z: 3.7 };
 		card.moveTo = { x: -6, y: 0, z: 3.7 };
+		card.rotation = { x: -1.57, y: 0, z: 0 };
+		card.rotateTo = { x: -1.57, y: 0, z: 0 };
 		card.group = 'deck';
 		if (card.typeId === 12) {
 			card.health = card.startingHealth;
@@ -438,9 +440,9 @@ const discardTurtleCard = (turtleId: string) => {
 	if (attachedRuneCards[0]) {
 		timeline.addKeyframe(0.1, () => {
 			updateCard(cardState.slots[1 + slotOffset], {
-				moveTo: { x: 6, y: 0, z: 3.7 },
+				moveTo: { x: 7, y: 2, z: 6 },
 				settled: false,
-				rotateTo: { x: -1.57, y: 0, z: 0 },
+				rotateTo: { x: 0, y: 0.5, z: 0 },
 				stiffness: 0.06,
 				group: 'discard'
 			});
@@ -450,9 +452,9 @@ const discardTurtleCard = (turtleId: string) => {
 	if (attachedRuneCards[1]) {
 		timeline.addKeyframe(0.2, () => {
 			updateCard(cardState.slots[2 + slotOffset], {
-				moveTo: { x: 6, y: 0, z: 3.7 },
+				moveTo: { x: 7, y: 2, z: 6 },
 				settled: false,
-				rotateTo: { x: -1.57, y: 0, z: 0 },
+				rotateTo: { x: 0, y: 0.5, z: 0 },
 				stiffness: 0.06,
 				group: 'discard'
 			});

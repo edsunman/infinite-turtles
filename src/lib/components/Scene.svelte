@@ -94,6 +94,7 @@
 			} else if (speed === 0.25) {
 				speed = 1;
 			}
+			console.log(`speed: ${speed}`);
 		}
 	}}
 />
