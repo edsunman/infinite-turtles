@@ -4,6 +4,9 @@ import type { Points, Texture } from 'three';
 
 type XYZ = { x: number; y: number; z: number };
 
+export type Start = (group: number, burst: boolean, hue: number, x?: number, z?: number) => void;
+export type Stop = (group: number) => void;
+
 export type ParticlesProps = Props<Points> & {
 	/** Position of the emitter. You can update while the emitter is running. */
 	emitterPosition?: [number, number, number];
@@ -64,8 +67,8 @@ export type ParticlesProps = Props<Points> & {
 	/** Bounding sphere of the emitter, defaults to 5. */
 	boundingSphereRadius?: number;
 	/** Bounding sphere of the emitter, defaults to 5. */
-	start?: () => void;
-	stop?: () => void;
+	start?: Start;
+	stop?: Stop;
 	emitterStateChanged?: (e: string) => void;
 	customGeometry?: Snippet;
 };

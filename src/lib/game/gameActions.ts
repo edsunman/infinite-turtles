@@ -1,10 +1,10 @@
-import { cardState, gameState, timeline, sfxPlayer } from '$lib/state.svelte';
-import { findClosestEnemy } from './gameUtils';
+import { cardState, gameState, timeline, sfxPlayer, particles } from '$lib/state.svelte';
+import { findAttachedHostCard, findClosestEnemy } from './gameUtils';
 import { addCard, updateCard } from '$lib/components/cards/cardActions';
 import { createAscendingDescendingArray, randomNumber } from '$lib/helpers/utils';
 import { data } from '$lib/data';
 import type { Card } from '$lib/types';
-import { browser, dev } from '$app/environment';
+import { browser } from '$app/environment';
 
 export const startGame = (phase = 1) => {
 	if (gameState.state !== 'menu') return;
@@ -78,6 +78,7 @@ export const startGame = (phase = 1) => {
 };
 
 const endGame = (victory: boolean) => {
+	particles.clearAll();
 	gameState.state = 'menu';
 	if (victory) {
 		if (gameState.phase === 4) {
@@ -279,8 +280,12 @@ const attackCard = (cardId: string, targetId: string) => {
 		}
 		if (target.health <= card.strength && target.typeId === 10) {
 			// turtle dead
+			const hostCard = findAttachedHostCard(target.id);
+			if (hostCard) {
+				particles.start(hostCard.id, true, 0, hostCard.position.x, hostCard.position.z);
+			}
 			timeline.addKeyframe(0.5, () => {
-				const hostCard = discardTurtleCard(target.id);
+				discardTurtleCard(target.id);
 				if (hostCard) {
 					const enemies = cardState.cards.filter((card) => card.typeId >= 2 && card.typeId < 10);
 					const enemy = findClosestEnemy(target, enemies);
@@ -467,13 +472,11 @@ const discardTurtleCard = (turtleId: string) => {
 		cardState.slots[0 + slotOffset] = '';
 	});
 
-	let hostCardWasAttached = false;
 	attachedRuneCards.forEach((card) => {
-		if (card && card.typeId === 14) {
-			hostCardWasAttached = true;
+		if (card?.typeId === 13 || card?.typeId === 15) {
+			particles.stop(card.id);
 		}
 	});
-	return hostCardWasAttached;
 };
 
 export const throwCard = (card: Card, target: Card) => {
@@ -536,6 +539,7 @@ export const throwCard = (card: Card, target: Card) => {
 			cardState.damagedCard = target;
 			cardState.damage.text = '+1';
 			sfxPlayer.play('potion');
+			particles.start(card.id, true, 0.5, 0, -0.6);
 		});
 	}
 	timeline.addKeyframe(0.5, () => useAction());
@@ -616,6 +620,19 @@ export const placeCard = (cardId: string, on: 'left' | 'right', type: 'turtle' |
 			cardState.damage.text = '+' + buff;
 		}
 	});
+	timeline.addKeyframe(0.75, () => {
+		// start particles
+		const card = cardState.cards.find((card) => card.id === cardId);
+		if (card?.typeId === 13 || card?.typeId === 15) {
+			particles.start(
+				card.id,
+				false,
+				card?.typeId === 13 ? 0.15 : 0.9,
+				card.position.x,
+				card.position.z
+			);
+		}
+	});
 };
 
 const damageCard = (strength: number, target: Card) => {
@@ -661,5 +678,29 @@ const closeGapInHand = (cardId: string = '') => {
 	});
 };
 
-// @ts-expect-error dev only console function
-if (browser && dev) window.endGame = () => endGame(true);
+if (browser) {
+	// @ts-expect-error dev console function
+	window.endGame = () => endGame(true);
+	// @ts-expect-error dev console function
+	window.spawnCard = (cardTypeId: number) => {
+		let handLength = 0;
+		cardState.cards.forEach((card) => {
+			if (card.group === 'hand') handLength++;
+		});
+		const newCardId = addCard({
+			typeId: cardTypeId,
+			group: 'deck',
+			position: { x: -6, y: 0, z: 3.7 },
+			settled: false,
+			stiffness: 0.15,
+			strength: data.cardTypes[cardTypeId].strength
+		});
+		cardState.cards.forEach((card) => {
+			if (card.id === newCardId) {
+				card.group = 'hand';
+				card.order = handLength;
+			}
+		});
+		positionHand();
+	};
+}

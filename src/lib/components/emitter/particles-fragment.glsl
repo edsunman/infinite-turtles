@@ -4,12 +4,14 @@ uniform sampler2D map;
 uniform float useMap;
 uniform vec4 colorStops;
 uniform mat4 colors;
+uniform float[5] groupColors;
 uniform float useClamp;
 
 varying vec2 vRotation;
 varying float vNormalLife;
 varying float vColorRandom;
 varying float vLightnessRandom;
+varying float vGroup;
 
 vec3 hue2rgb(float hue) {
     hue = fract(hue);
@@ -55,14 +57,6 @@ vec3 hsl2rgb(vec3 hsl) {
     }
 }
 
-vec4 toLinear(vec4 sRGB) {
-    bvec3 cutoff = lessThan(sRGB.rgb, vec3(0.04045));
-    vec3 higher = pow((sRGB.rgb + vec3(0.055)) / vec3(1.055), vec3(2.4));
-    vec3 lower = sRGB.rgb / vec3(12.92);
-
-    return vec4(mix(higher, lower, cutoff), sRGB.a);
-}
-
 void main() {
 
     // build up color and alpha gradient
@@ -72,7 +66,7 @@ void main() {
 
     // convert color to hsv and back to alter hue
     vec3 hsv = rgb2hsl(vec3(gradient.r, gradient.g, gradient.b));
-    vec3 alteredHue = vec3(hsv.x + vColorRandom, hsv.y, hsv.z + vLightnessRandom);
+    vec3 alteredHue = vec3(groupColors[int(vGroup + 0.1)], hsv.y, hsv.z + vLightnessRandom);
     vec3 rgb = hsl2rgb(alteredHue);
 
     // mix color and alpha

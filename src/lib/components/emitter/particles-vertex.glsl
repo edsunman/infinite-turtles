@@ -4,6 +4,7 @@ attribute float colorRandom;
 attribute float lightnessRandom;
 attribute float life;
 attribute float randomSeed;
+attribute float group;
 attribute vec3 velocity;
 
 uniform float maxLifetime;
@@ -20,7 +21,7 @@ varying float vColorRandom;
 varying float vLightnessRandom;
 varying vec2 vRotation;
 varying float vNormalLife;
-varying float vReverseNormalLife;
+varying float vGroup;
 
 // TODO: alow custom easing function
 float easeOut(float x) {
@@ -130,4 +131,5 @@ void main() {
     vRotation = vec2(cos(life * rotation), sin(life * rotation));
     vColorRandom = colorRandom;
     vLightnessRandom = lightnessRandom;
+    vGroup = group;
 }

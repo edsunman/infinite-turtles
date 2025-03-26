@@ -5,15 +5,15 @@
 	import { gameState, timeline } from '$lib/state.svelte';
 	import { startGame } from '$lib/game/gameActions';
 	import { untrack } from 'svelte';
+	import { innerWidth } from 'svelte/reactivity/window';
 
 	import Peformance from './misc/Peformance.svelte';
 	import Cards from './cards/Cards.svelte';
 	import Hitboxes from './cards/Hitboxes.svelte';
 	import Camera from './Camera.svelte';
-	import ParticleEmitter from './emitter/ParticleEmitter.svelte';
+	import InstancedParticles from './emitter/InstancedParticles.svelte';
 	//import Audio from './Audio.svelte';
 	import MenuPane from './meshes/MenuPane.svelte';
-	import { innerWidth } from 'svelte/reactivity/window';
 
 	const dracoLoader = useDraco();
 	const gltf = useGltf('/models/cards-transformed.glb', { dracoLoader });
@@ -24,6 +24,7 @@
 		circle: '/images/circle.png',
 		mainBackground: '/images/background-main.png'
 	});
+	const particleTexture = useTexture('/images/circleParticle.png');
 
 	const { progress } = useProgress();
 
@@ -77,7 +78,9 @@
 
 <!-- <Audio /> -->
 
-<ParticleEmitter />
+{#await particleTexture then alphaMap}
+	<InstancedParticles {alphaMap} />
+{/await}
 
 <MenuPane />
 

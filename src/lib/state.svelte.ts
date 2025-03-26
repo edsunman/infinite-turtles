@@ -1,5 +1,6 @@
 import { Timeline } from './helpers/animation';
 import { AudioPlayer } from './helpers/audio';
+import { ParticleManager } from './helpers/particles';
 import type { Card, GameState } from './types';
 
 export const gameState = $state<GameState>({
@@ -31,5 +32,7 @@ class CardState {
 }
 
 export const cardState = new CardState();
+
 export const timeline = new Timeline();
 export const sfxPlayer = new AudioPlayer();
+export const particles = new ParticleManager();
